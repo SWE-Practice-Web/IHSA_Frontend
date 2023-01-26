@@ -1,44 +1,63 @@
 <template>
-  <div class="container">
-    <GMapMap
-        :center=center
-        :zoom="7"
-        map-type-id="terrain"
-        style="width: 90vw; height: 90vh"
-    >
-    </GMapMap>
+  <div id="app">
+    <div class="cell cell-map">
+      <MapContainer />
+    </div>
+    <div class="cell cell-edit">
+      Edit
+    </div>
+    <div class="cell cell-inspect">
+      Inspect
+    </div>
   </div>
 </template>
 
-<script >
-export default {
-  name: 'App',
-  data() {
-    return {
-      center: {lat: 40.35, lng: -94.88},
+<script>
+import MapContainer from './MapContainer.vue'
+
+  export default {
+    name: 'App',
+    components:{
+      MapContainer
     }
   }
-}
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.container{
-  height:100vh;
-  width:100vw;
-}
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+  }
+
+  #app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 100vh;
+    grid-auto-rows: 1fr;
+    grid-gap: 1rem;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  .cell {
+    border-radius: 4px;
+    background-color: lightgrey;
+  }
+
+  .cell-map {
+    grid-column: 1;
+    grid-row-start: 1;
+    grid-row-end: 3;
+  }
+
+  .cell-edit {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .cell-inspect {
+    grid-column: 2;
+    grid-row: 2;
+  }
 </style>

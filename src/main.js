@@ -1,12 +1,9 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import VueGoogleMaps from '@fawmi/vue-google-maps'
+import OpenLayersMap from 'vue3-openlayers'
+import 'vue3-openlayers/dist/vue3-openlayers.css'
 
-const app = createApp(App)
+const app = createApp(App);
+app.use(OpenLayersMap)
 
-app.use(VueGoogleMaps, {
-    load: {
-        key:  process.env.VUE_APP_GOOGLE_MAPS_API_KEY,
-        language: 'en',
-    },
-}).mount('#app')
+app.mount('#app')
