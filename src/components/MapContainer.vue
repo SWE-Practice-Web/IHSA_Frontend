@@ -43,6 +43,7 @@ import {
     ref
 } from 'vue'
 export default {
+    name: 'MapContainer',
     setup() {
         const center = ref([-94.5, 40.2])
         const projection = ref('EPSG:4326')
