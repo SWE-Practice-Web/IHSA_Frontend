@@ -1,5 +1,5 @@
-<template>
-  <div id="app">
+;<template>
+  <div class="container">
     <div class="cell cell-map">
       <MapContainer />
     </div>
@@ -24,7 +24,14 @@ export default {
 </script>
 
 <style>
+.container {
+  display:grid;
+  height:100%;
+  width:100%;
+}
 .cell {
+  margin:3px;
+  border: 1px red solid;
   border-radius: 4px;
   background-color: lightgrey;
 }
