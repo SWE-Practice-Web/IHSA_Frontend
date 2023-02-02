@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div style="background-color: white" class="child1">
+        <div style="background-color: white" class="child1" v-show="hasEditAcces()">
             <input type="checkbox" v-model="drawFeaturesOn" @change="drawOn" /> Add Elements
 
             <select id="type" v-model="drawType">
@@ -64,20 +64,15 @@ export default {
         const zoom = ref(8)
         const rotation = ref(0)
         const features = ref({schools:{}, regions:{}})
-        let selectedFeature = ref({})
-
         const format = inject('ol-format');
-
+        const geom = inject('ol-geom');
+        const Feature = inject('ol-feature');
         const geoJson = new format.GeoJSON();
-
-
         const selectConditions = inject('ol-selectconditions')
-
         const selectCondition = selectConditions.click;
-
-        
         const drawType = ref("Point")
-
+        let role = ref("admin")
+        let selectedFeature = ref({})
         let drawFeaturesOn = ref(false);
         let selectFeaturesOn = ref(false);
         let deleteFeaturesOn = ref(false);
@@ -97,18 +92,58 @@ export default {
             drawType,
             features,
             selectedFeature,
+            geom,
+            Feature,
+            role
         }
     },
+
+    mounted () {
+        // const coordinates = [
+        //     [
+        //         [
+        //             40.845947265625,
+        //             40.69303993601352
+        //         ],
+        //         [
+        //             40.82305897027254,
+        //             39.67222714331001
+        //         ],
+        //         [
+        //             41.66076648980379,
+        //             39.695115271024406
+        //         ],
+        //         [
+        //             40.845947265625,
+        //             40.69303993601352
+        //         ]
+        //     ]
+        // ]
+    },
+
     methods: {
-        handleClick(event) {
+
+        /**
+        * Function to handle clicks when 'Edit Elements' or 'Delete Elements' checkbox are selected.
+        *
+        * @param {event} evt. Event emitted by the dom
+        */
+        handleClick(evt) {
             let feature;
-            if (event && event.selected && event.selected.length) { 
-                feature = event.selected[0]
-                if (this.selectFeaturesOn) {this.selectFeature(feature)}
-                else if (this.deleteFeaturesOn) {this.deleteFeature(feature)}
+            if (evt && evt.selected && evt.selected.length) {
+                feature = evt.selected[0]
+                if (this.selectFeaturesOn) { this.selectFeature(feature) }
+                else if (this.deleteFeaturesOn) { this.deleteFeature(feature) }
             }
         },
 
+
+
+        /**
+        * Function to handle clicks when 'Edit Elements' checkbox is selected.
+        *
+        * @param {Feature} feature. Feature being clicked on
+        */
         selectFeature(feature) {
             if (this.getTypeFromFeature(feature) == "Point2") {
                 this.selectedFeature = this.features.schools[feature.ol_uid]
@@ -117,32 +152,70 @@ export default {
             }
         },
 
+
+
+        /**
+        * Function to handle clicks when 'Delete Elements' checkbox is selected.
+        *
+        * @param {Feature} feature. Feature being clicked on
+        */
         deleteFeature(feature) {
             this.$refs.vectorLayer.vectorLayer.getSource().removeFeature(feature)
         },
 
+
+
+        /**
+        * Function to filter select interactions. If returns true, handleClick function will be called, otherwise not.
+        *
+        * @return {Boolean} True if select should activate, false otherwise
+        */
         selectInteactionFilter() {
             return this.selectFeaturesOn || this.deleteFeaturesOn
         },
 
+
+
+        /**
+        * Function called when the 'Edit Elements' checkbox is clicked. Sets selectFeaturesOn to true and all others to false
+        */
         selectOn() {
             this.selectFeaturesOn = true
             this.drawFeaturesOn = false
             this.deleteFeaturesOn = false
         },
 
+
+
+        /**
+        * Function called when the 'Add Elements' checkbox is clicked. Sets drawFeaturesOn to true and all others to false
+        */
         drawOn() {
             this.drawFeaturesOn = true
             this.selectFeaturesOn = false
             this.deleteFeaturesOn = false
         },
 
+
+
+        /**
+        * Function called when the 'Delete Elements' checkbox is clicked. Sets deleteFeaturesOn to true and all others to false
+        */
         deleteOn() {
             this.deleteFeaturesOn = true
             this.selectFeaturesOn = false
             this.drawFeaturesOn = false
         },
 
+
+
+        /**
+        * Function to add features to the map. Gets called when drawFeaturesOn is set to true and the user finished drawing.
+        * It creates and adds a feature to 'this.features.schools' if the drawType is Point, or to 'this.features.regions' otherwise.
+        * It also sets this.selectedFeature as this new feature. 
+        *
+        * @param {event} evt. Event emitted by the dom when the user finishes a drawing
+        */
         addFeature(evt) {
             let newFeature;
             if (this.drawType == "Point") {
@@ -164,8 +237,43 @@ export default {
             this.selectedFeature = newFeature;
         },
 
+
+
+        /**
+        * Function to get the name of the geometry type of a feature
+        *
+        * @param {Feature} feature. Feature to get the geometry type name from.
+        */
         getTypeFromFeature(feature) {
             return feature.getGeometry().constructor.name
+        },
+
+
+
+        /**
+        * Function to add features to the map. The difference between addFeature and this function is only used to add saved features from the backend.
+        * Basically, if there are some regions and schools already saved from previous sessions. This will load that.
+        * It creates and adds a feature to 'this.features.schools' if the type is Point, or to 'this.features.regions' otherwise.
+        *
+        * @param {event} evt. Event emitted by the dom when the user finishes a drawing
+        */
+        loadFeature(type, coordinates) {
+            let newGeometry;
+            if (type == "Point") {
+                newGeometry = new this.geom.Point(coordinates)
+            } else {
+                newGeometry = new this.geom.Polygon(coordinates)
+            }
+            const newFeature = new this.Feature({geometry: newGeometry})
+            this.$refs.vectorLayer.vectorLayer.getSource().addFeature(newFeature)
+        },
+
+        /**
+        * Function to check if the current user has edit access. As of right now, only admin has edit access.
+        * @return {Boolean} Returns a boolean indicating if the user has edit access or not.
+        */
+        hasEditAcces() {
+            return this.role == "admin"
         }
     }
 }
