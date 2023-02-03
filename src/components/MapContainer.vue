@@ -1,14 +1,17 @@
 <template>
     <div class="container">
         <div style="background-color: white" class="child1" v-show="hasEditAcces()">
-            <input type="checkbox" v-model="drawFeaturesOn" @change="drawOn" /> Add Elements
-
-            <select id="type" v-model="drawType">
-                <option value="Point">Add School</option>
-                <option value="Polygon">Add Region</option>
+            <select v-model="selectedSchool" aria-placeholder="Select a school">
+                <option disabled value="Please select a school" selected>Please select a school</option>
+                <option v-for="school in ihsa_schools" :value="school" :key="school.name">
+                    {{ school.name }}
+                </option>
             </select>
-            <input type="checkbox" v-model="selectFeaturesOn" @change="selectOn" /> Edit Elements
-            <input type="checkbox" v-model="deleteFeaturesOn" @change="deleteOn" /> Delete Elements
+            <button @click="addSchool">Add School</button>
+
+            <input type="checkbox" v-model="drawOn" @change="toggleDrawOn" style="margin-left;:15px"/> Draw Region
+            <input type="checkbox" v-model="selectOn" @change="toggleSelectOn" /> Edit Elements
+            <input type="checkbox" v-model="deleteOn" @change="toggleDeleteOn" /> Delete Elements
         </div>
 
 
@@ -21,18 +24,18 @@
             </ol-tile-layer>
 
             <ol-interaction-select @select="handleClick" :condition="selectCondition"
-                :filter="selectInteactionFilter">
+                :filter="selectInteractionFilter" ref="select">
                 <ol-style>
                     <ol-style-stroke color="green" :width="10"></ol-style-stroke>
                     <ol-style-fill color="rgba(255,255,255,0.5)"></ol-style-fill>
-                    <ol-style-icon v-if="selectFeaturesOn || deleteFeaturesOn" :src="markerIcon" :scale="0.08"></ol-style-icon>
+                    <ol-style-icon v-if="selectOn || deleteOn" :src="markerIcon" :scale="0.09"></ol-style-icon>
                 </ol-style>
             </ol-interaction-select>
 
             <ol-vector-layer ref="vectorLayer">
                 <ol-source-vector :projection="projection">
 
-                    <ol-interaction-draw v-if="drawFeaturesOn" :type="drawType" @drawend="addFeature">
+                    <ol-interaction-draw v-if="drawOn" type="Polygon" @drawend="addFeature">
 
                     </ol-interaction-draw>
 
@@ -41,41 +44,47 @@
                 <ol-style>
                     <ol-style-stroke color="red" :width="2"></ol-style-stroke>
                     <ol-style-fill color="rgba(255,255,255,0.1)"></ol-style-fill>
-                    <ol-style-circle :radius="7">
+                    <ol-style-circle :radius="18">
                         <ol-style-fill color="blue"></ol-style-fill>
                     </ol-style-circle>
+                    <ol-style-icon :src="markerIcon" :scale="0.07"></ol-style-icon>
                 </ol-style>
             </ol-vector-layer>
         </ol-map>
-        <div style="background-color: lightgray;" class="child3">{{ selectedFeature }}</div>
+        <div style="background-color: lightgray;" class="child3">
+            <div v-for="value, name in selectedFeature" :key="name">
+                {{ name }} <input type="text" v-model="selectedFeature[name]">
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import markerIcon from '../assets/marker.png'
+import schoolsCoordinates from '../../public/ihsa_schools.json'
 import {
     ref,
     inject
 } from 'vue'
 export default {
     setup() {
-        const center = ref([40, 40])
+        const center = ref([-87.86, 42.45])
         const projection = ref('EPSG:4326')
         const zoom = ref(8)
         const rotation = ref(0)
         const features = ref({schools:{}, regions:{}})
-        const format = inject('ol-format');
         const geom = inject('ol-geom');
         const Feature = inject('ol-feature');
-        const geoJson = new format.GeoJSON();
         const selectConditions = inject('ol-selectconditions')
         const selectCondition = selectConditions.click;
-        const drawType = ref("Point")
+        let lastSelectedFeature = null;
+        let selectedSchool = ref("Please select a school")
         let role = ref("admin")
         let selectedFeature = ref({})
-        let drawFeaturesOn = ref(false);
-        let selectFeaturesOn = ref(false);
-        let deleteFeaturesOn = ref(false);
+        let drawOn = ref(false);
+        let selectOn = ref(true);
+        let deleteOn = ref(false);
+        let ihsa_schools = schoolsCoordinates.Placemark
 
 
         return {
@@ -84,41 +93,22 @@ export default {
             zoom,
             rotation,
             selectCondition,
-            geoJson,
             markerIcon,
-            drawFeaturesOn,
-            selectFeaturesOn,
-            deleteFeaturesOn,
-            drawType,
+            drawOn,
+            selectOn,
+            deleteOn,
             features,
+            lastSelectedFeature,
             selectedFeature,
             geom,
             Feature,
-            role
+            role,
+            ihsa_schools,
+            selectedSchool
         }
     },
 
     mounted () {
-        // const coordinates = [
-        //     [
-        //         [
-        //             40.845947265625,
-        //             40.69303993601352
-        //         ],
-        //         [
-        //             40.82305897027254,
-        //             39.67222714331001
-        //         ],
-        //         [
-        //             41.66076648980379,
-        //             39.695115271024406
-        //         ],
-        //         [
-        //             40.845947265625,
-        //             40.69303993601352
-        //         ]
-        //     ]
-        // ]
     },
 
     methods: {
@@ -132,9 +122,10 @@ export default {
             let feature;
             if (evt && evt.selected && evt.selected.length) {
                 feature = evt.selected[0]
-                if (this.selectFeaturesOn) { this.selectFeature(feature) }
-                else if (this.deleteFeaturesOn) { this.deleteFeature(feature) }
-            }
+                this.lastSelectedFeature = feature
+                if (this.selectOn) { this.selectFeature(feature) }
+                else if (this.deleteOn) { this.deleteFeature(feature) }
+            } 
         },
 
 
@@ -145,10 +136,11 @@ export default {
         * @param {Feature} feature. Feature being clicked on
         */
         selectFeature(feature) {
-            if (this.getTypeFromFeature(feature) == "Point2") {
-                this.selectedFeature = this.features.schools[feature.ol_uid]
+            if (this.getTypeFromFeature(feature) == "Point") {
+                this.selectedFeature = this.features.schools[feature.id_]
             } else {
-                this.selectedFeature = this.features.regions[feature.ol_uid]
+                this.selectedFeature = this.features.regions[feature.id_]
+                this.getPointsInsidePolygon(feature)
             }
         },
 
@@ -156,11 +148,18 @@ export default {
 
         /**
         * Function to handle clicks when 'Delete Elements' checkbox is selected.
+        * Removes the feature from the map as well as from this.features
         *
         * @param {Feature} feature. Feature being clicked on
         */
         deleteFeature(feature) {
+            console.log(this.features.schools[feature.id_])
             this.$refs.vectorLayer.vectorLayer.getSource().removeFeature(feature)
+            if (this.getTypeFromFeature(feature) == "Point") {
+                delete this.features.schools[feature.id_]
+            } else {
+                delete this.features.regions[feature.id_]
+            }
         },
 
 
@@ -170,47 +169,48 @@ export default {
         *
         * @return {Boolean} True if select should activate, false otherwise
         */
-        selectInteactionFilter() {
-            return this.selectFeaturesOn || this.deleteFeaturesOn
+        selectInteractionFilter() {
+            return this.selectOn || this.deleteOn
         },
 
 
 
         /**
-        * Function called when the 'Edit Elements' checkbox is clicked. Sets selectFeaturesOn to true and all others to false
+        * Function called when the 'Edit Elements' checkbox is clicked. Sets selectOn to true and all others to false
         */
-        selectOn() {
-            this.selectFeaturesOn = true
-            this.drawFeaturesOn = false
-            this.deleteFeaturesOn = false
+        toggleSelectOn() {
+            this.selectOn = true
+            this.drawOn = false
+            this.deleteOn = false
         },
 
 
 
         /**
-        * Function called when the 'Add Elements' checkbox is clicked. Sets drawFeaturesOn to true and all others to false
+        * Function called when the 'Add Elements' checkbox is clicked. Sets drawOn to true and all others to false
         */
-        drawOn() {
-            this.drawFeaturesOn = true
-            this.selectFeaturesOn = false
-            this.deleteFeaturesOn = false
+        toggleDrawOn() {
+            this.drawOn = true
+            this.selectOn = false
+            this.deleteOn = false
         },
 
 
 
         /**
-        * Function called when the 'Delete Elements' checkbox is clicked. Sets deleteFeaturesOn to true and all others to false
+        * Function called when the 'Delete Elements' checkbox is clicked. Sets deleteOn to true and all others to false
         */
-        deleteOn() {
-            this.deleteFeaturesOn = true
-            this.selectFeaturesOn = false
-            this.drawFeaturesOn = false
+        toggleDeleteOn() {
+            this.cleanSelectedFeatures() //Unselect any selected features beacuse otherwise select doesn't work properly
+            this.deleteOn = true
+            this.selectOn = false
+            this.drawOn = false
         },
 
 
 
         /**
-        * Function to add features to the map. Gets called when drawFeaturesOn is set to true and the user finished drawing.
+        * Function to add features to the map. Gets called when drawOn is set to true and the user finished drawing.
         * It creates and adds a feature to 'this.features.schools' if the drawType is Point, or to 'this.features.regions' otherwise.
         * It also sets this.selectedFeature as this new feature. 
         *
@@ -218,21 +218,23 @@ export default {
         */
         addFeature(evt) {
             let newFeature;
+            evt.feature.setId(evt.feature.ol_uid)
             if (this.drawType == "Point") {
                 newFeature = {
-                    "School Name": "",
-                    "Number of Riders": "",
-                    "Is Anchor School": "",
-                    "Feature Id": evt.feature.ol_uid
+                    "schoolName": "",
+                    "numOfRiders": "",
+                    "isAnchorSchool": "",
+                    "featureId": evt.feature.id_,
+                    "geometryType": "Point"
                 }
-                this.features.schools[evt.feature.ol_uid] = newFeature
+                this.features.schools[evt.feature.id_] = newFeature
             } else {
                 newFeature = {
-                    "Region Number/Name": "",
-                    "Number of Riders": "",
-                    "Feature Id": evt.feature.ol_uid
+                    "regionId": "",
+                    "featureId": evt.feature.id_,
+                    "geometryType": "Polygon"
                 }
-                this.features.regions[evt.feature.ol_uid] = newFeature
+                this.features.regions[evt.feature.id_] = newFeature
             }
             this.selectedFeature = newFeature;
         },
@@ -245,7 +247,7 @@ export default {
         * @param {Feature} feature. Feature to get the geometry type name from.
         */
         getTypeFromFeature(feature) {
-            return feature.getGeometry().constructor.name
+            return feature.getGeometry().getType()
         },
 
 
@@ -255,17 +257,46 @@ export default {
         * Basically, if there are some regions and schools already saved from previous sessions. This will load that.
         * It creates and adds a feature to 'this.features.schools' if the type is Point, or to 'this.features.regions' otherwise.
         *
-        * @param {event} evt. Event emitted by the dom when the user finishes a drawing
+        * @param {Object} feature. Feature generated by this page. The properties of this feature depend on if the feature is a school or region:
+        * school: {geometryType, featureId, coordinates, schoolName, numOfRiders, isAnchorSchool}
+        * school: {geometryType, featureId, coordinates, regionId}
+        * @return {Object} Returns the newly created feature object
         */
-        loadFeature(type, coordinates) {
+        loadFeature(feature) {
+            //Load feature properties
+            let {geometryType, featureId, coordinates, schoolName, numOfRiders, isAnchorSchool, regionId} = feature;
+            //Add feature to map
             let newGeometry;
-            if (type == "Point") {
+            if (geometryType == "Point") {
                 newGeometry = new this.geom.Point(coordinates)
             } else {
                 newGeometry = new this.geom.Polygon(coordinates)
             }
-            const newFeature = new this.Feature({geometry: newGeometry})
-            this.$refs.vectorLayer.vectorLayer.getSource().addFeature(newFeature)
+            const newMapFeature = new this.Feature({geometry: newGeometry})
+            featureId = featureId ? featureId !== null : newMapFeature.ol_uid
+            newMapFeature.setId(featureId)
+            this.$refs.vectorLayer.vectorLayer.getSource().addFeature(newMapFeature)
+
+            let newFeature;
+            //Add feature to this.features
+            if (geometryType == "Point") {
+                newFeature = {
+                    "schoolName": schoolName,
+                    "numOfRiders": numOfRiders,
+                    "isAnchorSchool": isAnchorSchool,
+                    "featureId": featureId,
+                    "geometryType": geometryType
+                }
+                this.features.schools[featureId] = newFeature
+            } else {
+                newFeature = {
+                    "regionId": regionId,
+                    "featureId": featureId,
+                    "geometryType": geometryType
+                }
+                this.features.regions[featureId] = newFeature
+            }
+            return newFeature
         },
 
         /**
@@ -274,6 +305,53 @@ export default {
         */
         hasEditAcces() {
             return this.role == "admin"
+        },
+
+
+        /**
+        * Function to unselect all selected features.
+        */
+        cleanSelectedFeatures() {
+            this.$refs.select.select.getFeatures().clear() 
+        },
+
+
+        /**
+        * Function to add a school from the list of IHSA schools to the map. When Add School button is clicked, whichever school is selected
+        * in the select school list, will be added to the map.
+        */
+        addSchool() {
+            if (this.selectedSchool == "Please select a school") {return}
+            const lat = this.selectedSchool.LookAt.latitude
+            const lon = this.selectedSchool.LookAt.longitude
+            const coordinates = [lon, lat]
+            
+            const newSchool = {
+                "geometryType":"Point", 
+                "featureId":null, 
+                "schoolName": this.selectedSchool.Snippet, 
+                "coordinates":coordinates, 
+                "numOfRiders":0,
+                "isAnchorSchool":false,
+            
+            }
+            const school = this.loadFeature(newSchool)
+            this.selectedFeature = school
+            this.center = coordinates
+        },
+
+
+        getPointsInsidePolygon(myPolygon) {
+            var candidates = [];
+            const getGeometryType = this.getTypeFromFeature //For some reason this turns undefined inside forEachFeatureIntersectingExtent. So, I am saving this function here
+            const source = this.$refs.vectorLayer.vectorLayer.getSource()
+            source.forEachFeatureIntersectingExtent(myPolygon.getGeometry().getExtent(), function (feature) {
+                if (getGeometryType(feature) == 'Point' && myPolygon.getGeometry().intersectsCoordinate(feature.getGeometry().getCoordinates())) {
+                    candidates.push(feature);
+                }
+            });
+            console.log(candidates)
+
         }
     }
 }
