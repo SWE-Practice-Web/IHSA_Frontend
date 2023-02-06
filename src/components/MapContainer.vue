@@ -1,17 +1,17 @@
 <template>
     <div class="container">
         <div style="background-color: white" class="child1" v-show="hasEditAcces()">
-            <select v-model="selectedSchool" aria-placeholder="Select a school">
+            <!-- <select v-model="selectedSchool" aria-placeholder="Select a school">
                 <option disabled value="Please select a school" selected>Please select a school</option>
                 <option v-for="school in ihsa_schools" :value="school" :key="school.name">
                     {{ school.name }}
                 </option>
             </select>
-            <button @click="addSchool">Add School</button>
+            <button @click="addSchool">Add School</button> -->
 
             <input type="checkbox" v-model="drawOn" @change="toggleDrawOn" style="margin-left;:15px"/> Draw Region
-            <input type="checkbox" v-model="selectOn" @change="toggleSelectOn" /> Edit Elements
-            <input type="checkbox" v-model="deleteOn" @change="toggleDeleteOn" /> Delete Elements
+            <input type="checkbox" v-model="selectOn" @change="toggleSelectOn" /> Select
+            <input type="checkbox" v-model="deleteOn" @change="toggleDeleteOn" /> Delete
         </div>
 
 
@@ -28,7 +28,7 @@
                 <ol-style>
                     <ol-style-stroke color="green" :width="10"></ol-style-stroke>
                     <ol-style-fill color="rgba(255,255,255,0.5)"></ol-style-fill>
-                    <ol-style-icon v-if="selectOn || deleteOn" :src="markerIcon" :scale="0.09"></ol-style-icon>
+                    <ol-style-icon v-if="selectOn || deleteOn" :src="handleMarker()" :scale="0.4"></ol-style-icon>
                 </ol-style>
             </ol-interaction-select>
 
@@ -47,20 +47,33 @@
                     <ol-style-circle :radius="18">
                         <ol-style-fill color="blue"></ol-style-fill>
                     </ol-style-circle>
-                    <ol-style-icon :src="markerIcon" :scale="0.07"></ol-style-icon>
+                    <ol-style-icon :src="blackMarker" :scale="0.2"></ol-style-icon>
                 </ol-style>
             </ol-vector-layer>
         </ol-map>
         <div style="background-color: lightgray;" class="child3">
-            <div v-for="value, name in selectedFeature" :key="name">
-                {{ name }} <input type="text" v-model="selectedFeature[name]">
+            <div v-if="selectedFeature.schoolName !== undefined">School Name <input type="text" v-model="selectedFeature.schoolName"></div><br>
+            <div  v-if="selectedFeature.numOfRiders !== undefined">Number of Riders <input type="text" v-model="selectedFeature.numOfRiders"></div><br>
+            <div  v-if="selectedFeature.isAnchorSchool !== undefined">Is Anchor School <input type="checkbox" v-model="selectedFeature.isAnchorSchool"></div><br>
+            <div  v-if="selectedFeature.region !== undefined">
+                Region
+                <select v-model="selectedFeature.region" @change="changeRegion">
+                    <option v-for="region in regions" :value="region" :key="region">{{ region }}</option>
+                </select>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import markerIcon from '../assets/marker.png'
+import blackMarker from '../assets/blackMarker.png' //Location icon by Icons8
+import redMarker from '../assets/redMarker.png' //Location icon by Icons8
+import yellowMarker from '../assets/yellowMarker.png' //Location icon by Icons8
+import greenMarker from '../assets/greenMarker.png' //Location icon by Icons8
+import bluedMarker from '../assets/blueMarker.png' //Location icon by Icons8
+import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by Icons8
+import * as Style from 'ol/style/'
+
 import schoolsCoordinates from '../../public/ihsa_schools.json'
 import {
     ref,
@@ -76,8 +89,11 @@ export default {
         const geom = inject('ol-geom');
         const Feature = inject('ol-feature');
         const selectConditions = inject('ol-selectconditions')
-        const selectCondition = selectConditions.click;
-        let lastSelectedFeature = null;
+        const selectCondition = selectConditions.pointerMove;
+        // const selectCondition = selectConditions.click;
+        const regions = ref([1,2,3,4,5])
+        let lastSelectedFeature = ref(null);
+        let selectedRegion = ref({});
         let selectedSchool = ref("Please select a school")
         let role = ref("admin")
         let selectedFeature = ref({})
@@ -85,6 +101,14 @@ export default {
         let selectOn = ref(true);
         let deleteOn = ref(false);
         let ihsa_schools = schoolsCoordinates.Placemark
+        let createdSchools = ref(new Set())
+        let regionToMarker = ref({
+            1: redMarker,
+            2: yellowMarker,
+            3: greenMarker,
+            4: bluedMarker,
+            5: lightBlueMarker
+        })
 
 
         return {
@@ -93,7 +117,7 @@ export default {
             zoom,
             rotation,
             selectCondition,
-            markerIcon,
+            blackMarker,
             drawOn,
             selectOn,
             deleteOn,
@@ -104,14 +128,33 @@ export default {
             Feature,
             role,
             ihsa_schools,
-            selectedSchool
+            selectedSchool,
+            selectedRegion,
+            createdSchools,
+            regionToMarker,
+            Style,
+            regions
         }
     },
 
     mounted () {
+        for (let school of this.ihsa_schools) {
+            this.addSchool(school)
+        }
     },
 
     methods: {
+
+        changeRegion(evt) {
+            const newRegion = evt.target.value
+            const newStyle = new Style.Style({
+                    image: new Style.Icon({
+                        src: this.regionToMarker[newRegion],
+                        scale: 0.3
+                    })
+                })
+            this.lastSelectedFeature.setStyle(newStyle)
+        },
 
         /**
         * Function to handle clicks when 'Edit Elements' or 'Delete Elements' checkbox are selected.
@@ -128,6 +171,16 @@ export default {
             } 
         },
 
+        handleMarker() {
+            if (this.lastSelectedFeature == null) {
+                return this.blackMarker
+            } else {
+                let feature = this.lastSelectedFeature
+                const selectedSchool = this.features.schools[feature.id_]
+                return this.regionToMarker[selectedSchool.region]
+            }
+        },
+
 
 
         /**
@@ -140,7 +193,7 @@ export default {
                 this.selectedFeature = this.features.schools[feature.id_]
             } else {
                 this.selectedFeature = this.features.regions[feature.id_]
-                this.getPointsInsidePolygon(feature)
+                this.selectedRegion = this.getSchoolsInsidePolygon(feature)
             }
         },
 
@@ -153,9 +206,9 @@ export default {
         * @param {Feature} feature. Feature being clicked on
         */
         deleteFeature(feature) {
-            console.log(this.features.schools[feature.id_])
             this.$refs.vectorLayer.vectorLayer.getSource().removeFeature(feature)
             if (this.getTypeFromFeature(feature) == "Point") {
+                this.createdSchools.delete(this.features.schools[feature.id_]['schoolName'])
                 delete this.features.schools[feature.id_]
             } else {
                 delete this.features.regions[feature.id_]
@@ -219,23 +272,13 @@ export default {
         addFeature(evt) {
             let newFeature;
             evt.feature.setId(evt.feature.ol_uid)
-            if (this.drawType == "Point") {
-                newFeature = {
-                    "schoolName": "",
-                    "numOfRiders": "",
-                    "isAnchorSchool": "",
-                    "featureId": evt.feature.id_,
-                    "geometryType": "Point"
-                }
-                this.features.schools[evt.feature.id_] = newFeature
-            } else {
-                newFeature = {
-                    "regionId": "",
-                    "featureId": evt.feature.id_,
-                    "geometryType": "Polygon"
-                }
-                this.features.regions[evt.feature.id_] = newFeature
+            newFeature = {
+                "regionId": "",
+                "featureId": evt.feature.id_,
+                "geometryType": "Polygon"
             }
+            this.features.regions[evt.feature.id_] = newFeature
+            this.selectedRegion = this.getSchoolsInsidePolygon(evt.feature)
             this.selectedFeature = newFeature;
         },
 
@@ -245,6 +288,7 @@ export default {
         * Function to get the name of the geometry type of a feature
         *
         * @param {Feature} feature. Feature to get the geometry type name from.
+        * @return {String} String representing the geometry type of the inputted feature.
         */
         getTypeFromFeature(feature) {
             return feature.getGeometry().getType()
@@ -264,7 +308,7 @@ export default {
         */
         loadFeature(feature) {
             //Load feature properties
-            let {geometryType, featureId, coordinates, schoolName, numOfRiders, isAnchorSchool, regionId} = feature;
+            let {geometryType, featureId, coordinates, schoolName, numOfRiders, isAnchorSchool, regionId, region} = feature;
             //Add feature to map
             let newGeometry;
             if (geometryType == "Point") {
@@ -275,6 +319,15 @@ export default {
             const newMapFeature = new this.Feature({geometry: newGeometry})
             featureId = featureId ? featureId !== null : newMapFeature.ol_uid
             newMapFeature.setId(featureId)
+            if (geometryType == "Point") {
+                const iconStyle = new Style.Style({
+                    image: new Style.Icon({
+                        src: this.regionToMarker[region],
+                        scale: 0.3
+                    })
+                })
+                newMapFeature.setStyle(iconStyle)
+            }
             this.$refs.vectorLayer.vectorLayer.getSource().addFeature(newMapFeature)
 
             let newFeature;
@@ -285,7 +338,8 @@ export default {
                     "numOfRiders": numOfRiders,
                     "isAnchorSchool": isAnchorSchool,
                     "featureId": featureId,
-                    "geometryType": geometryType
+                    "geometryType": geometryType,
+                    "region": region
                 }
                 this.features.schools[featureId] = newFeature
             } else {
@@ -301,6 +355,7 @@ export default {
 
         /**
         * Function to check if the current user has edit access. As of right now, only admin has edit access.
+        * 
         * @return {Boolean} Returns a boolean indicating if the user has edit access or not.
         */
         hasEditAcces() {
@@ -317,41 +372,59 @@ export default {
 
 
         /**
-        * Function to add a school from the list of IHSA schools to the map. When Add School button is clicked, whichever school is selected
-        * in the select school list, will be added to the map.
+        * Function to add a school from the list of IHSA schools to the map. This function will be called to add all schools when the page loads
         */
-        addSchool() {
-            if (this.selectedSchool == "Please select a school") {return}
-            const lat = this.selectedSchool.LookAt.latitude
-            const lon = this.selectedSchool.LookAt.longitude
+        addSchool(selectedSchool) {
+            const lat = selectedSchool.LookAt.latitude
+            const lon = selectedSchool.LookAt.longitude
             const coordinates = [lon, lat]
+
             
+            this.createdSchools.add(selectedSchool.Snippet)
             const newSchool = {
                 "geometryType":"Point", 
                 "featureId":null, 
-                "schoolName": this.selectedSchool.Snippet, 
+                "schoolName": selectedSchool.Snippet, 
                 "coordinates":coordinates, 
                 "numOfRiders":0,
                 "isAnchorSchool":false,
-            
+                "region": Math.floor(Math.random() * 5) + 1
             }
-            const school = this.loadFeature(newSchool)
-            this.selectedFeature = school
-            this.center = coordinates
+
+            // const school = this.loadFeature(newSchool)
+            this.loadFeature(newSchool)
+            this.cleanSelectedFeatures()
         },
 
-
+        /**
+        * Function to get all points inside a polygon(region).
+        * @param {Feature} myPolygon. Feature object of the polygon to get the points inside to.
+        * 
+        * @return {Array[Feature]}. List of points inside the polygon/region.
+        */
         getPointsInsidePolygon(myPolygon) {
-            var candidates = [];
+            var points = [];
             const getGeometryType = this.getTypeFromFeature //For some reason this turns undefined inside forEachFeatureIntersectingExtent. So, I am saving this function here
             const source = this.$refs.vectorLayer.vectorLayer.getSource()
             source.forEachFeatureIntersectingExtent(myPolygon.getGeometry().getExtent(), function (feature) {
                 if (getGeometryType(feature) == 'Point' && myPolygon.getGeometry().intersectsCoordinate(feature.getGeometry().getCoordinates())) {
-                    candidates.push(feature);
+                    points.push(feature);
                 }
             });
-            console.log(candidates)
+            return points;
+        },
 
+
+        /**
+        * Function to get all schools inside a polygon(region).
+        * @param {Feature} myPolygon. Feature object of the polygon to get the points inside to.
+        * 
+        * @return {Array[Object]}. List of schools inside the polygon/region.
+        */
+        getSchoolsInsidePolygon(myPolygon) {
+            const points = this.getPointsInsidePolygon(myPolygon)
+            const schools = points.map((point) => this.features.schools[point.id_])
+            return schools
         }
     }
 }
