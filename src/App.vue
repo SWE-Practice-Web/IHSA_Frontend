@@ -14,6 +14,9 @@ export default {
 </script>
 
 <style>
+* {
+  box-sizing: border-box;
+}
 html, body {
   height: 100%;
   margin: 0;

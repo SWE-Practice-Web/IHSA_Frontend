@@ -1,0 +1,479 @@
+[
+    {
+        "school": "Ball State University",
+        "raw_name": "Ball State University",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 40.19949,
+        "lng": -85.41247
+    },
+    {
+        "school": "Butler University",
+        "raw_name": "Butler University",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 39.83893,
+        "lng": -86.17249
+    },
+    {
+        "school": "Earlham College",
+        "raw_name": "Earlham College",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 39.82338,
+        "lng": -84.91357
+    },
+    {
+        "school": "Eastern Illinois University",
+        "raw_name": "Eastern Illinois University",
+        "region": 1,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 39.48059,
+        "lng": -88.1756
+    },
+    {
+        "school": "Indiana University",
+        "raw_name": "Indiana University",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 39.16616,
+        "lng": -86.52639
+    },
+    {
+        "school": "Indiana University-Purdue University at Indianapolis",
+        "raw_name": "Indiana University - Purdue University at Indianapolis",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 39.77643,
+        "lng": -86.18527
+    },
+    {
+        "school": "Lake Land College",
+        "raw_name": "Lake Land College",
+        "region": 1,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 39.41726,
+        "lng": -88.3806
+    },
+    {
+        "school": "Purdue University",
+        "raw_name": "Purdue University",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 40.42809,
+        "lng": -86.92251
+    },
+    {
+        "school": "Saint Mary-of-the-Woods College",
+        "raw_name": "St. Mary of the Woods College",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 39.51059,
+        "lng": -87.46113
+    },
+    {
+        "school": "Taylor University",
+        "raw_name": "Taylor University",
+        "region": 1,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 40.45838,
+        "lng": -85.49525
+    },
+    {
+        "school": "University of Illinois Urbana-Champaign",
+        "raw_name": "University of Illinois (Urbana - Champaign)",
+        "region": 1,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 40.1019523,
+        "lng": -88.2271615
+    },
+    {
+        "school": "New Mexico State University",
+        "raw_name": "New Mexico State University",
+        "region": 2,
+        "state": "New Mexico",
+        "state_code": "NM",
+        "lat": 32.28259,
+        "lng": -106.75
+    },
+    {
+        "school": "NCTC North Central Texas College - Gainesville Campus",
+        "raw_name": "North Central Texas College",
+        "region": 2,
+        "state": "Texas",
+        "state_code": "TX",
+        "lat": 33.6187918,
+        "lng": -97.1659405
+    },
+    {
+        "school": "Oklahoma Panhandle State University",
+        "raw_name": "Oklahoma Panhandle State University",
+        "region": 2,
+        "state": "Oklahoma",
+        "state_code": "OK",
+        "lat": 36.59452,
+        "lng": -101.63849
+    },
+    {
+        "school": "Southern Nazarene University",
+        "raw_name": "Southern Nazarene University",
+        "region": 2,
+        "state": "Oklahoma",
+        "state_code": "OK",
+        "lat": 35.51229,
+        "lng": -97.62995
+    },
+    {
+        "school": "Tarleton State University",
+        "raw_name": "Tarleton State University",
+        "region": 2,
+        "state": "Texas",
+        "state_code": "TX",
+        "lat": 32.2160478,
+        "lng": -98.2181417
+    },
+    {
+        "school": "Texas Tech University",
+        "raw_name": "Texas Tech University",
+        "region": 2,
+        "state": "Texas",
+        "state_code": "TX",
+        "lat": 33.5842635,
+        "lng": -101.8804709
+    },
+    {
+        "school": "University of North Texas",
+        "raw_name": "University of North Texas",
+        "region": 2,
+        "state": "Texas",
+        "state_code": "TX",
+        "lat": 33.2074925,
+        "lng": -97.1547749
+    },
+    {
+        "school": "University of Oklahoma",
+        "raw_name": "University of Oklahoma",
+        "region": 2,
+        "state": "Oklahoma",
+        "state_code": "OK",
+        "lat": 35.205898,
+        "lng": -97.4479024
+    },
+    {
+        "school": "West Texas A&M University",
+        "raw_name": "West Texas A & M University",
+        "region": 2,
+        "state": "Texas",
+        "state_code": "TX",
+        "lat": 34.9816953,
+        "lng": -101.9182216
+    },
+    {
+        "school": "Gustavus Adolphus College",
+        "raw_name": "Gustavus Adolphus College",
+        "region": 3,
+        "state": "Minnesota",
+        "state_code": "MN",
+        "lat": 44.3233,
+        "lng": -93.97051
+    },
+    {
+        "school": "Montana State University",
+        "raw_name": "Montana State University",
+        "region": 3,
+        "state": "Montana",
+        "state_code": "MT",
+        "lat": 45.66965,
+        "lng": -111.053
+    },
+    {
+        "school": "North Dakota State University",
+        "raw_name": "North Dakota State University",
+        "region": 3,
+        "state": "North Dakota",
+        "state_code": "ND",
+        "lat": 46.89469,
+        "lng": -96.80341
+    },
+    {
+        "school": "Saint Cloud State University",
+        "raw_name": "St. Cloud State University",
+        "region": 3,
+        "state": "Minnesota",
+        "state_code": "MN",
+        "lat": 45.55274,
+        "lng": -94.15193
+    },
+    {
+        "school": "University of Minnesota - Crookston",
+        "raw_name": "University of Minnesota at Crookston",
+        "region": 3,
+        "state": "Minnesota",
+        "state_code": "MN",
+        "lat": 47.7998584,
+        "lng": -96.6094281
+    },
+    {
+        "school": "University of Minnesota - Twin Cities",
+        "raw_name": "University of Minnesota - Twin Cities",
+        "region": 3,
+        "state": "Minnesota",
+        "state_code": "MN",
+        "lat": 44.9739938,
+        "lng": -93.2299172
+    },
+    {
+        "school": "University of Wisconsin - Eau Claire",
+        "raw_name": "University of Wisconsin at Eau Claire",
+        "region": 3,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 44.79843,
+        "lng": -91.50043
+    },
+    {
+        "school": "University of Wisconsin - River Falls",
+        "raw_name": "University of Wisconsin at River Falls",
+        "region": 3,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 44.85352,
+        "lng": -92.6234
+    },
+    {
+        "school": "Augustana College",
+        "raw_name": "Augustana College",
+        "region": 4,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 41.50337,
+        "lng": -90.54902
+    },
+    {
+        "school": "Ellsworth Community College",
+        "raw_name": "Ellsworth Community College",
+        "region": 4,
+        "state": "Iowa",
+        "state_code": "IA",
+        "lat": 42.52719,
+        "lng": -93.26647
+    },
+    {
+        "school": "Iowa State University",
+        "raw_name": "Iowa State University",
+        "region": 4,
+        "state": "Iowa",
+        "state_code": "IA",
+        "lat": 42.0251,
+        "lng": -93.64915
+    },
+    {
+        "school": "Marquette University",
+        "raw_name": "Marquette University",
+        "region": 4,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 43.03896,
+        "lng": -87.92798
+    },
+    {
+        "school": "Northwestern University",
+        "raw_name": "Northwestern University",
+        "region": 4,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 42.05559,
+        "lng": -87.6745
+    },
+    {
+        "school": "Purdue University Northwest - Hammond",
+        "raw_name": "Purdue University Northwest",
+        "region": 4,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 41.581327,
+        "lng": -87.471445
+    },
+    {
+        "school": "Ripon College",
+        "raw_name": "Ripon College",
+        "region": 4,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 43.84256,
+        "lng": -88.84186
+    },
+    {
+        "school": "University of Notre Dame",
+        "raw_name": "University of Notre Dame\/St. Mary's College (IN)",
+        "region": 4,
+        "state": "Indiana",
+        "state_code": "IN",
+        "lat": 41.7055756,
+        "lng": -86.2353388
+    },
+    {
+        "school": "University of Wisconsin - LaCrosse",
+        "raw_name": "University of Wisconsin at LaCrosse",
+        "region": 4,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 43.8159923,
+        "lng": -91.233342
+    },
+    {
+        "school": "University of Wisconsin - Madison",
+        "raw_name": "University of Wisconsin at Madison",
+        "region": 4,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 43.076592,
+        "lng": -89.4146762
+    },
+    {
+        "school": "University of Wisconsin - Milwaukee",
+        "raw_name": "University of Wisconsin at Milwaukee",
+        "region": 4,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 43.07535,
+        "lng": -87.88126
+    },
+    {
+        "school": "University of Wisconsin - Platteville",
+        "raw_name": "University of Wisconsin at Platteville",
+        "region": 4,
+        "state": "Wisconsin",
+        "state_code": "WI",
+        "lat": 42.73363,
+        "lng": -90.48951
+    },
+    {
+        "school": "Black Hawk College",
+        "raw_name": "Black Hawk College",
+        "region": 5,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 41.52864,
+        "lng": -90.41096
+    },
+    {
+        "school": "Illinois State University",
+        "raw_name": "Illinois State University",
+        "region": 5,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 40.51254,
+        "lng": -88.99758
+    },
+    {
+        "school": "Kansas State University",
+        "raw_name": "Kansas State University",
+        "region": 5,
+        "state": "Kansas",
+        "state_code": "KS",
+        "lat": 39.18858,
+        "lng": -96.58099
+    },
+    {
+        "school": "Missouri State University",
+        "raw_name": "Missouri State University",
+        "region": 5,
+        "state": "Missouri",
+        "state_code": "MO",
+        "lat": 37.19838,
+        "lng": -93.27852
+    },
+    {
+        "school": "Northern Illinois University",
+        "raw_name": "Northern Illinois University",
+        "region": 5,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 41.93753,
+        "lng": -88.77592
+    },
+    {
+        "school": "Northwest Missouri State University",
+        "raw_name": "Northwest Missouri State University",
+        "region": 5,
+        "state": "Missouri",
+        "state_code": "MO",
+        "lat": 40.35314,
+        "lng": -94.88215
+    },
+    {
+        "school": "Saint Louis University",
+        "raw_name": "Saint Louis University",
+        "region": 5,
+        "state": "Missouri",
+        "state_code": "MO",
+        "lat": 38.63533,
+        "lng": -90.23372
+    },
+    {
+        "school": "Southeast Missouri State University",
+        "raw_name": "Southeast Missouri State University",
+        "region": 5,
+        "state": "Missouri",
+        "state_code": "MO",
+        "lat": 37.31255,
+        "lng": -89.53093
+    },
+    {
+        "school": "Southern Illinois University at Carbondale",
+        "raw_name": "Southern Illinois University at Carbondale",
+        "region": 5,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 37.7131371,
+        "lng": -89.2257454
+    },
+    {
+        "school": "Truman State University",
+        "raw_name": "Truman State University",
+        "region": 5,
+        "state": "Missouri",
+        "state_code": "MO",
+        "lat": 40.18948,
+        "lng": -92.58186
+    },
+    {
+        "school": "University of Kansas",
+        "raw_name": "University of Kansas",
+        "region": 5,
+        "state": "Kansas",
+        "state_code": "KS",
+        "lat": 38.9543439,
+        "lng": -95.2579848
+    },
+    {
+        "school": "Washington University in St. Louis",
+        "raw_name": "Washington University in St. Louis",
+        "region": 5,
+        "state": "Missouri",
+        "state_code": "MO",
+        "lat": 38.6466729,
+        "lng": -90.3309783
+    },
+    {
+        "school": "Western Illinois University",
+        "raw_name": "Western Illinois University",
+        "region": 5,
+        "state": "Illinois",
+        "state_code": "IL",
+        "lat": 40.46421,
+        "lng": -90.68374
+    }
+]
