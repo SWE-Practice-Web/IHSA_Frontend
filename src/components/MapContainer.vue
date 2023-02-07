@@ -60,10 +60,12 @@
             </div>
             <div class="RegionInfo" style="border:3px red solid;height:70%">
                 Region
-                <select v-model="selectedRegion" @change="getSchoolsForRegion">
+                <select v-model="selectedRegion" @change="getInformationForRegion">
                     <option v-for="region in regions" :value="region" :key="region">{{ region }}</option>
                 </select><br>
                 Number of Schools <input type="text" :value="numOfSchoolsInRegion"><br>
+                Number of Riders <input type="text" :value="numOfRidersInRegion"><br>
+                Average Distance <input type="text" :value="distancesInRegion"><br>
             </div>
         </div>
     </div>
@@ -77,6 +79,7 @@ import greenMarker from '../assets/greenMarker.png' //Location icon by Icons8
 import bluedMarker from '../assets/blueMarker.png' //Location icon by Icons8
 import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by Icons8
 import * as Style from 'ol/style/'
+import {getLength} from 'ol/sphere'
 
 import ihsa_schools from '../../public/schools.json'
 import {
@@ -90,7 +93,7 @@ export default {
         const zoom = ref(8)
         const rotation = ref(0)
         const schools = ref({})
-        const features = ref({ schools: {}, regions: {} })
+        const features = ref({})
         const geom = inject('ol-geom');
         const Feature = inject('ol-feature');
         const selectConditions = inject('ol-selectconditions')
@@ -106,6 +109,8 @@ export default {
         let deleteOn = ref(false);
         let createdSchools = ref(new Set())
         let numOfSchoolsInRegion = ref(0)
+        let numOfRidersInRegion = ref(0)
+        let distancesInRegion = ref([])
         let regionToMarker = ref({
             1: redMarker,
             2: brownMarker,
@@ -143,7 +148,9 @@ export default {
             regions,
             tooltipPos,
             tooltipPositioning,
-            numOfSchoolsInRegion
+            numOfSchoolsInRegion,
+            numOfRidersInRegion,
+            distancesInRegion
         }
     },
 
@@ -151,7 +158,7 @@ export default {
         for (let school of this.ihsa_schools) {
             this.addSchool(school)
         }
-        this.getSchoolsForRegion()
+        this.getInformationForRegion()
     },
 
     methods: {
@@ -307,6 +314,7 @@ export default {
                 })
                 newMapFeature.setStyle(iconStyle)
             }
+            this.features[featureId] = newMapFeature
             this.$refs.vectorLayer.vectorLayer.getSource().addFeature(newMapFeature)
 
             let newFeature;
@@ -356,7 +364,7 @@ export default {
                 "featureId": null,
                 "schoolName": selectedSchool.raw_name,
                 "coordinates": coordinates,
-                "numOfRiders": 0,
+                "numOfRiders": selectedSchool.riders,
                 "isAnchorSchool": false,
                 "region": selectedSchool.region
             }
@@ -364,16 +372,43 @@ export default {
             this.cleanSelectedFeatures()
         },
 
-        getSchoolsForRegion() {
+        getInformationForRegion() {
             const region = this.selectedRegion
             let regionSchools = []
-            for (let value of Object.values(this.schools)) {
-                if (value.region == region) {
-                    regionSchools.push(value)
+            for (let [key, value] of Object.entries(this.schools)) {
+                let school = value
+                school['featureId'] = key
+                if (school.region == region) {
+                    regionSchools.push(school)
                 }
             }
             this.numOfSchoolsInRegion = regionSchools.length
+            this.numOfRidersInRegion = this.sum(regionSchools.map(school => school.numOfRiders))
+            this.distancesInRegion = this.getDistances(regionSchools.map(school => school.featureId))
             return regionSchools.length
+        },
+
+        sum(arr) {
+            return arr.reduce((a, b) => a + b, 0);
+        },
+
+        getDistances(featuresIds) {
+            let distances = []
+            for (let i = 0 ; i < featuresIds.length - 1; i ++) {
+                for (let j = i+1 ; j < featuresIds.length ; j ++) {
+                    const feature1 = this.features[featuresIds[i]]
+                    const feature2 = this.features[featuresIds[j]]
+                    const point1 = feature1.getGeometry()
+                    const point2 = feature2.getGeometry()
+                    const line = new this.geom.LineString([point1.getCoordinates(), point2.getCoordinates()])
+                    const options = {'projection':'EPSG:4326'}
+                    const length = getLength(line, options)
+                    const currDistance = Math.round((length / 1000) * 100) / 100
+                    distances.push(currDistance)
+                }
+            }
+            const avgDistance = this.sum(distances) / distances.length
+            return `${Math.round(avgDistance / 1.609 * 100) / 100} miles`
         }
     }
 }
