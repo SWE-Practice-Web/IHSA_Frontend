@@ -16,6 +16,7 @@ export default {
 <style>
 * {
   box-sizing: border-box;
+  font-size: 0.8rem !important;
 }
 html, body {
   height: 100%;
