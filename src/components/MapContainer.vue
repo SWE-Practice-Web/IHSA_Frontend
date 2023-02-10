@@ -38,7 +38,7 @@
                         v-model="selectedFeature.schoolName"></div><br>
                 <div v-if="selectedFeature.numOfRiders !== undefined">Number of Riders <input type="number" @input="updateSchoolInfo"
                         v-model="selectedFeature.numOfRiders"></div><br>
-                <div v-if="selectedFeature.isAnchorSchool !== undefined">Is Anchor School <input type="checkbox" @input="updateSchoolInfo"
+                <div v-if="selectedFeature.isAnchorSchool !== undefined">Is Anchor School <input type="checkbox" @change="updateSchoolInfo"
                         v-model="selectedFeature.isAnchorSchool"></div><br>
                 <div v-if="selectedFeature.region !== undefined">
                     Region
@@ -57,7 +57,7 @@
                     </div>
                     <div>Schools: {{ numOfSchoolsInRegion }}</div>
                     <div>Riders: {{ numOfRidersInRegion }}</div>
-                    <div>Has Anchoor School: {{ thereIsAnchoorSchoolInRegion ? 'Yes' : 'No' }}</div>
+                    <div>Anchoor Schools: {{ anchoorSchoolsInRegion }}</div>
                     <div>Avg Mileage: {{ Math.round(avgDistanceInRegion * 100) / 100 }}</div>
                 </div>
                 <table class="regionTable">
@@ -94,6 +94,7 @@ import bluedMarker from '../assets/blueMarker.png' //Location icon by Icons8
 import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by Icons8
 import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
+import Control from 'ol/control/Control'
 
 import ihsa_schools from '../../public/schools.json'
 import {
@@ -126,7 +127,7 @@ export default {
         let numOfRidersInRegion = ref(0)
         let distancesInRegion = ref([])
         let avgDistanceInRegion = ref(0)
-        let thereIsAnchoorSchoolInRegion = ref(false)
+        let anchoorSchoolsInRegion = ref(0)
 
         let regionToMarker = ref({
             1: redMarker,
@@ -169,7 +170,7 @@ export default {
             numOfRidersInRegion,
             distancesInRegion,
             avgDistanceInRegion,
-            thereIsAnchoorSchoolInRegion
+            anchoorSchoolsInRegion
         }
     },
 
@@ -181,6 +182,8 @@ export default {
         this.getDistancesForSchools()
         // Get info for region
         this.getInformationForRegion()
+        // Generate color map of regions and add it to top right corner
+        this.generateColorMap()
     },
 
     methods: {
@@ -210,7 +213,6 @@ export default {
         changeRegion(evt) {
             this.getInformationForRegion()
             const newRegion = evt.target.value
-            // console.log(newRegion !== null ? this.regionToMarker[newRegion] : this.blackMarker)
             const newStyle = new Style.Style({
                 image: new Style.Icon({
                     src: newRegion !== null ? this.regionToMarker[newRegion] : this.blackMarker,
@@ -421,16 +423,16 @@ export default {
 
         getInformationForRegion() {
             const region = this.selectedRegion
-            this.thereIsAnchoorSchoolInRegion = false
+            this.anchoorSchoolsInRegion = 0
             let regionSchools = []
             for (let [key, value] of Object.entries(this.schools)) {
                 let school = value
                 school['featureId'] = key
-                if (school.isAnchorSchool) { 
-                    this.thereIsAnchoorSchoolInRegion = true
-                }
                 if (school.region == region) {
                     regionSchools.push(school)
+                    if (school.isAnchorSchool) { 
+                        this.anchoorSchoolsInRegion += 1
+                    }
                 }
             }
             this.numOfSchoolsInRegion = regionSchools.length
@@ -438,7 +440,6 @@ export default {
             this.numOfRidersInRegion = this.sum(regionSchools.map(school => this.getInt(school.numOfRiders)))
             this.distancesInRegion = this.getDistances(regionSchools.map(school => school.featureId))
             this.avgDistanceInRegion = this.sum(this.distancesInRegion) / this.distancesInRegion.length
-            return regionSchools.length
         },
 
         sum(arr) {
@@ -493,6 +494,41 @@ export default {
                     this.schools[featuresIds[j]]['distances'][featuresIds[i]] = currDistanceInMiles
                 }
             }
+        },
+
+        generateColorMap() {
+            const container = document.createElement('div');
+            container.className = 'ol-control-panel ol-unselectable';
+            container.style = "background-color:white;display:inline-block;padding:2px;position:fixed;top:0;left:0"
+
+            const redContainer = document.createElement('div');
+            const brownContainer = document.createElement('div');
+            const greenContainer = document.createElement('div');
+            const blueContainer = document.createElement('div');
+            const lightBlueContainer = document.createElement('div');
+
+            redContainer.style = "display:flex"
+            brownContainer.style = "display:flex"
+            greenContainer.style = "display:flex"
+            blueContainer.style = "display:flex"
+            lightBlueContainer.style = "display:flex"
+
+            redContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#ff5454'></div>&nbspRegion 1"
+            brownContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#50342c'></div>&nbspRegion 2"
+            greenContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#28cc94'></div>&nbspRegion 3"
+            blueContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#1034bc'></div>&nbspRegion 4"
+            lightBlueContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#d05cec'></div>&nbspRegion 5"
+            // yellowContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#e8fc54'></div>&nbspRegion 5"
+            container.appendChild(redContainer)
+            container.appendChild(brownContainer)
+            container.appendChild(greenContainer)
+            container.appendChild(blueContainer)
+            container.appendChild(lightBlueContainer)
+            /*A custom control which has container holding input elements etc*/
+            var controlPanel = new Control({
+                element: container
+            });
+            this.$refs.map.map.addControl(controlPanel)
         }
     }
 }
