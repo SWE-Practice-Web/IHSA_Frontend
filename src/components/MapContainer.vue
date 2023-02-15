@@ -8,14 +8,14 @@
                 <ol-source-osm />
             </ol-tile-layer>
 
-            <ol-interaction-select @select="handleClick" :condition="selectCondition" :filter="selectInteractionFilter"
+            <ol-interaction-select  @select="handleClick" :toggleCondition="never" :condition="clickFeature" :filter="selectInteractionFilter"
                 ref="click">
                 <ol-style>
                     <ol-style-icon v-if="selectOn || deleteOn" :src="handleMarker()" :scale="0.4"></ol-style-icon>
                 </ol-style>
             </ol-interaction-select>
 
-            <ol-interaction-select @select="showTooltip" :condition="selectCondition2" :filter="selectInteractionFilter"
+            <ol-interaction-select @select="showTooltip" :condition="pointerMove" :filter="preventHoverOnSelectedFeature"
                 ref="hover">
                 <ol-style>
                     <ol-style-icon v-if="selectOn || deleteOn" :src="blackMarker" :scale="0.3"></ol-style-icon>
@@ -33,10 +33,10 @@
             </ol-overlay>
         </ol-map>
         <div style="background-color: lightgray; height: 100vh;" class="child2">
-            <div class="SchoolInfo" style="border:3px red solid;height:25%">
+            <div class="SchoolInfo" style="border:1px black solid;height:25%">
                 <div v-if="selectedFeature.schoolName !== undefined">School Name <input type="text" @input="updateSchoolInfo"
                         v-model="selectedFeature.schoolName"></div><br>
-                <div v-if="selectedFeature.numOfRiders !== undefined">Number of Riders <input type="number" @input="updateSchoolInfo"
+                <div v-if="selectedFeature.numOfRiders !== undefined">Number of Riders <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)"
                         v-model="selectedFeature.numOfRiders"></div><br>
                 <div v-if="selectedFeature.isAnchorSchool !== undefined">Is Anchor School <input type="checkbox" @change="updateSchoolInfo"
                         v-model="selectedFeature.isAnchorSchool"></div><br>
@@ -47,7 +47,7 @@
                     </select>
                 </div>
             </div>
-            <div style="border:3px red solid;height:75%">
+            <div style="border:1px black solid;height:75%">
                 <div class="regionInfo">
                     <div>
                         Region
@@ -72,11 +72,11 @@
                     </thead>
                     <tbody>
                         <tr v-for="school in schoolsInSelectedRegion()" :key="school.featureId">
-                            <th>{{ school.schoolName }}</th>
-                            <th>{{ school.numOfRiders }}</th>
-                            <th>{{ school.isAnchorSchool ? 'yes' : 'no' }}</th>
-                            <th>{{ Math.round(school.avgMileageInRegion * 100) / 100 }}</th>
-                            <th>{{ Math.round(school.maxMileageInRegion * 100) / 100 }}</th>
+                            <td><a class='kinda-link' @click='selectSchoolInMap(school.featureId)'>{{ school.schoolName }}</a></td>
+                            <td>{{ school.numOfRiders == "" ? 0 : school.numOfRiders }}</td>
+                            <td>{{ school.isAnchorSchool ? 'yes' : 'no' }}</td>
+                            <td>{{ Math.round(school.avgMileageInRegion * 100) / 100 }}</td>
+                            <td>{{ Math.round(school.maxMileageInRegion * 100) / 100 }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -95,6 +95,7 @@ import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by I
 import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
+import { never } from 'ol/events/condition'
 
 import ihsa_schools from '../../public/schools.json'
 import {
@@ -105,15 +106,15 @@ export default {
     setup() {
         const center = ref([-87.86, 42.45])
         const projection = ref('EPSG:4326')
-        const zoom = ref(8)
+        const zoom = ref(7)
         const rotation = ref(0)
         const schools = ref({})
         const features = ref({})
         const geom = inject('ol-geom');
         const Feature = inject('ol-feature');
         const selectConditions = inject('ol-selectconditions')
-        const selectCondition2 = selectConditions.pointerMove;
-        const selectCondition = selectConditions.click;
+        const pointerMove = selectConditions.pointerMove;
+        const clickFeature = selectConditions.click;
         const regions = ref([1, 2, 3, 4, 5])
         let lastSelectedFeature = ref(null);
         let selectedRegion = ref(1);
@@ -145,8 +146,8 @@ export default {
             projection,
             zoom,
             rotation,
-            selectCondition,
-            selectCondition2,
+            clickFeature,
+            pointerMove,
             blackMarker,
             selectOn,
             deleteOn,
@@ -170,7 +171,8 @@ export default {
             numOfRidersInRegion,
             distancesInRegion,
             avgDistanceInRegion,
-            anchoorSchoolsInRegion
+            anchoorSchoolsInRegion,
+            never
         }
     },
 
@@ -187,6 +189,10 @@ export default {
     },
 
     methods: {
+
+        preventEmptyNumber(school) {
+            school.numOfRiders = school.numOfRiders == '' ? 0 : school.numOfRiders
+        },
 
         updateSchoolInfo() {
             if (this.selectedFeature.region == this.selectedRegion) {
@@ -221,6 +227,7 @@ export default {
             })
             this.cleanSelectedFeatures()
             this.lastSelectedFeature.setStyle(newStyle)
+            this.manuallySelectFeature(this.lastSelectedFeature)
             
         },
 
@@ -233,11 +240,13 @@ export default {
             let feature;
             if (evt && evt.selected && evt.selected.length) {
                 feature = evt.selected[0]
+                // console.log(feature)
                 this.lastSelectedFeature = feature
                 if (this.selectOn) { this.selectFeature(feature) }
                 else if (this.deleteOn) { this.deleteFeature(feature) }
-            } else {
-                this.selectedFeature = {}
+            } else if (evt && evt.deselected && evt.deselected.length) {
+                this.cleanSelectedFeatures()
+                this.manuallySelectFeature(evt.deselected[0])
             }
         },
 
@@ -255,6 +264,14 @@ export default {
             }
         },
 
+        selectSchoolInMap(featureId) {
+            this.center = this.features[featureId].getGeometry().getCoordinates()
+            this.selectedFeature = this.schools[featureId]
+            this.lastSelectedFeature = this.features[featureId]
+            this.cleanSelectedFeatures()
+            this.manuallySelectFeature(this.features[featureId])
+        },
+
 
 
         /**
@@ -264,6 +281,11 @@ export default {
         */
         selectFeature(feature) {
             this.selectedFeature = this.schools[feature.id_]
+        },
+
+
+        manuallySelectFeature(feature) {
+            this.$refs.click.select.getFeatures().push(feature)
         },
 
 
@@ -286,8 +308,17 @@ export default {
         *
         * @return {Boolean} True if select should activate, false otherwise
         */
-        selectInteractionFilter() {
-            return this.selectOn || this.deleteOn
+        selectInteractionFilter(feature) {
+            return feature.id_
+        },
+
+
+        preventHoverOnSelectedFeature(feature) {
+            if (this.lastSelectedFeature) {
+                return !(this.lastSelectedFeature.id_ == feature.id_)
+            } else {
+                return true
+            }
         },
 
 
@@ -418,7 +449,6 @@ export default {
                 "maxMileageInRegion": 0,
             }
             this.loadFeature(newSchool)
-            this.cleanSelectedFeatures()
         },
 
         getInformationForRegion() {
@@ -596,5 +626,10 @@ thead {
 .regionTable {
     height: 89%;
     width: 100%;
+}
+
+a.kinda-link:hover { cursor: pointer; text-decoration: underline;}
+.kinda-link {
+    color:blue
 }
 </style>
