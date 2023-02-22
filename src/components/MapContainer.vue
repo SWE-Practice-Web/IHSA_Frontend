@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="mapContainer">
         <ol-map :loadTilesWhileAnimating="true" :loadTilesWhileInteracting="true" class="child1" ref="map">
 
             <ol-view ref="view" :center="center" :rotation="rotation" :zoom="zoom" :projection="projection" />
@@ -564,7 +564,7 @@ export default {
 }
 </script>
 <style scoped>
-.container {
+.mapContainer {
     display: grid;
     grid-template-columns: 60% 40%;
     height: 100vh;
