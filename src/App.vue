@@ -1,14 +1,17 @@
 <template>
-  <RegionMap class="regionMap"/>
+  <!-- <RegionMap class="regionMap"/> -->
+  <HomePage/>
 </template>
 
 <script>
-import RegionMap from './components/RegionMap.vue'
+// import RegionMap from './components/RegionMap.vue'
+import HomePage from './views/HomePage.vue';
 
 export default {
   name: 'App',
   components: {
-    RegionMap
+    // RegionMap
+    HomePage
   }
 }
 </script>
