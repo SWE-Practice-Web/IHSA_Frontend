@@ -1,4 +1,5 @@
 <template class="homeContainer">
+    <NavBar />
     <div class="d-flex justify-content-center align-items-center w-100 h-100 bg-light">
         <table class="table table-striped w-50 border border-primary">
             <thead class="table-dark">
@@ -24,6 +25,7 @@
 </template>
 
 <script>
+import NavBar from '@/components/NavBar.vue'
 
 export default {
     name: 'HomePage',
@@ -43,8 +45,12 @@ export default {
         return {
             horseList
         }
+    },
+    components: {
+        NavBar
     }
 }
+
 </script>
 
 <style>
