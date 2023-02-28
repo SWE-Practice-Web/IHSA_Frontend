@@ -529,7 +529,7 @@ export default {
         generateColorMap() {
             const container = document.createElement('div');
             container.className = 'ol-control-panel ol-unselectable';
-            container.style = "background-color:white;display:inline-block;padding:2px;position:fixed;top:0;left:0"
+            container.style = "background-color:rgba(255,255,255,0.8);display:inline-block;padding:2px;position:fixed;top:0;left:0"
 
             const redContainer = document.createElement('div');
             const brownContainer = document.createElement('div');
