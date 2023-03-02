@@ -190,21 +190,50 @@ export default {
 
     methods: {
 
+
+
+        /**
+        * Function to show a 0 instead of an empty box when inputs of type=number are being edited
+        *
+        * @param {object} school. School being updated
+        */
         preventEmptyNumber(school) {
             school.numOfRiders = school.numOfRiders == '' ? 0 : school.numOfRiders
         },
 
+
+
+        /**
+        * Function being called whenever the school information is updated. It updates the information of the region
+        * that contains that school
+        *
+        * @param {object} school. School being updated
+        */
         updateSchoolInfo() {
             if (this.selectedFeature.region == this.selectedRegion) {
                 this.getInformationForRegion()
             }
         },
 
+
+
+        /**
+        * Function to get all schools in the current selected region.
+        *
+        */
         schoolsInSelectedRegion() {
             const schools = Object.values(this.schools)
             return schools.filter(school => school.region == this.selectedRegion)
         },
 
+
+
+        /**
+        * Function to handle hover on the map. If the mouse is hovering over a school, it displays a tooltip with 
+        * the school information
+        *
+        * @param {Event} evt. Hover event being emitted.
+        */
         showTooltip(evt) {
             let feature;
             if (evt.selected && evt.selected.length) {
