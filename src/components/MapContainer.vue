@@ -32,7 +32,7 @@
                 </div>
             </ol-overlay>
         </ol-map>
-        <div style="background-color: lightgray; height: 100vh;" class="child2">
+        <div class="child2">
             <div class="SchoolInfo" style="border:1px black solid;height:25%">
                 <div v-if="selectedFeature.schoolName !== undefined">School Name <input type="text" @input="updateSchoolInfo"
                         v-model="selectedFeature.schoolName"></div><br>
@@ -529,7 +529,7 @@ export default {
         generateColorMap() {
             const container = document.createElement('div');
             container.className = 'ol-control-panel ol-unselectable';
-            container.style = "background-color:rgba(255,255,255,0.8);display:inline-block;padding:2px;position:fixed;top:0;left:0"
+            container.style = "background-color:rgba(255,255,255,0.8);display:inline-block;padding:2px;position:fixed;top:10;left:0"
 
             const redContainer = document.createElement('div');
             const brownContainer = document.createElement('div');
@@ -567,16 +567,18 @@ export default {
 .mapContainer {
     display: grid;
     grid-template-columns: 60% 40%;
-    height: 100vh;
+    height: 93vh;
     width: 100vw;
 }
 
 .child1 {
-    grid-column: 1
+    grid-column: 1;
 }
 
 .child2 {
     grid-column: 2;
+    height: 93vh;
+    background-color: lightgray;
 }
 
 .overlay-content {
@@ -594,7 +596,7 @@ table {
 
 th,
 td {
-    padding: 1rem 0.1rem;
+    padding: 0.5rem 0.3rem;
     border: 1px black solid;
 }
 

@@ -1,37 +1,36 @@
 <template>
   <div class="hero-image">
-    <div class="card" style="width: 22rem; margin: auto; top: 46px; background-color: lightgray; border-style: solid; border-color: black; border-width: 2px;">
+    <div class="card" style="background-color: lightgray; border-style: solid; border-color: black; border-width: 2px;">
       <div class="card-body">
-        <h4 class="card-title">Sign-Up</h4>
-        <div class="card" style="width: 18rem; margin: auto;">
+        <div class="card">
           <div class="hello">
             <img alt="IHSA logo" src="../assets/ihsalogo.png" height="150" width="200">
             <div>
               <br>
               <div class="signup">
                 <h5>
-                Username
+                  Username
                 </h5>
                 <input type="username" id="username" placeholder="Username">
                 <h5>
-                Email
+                  Email
                 </h5>
                 <input type="email" id="email" placeholder="Email">
                 <h5>
-                Password
+                  Password
                 </h5>
                 <input type="password" id="password" placeholder="Password">
                 <h5>
-                Confirm password
+                  Confirm password
                 </h5>
                 <input type="password" id="password" placeholder="Password">
                 <br>
                 <br>
                 <button class="btn btn-dark" type="submit">Signup</button>
-                <p>Have an account? <a href="#">Login here</a> </p>
+                <p>Have an account? <router-link class="nav-link" to="/Login">Login here</router-link> </p>
               </div>
-            </div> 
-          </div> 
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -51,35 +50,43 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1 {
-  color: rgb(255, 255, 255);
-  padding: 20px;
+h5 {
+  margin-bottom: 0rem;
 }
-h3 {
-  margin: 40px 0 0;
-  color: rgb(0, 0, 0);
+
+input {
+  margin-bottom: 1rem;
 }
+
 ul {
   list-style-type: none;
   padding: 0;
 }
+
 li {
   display: inline-block;
   margin: 0 10px;
 }
+
 a {
   color: #4000ff;
 }
-.hero-image{
-  height: 100vh;
-  width: 100%;
-  background-image: url("../assets/ihsabackground.png");
-  background-size: cover;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
+
+.card-body {
+  padding: 15px 30px;
 }
 
+.hello {
+  padding: 0px 10px;
+}
+
+.hero-image {
+  height: 93vh;
+  width: 100%;
+  background-image: url("../assets/ihsabackground.jpg");
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
