@@ -21,7 +21,7 @@
                 </h5>
                 <input type="password" id="password" placeholder="Password">
                 <h5>
-                  Confirm password
+                  Confirm Password
                 </h5>
                 <input type="password" id="password" placeholder="Password">
                 <br>
