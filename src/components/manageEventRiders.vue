@@ -1,42 +1,4 @@
 <template>
-    <div v-if="randomizeReady()">
-        <button type="button" class="btn btn-primary w-50 m-3" @click="assignHorses">Randomize</button>
-        <div class="mb-3 d-flex flex-column justify-content-start">
-            <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseClasses"
-                aria-expanded="false" aria-controls="collapseClasses">
-                View Class Draw
-            </button>
-            <div class="collapse flex-column align-items-center" id="collapseClasses">
-                <table class="table table-striped w-90 border border-primary"
-                    v-for="riderClass in getSortedClasses(classDraw)" :key="riderClass">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col" colspan="4" data-bs-toggle="collapse"
-                                :data-bs-target="`#collapseC${riderClass.split(' ')[1]}`" aria-expanded="false"
-                                :aria-controls="`collapseC${riderClass.split(' ')[1]}`" role="button">
-                                {{ riderClass }}
-                            </th>
-                        </tr>
-                        <tr class="collapse" :id="`collapseC${riderClass.split(' ')[1]}`">
-                            <th scope="col">Rider name</th>
-                            <th scope="col">Rider school</th>
-                            <th scope="col">Horse name</th>
-                            <th scope="col">Horse Provider</th>
-                        </tr>
-                    </thead>
-                    <tbody class="collapse" :id="`collapseC${riderClass.split(' ')[1]}`">
-                        <tr v-for="data in classDraw[riderClass]" :key="data.rider.id">
-                            <td>{{ data.rider.name }}</td>
-                            <td>{{ data.rider.school }}</td>
-                            <td>{{ data.horse.name }}</td>
-                            <td>{{ data.horse.provider }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="d-flex justify-content-around flex-grow">
         <div class="flex-grow-1 m-3">
             <label class="" for="ridersFile">Riders: </label>
             <div class="mb-3 d-flex">
@@ -44,11 +6,7 @@
                 <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
             </div>
             <div class="mb-3 d-flex flex-column justify-content-start">
-                <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseRiders" aria-expanded="false" aria-controls="collapseRiders">
-                    View Riders
-                </button>
-                <div class="collapse flex-column align-items-center" id="collapseRiders">
+                <div class="d-flex flex-column align-items-center">
                     <table class="table table-striped w-90 border border-primary"
                         v-for="riderClass in getSortedClasses(ridersData)" :key="riderClass">
                         <thead class="table-dark">
@@ -72,40 +30,6 @@
             <br>
             <br>
         </div>
-        <div class="flex-grow-1 m-3">
-            <label class="card-title" for="horsesFile">Horses: </label>
-            <div class="mb-3 d-flex">
-                <input class="form-control" type="file" id="horsesFile" accept=".csv">
-                <button type="button" class="btn btn-primary" @click="handleHorsesFileUpload">Submit</button>
-            </div>
-            <div class="mb-3 d-flex flex-column justify-content-start">
-                <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseHorses" aria-expanded="false" aria-controls="collapseHorses">
-                    View Horses
-                </button>
-                <div class="collapse flex-column align-items-center" id="collapseHorses">
-                    <table class="table table-striped w-90 border border-primary"
-                        v-for="horseClass in getSortedClasses(horsesData)" :key="horseClass">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col" colspan="2" data-bs-toggle="collapse"
-                                    :data-bs-target="`#collapseH${horseClass.split(' ')[1]}`" aria-expanded="false"
-                                    :aria-controls="`collapseH${horseClass.split(' ')[1]}`" role="button">
-                                    {{ horseClass }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="collapse" :id="`collapseH${horseClass.split(' ')[1]}`">
-                            <tr v-for="horse in horsesData[horseClass]" :key="horse.name">
-                                <td>{{ horse.name }}</td>
-                                <td>{{ horse.provider }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 </template>
   
 <script>
@@ -116,8 +40,8 @@ export default {
     setup() {
         let file = null
         let data = null
-        let ridersData = reactive({ 'Class 11': [], 'Class 12A': [], 'Class 12B': [], 'Class 13': [], 'Class 14': [], 'Class 15': [], 'Class 16': [], 'Class 17': [] })
-        let horsesData = reactive({ 'Class 11': [], 'Class 12A': [], 'Class 12B': [], 'Class 13': [], 'Class 14': [], 'Class 15': [], 'Class 16': [], 'Class 17': [] })
+        let ridersData = reactive(this.$eventRiders)
+        let horsesData = reactive(this.$eventHorses)
         let classDraw = reactive({ 'Class 11': [], 'Class 12A': [], 'Class 12B': [], 'Class 13': [], 'Class 14': [], 'Class 15': [], 'Class 16': [], 'Class 17': [] })
         return {
             file,
@@ -220,6 +144,7 @@ export default {
                     }
                 }
             }
+            this.$eventRiders = this.ridersData
         },
 
         horsesDataToJson(data) {
@@ -249,7 +174,8 @@ export default {
   
 <style scoped>
 #collapseHorses,
-#collapseRiders {
+#collapseRiders,
+#collapseClasses {
     display: flex;
 }
 

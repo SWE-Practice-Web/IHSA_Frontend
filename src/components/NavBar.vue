@@ -15,7 +15,13 @@
                         <router-link class="nav-link" to="/map">Map</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/riders">Add Riders</router-link>
+                        <router-link class="nav-link" to="/eventRiders">Manage Event Riders</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/eventHorses">Manage Event Horses</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/eventClasses">Manage Event Classes</router-link>
                     </li>
                 </div>
                 <div class="pe-3">
