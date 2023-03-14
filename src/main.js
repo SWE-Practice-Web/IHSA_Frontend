@@ -16,12 +16,14 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faChevronCircleDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faChevronCircleDown)
+import AnnouncementPage from "./views/AnnouncementPage.vue"
 
 const routes = [
     { path: '/', component: HomePage },
     { path: '/map', component: MapContainer },
     { path: '/login', component: LoginPage },
     { path: '/signup', component: SignupPage },
+    { path: '/announcements', component: AnnouncementPage },
     { path: '/eventRiders', component: manageEventRiders },
     { path: '/eventHorses', component: manageEventHorses },
     { path: '/eventClasses', component: manageEventClasses },
