@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import HomePage from "./views/HomePage.vue"
 import MapContainer from "./components/MapContainer.vue"
+import AddRiders from "./components/AddRiders.vue"
 import LoginPage from "./views/LoginPage.vue"
 import SignupPage from "./views/SignupPage.vue"
 
@@ -15,6 +16,7 @@ const routes = [
     { path: '/map', component: MapContainer },
     { path: '/login', component: LoginPage },
     { path: '/signup', component: SignupPage },
+    { path: '/riders', component: AddRiders },
   ]
 
 const router = VueRouter.createRouter({
