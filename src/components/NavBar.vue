@@ -15,6 +15,9 @@
                         <router-link class="nav-link" to="/map">Map</router-link>
                     </li>
                     <li class="nav-item">
+                        <router-link class="nav-link" to="/announcements">Announcements</router-link>
+                    </li>
+                    <li class="nav-item">
                         <router-link class="nav-link" to="/eventRiders">Manage Event Riders</router-link>
                     </li>
                     <li class="nav-item">
