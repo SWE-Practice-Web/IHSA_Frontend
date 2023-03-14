@@ -6,7 +6,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto d-flex justify-content-between" style="width:100vw">
+            <ul class="navbar-nav mr-auto d-flex justify-content-between" style="width:100%">
                 <div class="d-flex ps-3">
                     <li class="nav-item">
                         <router-link class="nav-link" to="/">Home</router-link>
@@ -15,7 +15,7 @@
                         <router-link class="nav-link" to="/map">Map</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/announcements">Announcements</router-link>
+                        <router-link class="nav-link" to="/riders">Add Riders</router-link>
                     </li>
                 </div>
                 <div class="pe-3">
