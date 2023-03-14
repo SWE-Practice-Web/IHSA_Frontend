@@ -9,12 +9,14 @@ import HomePage from "./views/HomePage.vue"
 import MapContainer from "./components/MapContainer.vue"
 import LoginPage from "./views/LoginPage.vue"
 import SignupPage from "./views/SignupPage.vue"
+import AnnouncementPage from "./views/AnnouncementPage.vue"
 
 const routes = [
     { path: '/', component: HomePage },
     { path: '/map', component: MapContainer },
     { path: '/login', component: LoginPage },
     { path: '/signup', component: SignupPage },
+    { path: '/announcements', component: AnnouncementPage },
   ]
 
 const router = VueRouter.createRouter({

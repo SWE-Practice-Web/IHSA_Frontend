@@ -14,6 +14,9 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/map">Map</router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/announcements">Announcements</router-link>
+                    </li>
                 </div>
                 <div class="pe-3">
                     <li class="nav-item dropdown dropleft">
