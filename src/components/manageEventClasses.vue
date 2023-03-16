@@ -2,9 +2,8 @@
     <div>
         <button type="button" class="btn btn-primary w-50 m-3" @click="assignHorses">Randomize Classes</button>
         <div class="m-3 d-flex flex-column justify-content-center align-items-center">
-            <div class="d-flex flex-column align-items-center justify-content-center w-100">
-                <table class="table table-striped w-90 border border-primary"
-                    v-for="riderClass in getSortedClasses(classDraw)" :key="riderClass">
+                <table class="table table-striped w-75 border border-primary"
+                    v-for="riderClass in getFilteredClasses(classDraw)" :key="riderClass">
                     <thead class="table-dark">
                         <tr>
                             <th scope="col" colspan="7">
@@ -33,7 +32,6 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
         </div>
     </div>
 </template>
@@ -70,7 +68,7 @@ export default {
                 return
             }
             
-            const DEFAULTHORSE = { 'name': 'null', 'provider': 'null' }
+            const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
             for (const className in this.ridersData) {
                 this.classDraw[className] = []
                 const riders = this.ridersData[className];
@@ -101,7 +99,6 @@ export default {
                     }
                 }
             }
-            console.log(this.classDraw)
         },
 
 
@@ -138,6 +135,12 @@ export default {
 
         getSortedClasses() {
             return Object.keys(this.ridersData).sort()
+        },
+
+        // Filter riding classes that have no horses yet
+        getFilteredClasses() {
+            let sortedClasses = this.getSortedClasses()
+            return sortedClasses.filter((ridingClass) => this.classDraw[ridingClass].length > 0)
         },
 
     }

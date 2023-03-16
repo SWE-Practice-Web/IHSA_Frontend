@@ -1,14 +1,13 @@
 <template>
-        <div class="flex-grow-1 m-3">
+        <div class="d-flex flex-column flex-grow-1 m-3 align-items-center justify-content-center">
             <label class="card-title" for="horsesFile">Horses: </label>
-            <div class="mb-3 d-flex">
+            <div class="mb-3 d-flex w-75">
                 <input class="form-control" type="file" id="horsesFile" accept=".csv">
                 <button type="button" class="btn btn-primary" @click="handleHorsesFileUpload">Submit</button>
             </div>
-            <div class="mb-3 d-flex flex-column justify-content-start">
-                <div class="d-flex flex-column align-items-center">
+            <div class="mb-3 d-flex w-75 flex-column justify-content-start">
                     <table class="table table-striped w-90 border border-primary"
-                        v-for="horseClass in getSortedClasses(horsesData)" :key="horseClass">
+                        v-for="horseClass in getFilteredClasses(horsesData)" :key="horseClass">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col" colspan="2">
@@ -23,7 +22,6 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
 </template>
@@ -50,6 +48,12 @@ export default {
     },
     name: 'manageEventHorses',
     methods: {
+        // Filter riding classes that have no horses yet
+        getFilteredClasses() {
+            let sortedClasses = this.getSortedClasses()
+            return sortedClasses.filter((ridingClass) => this.horsesData[ridingClass].length > 0)
+        },
+
         getSortedClasses() {
             return Object.keys(this.horsesData).sort()
         },

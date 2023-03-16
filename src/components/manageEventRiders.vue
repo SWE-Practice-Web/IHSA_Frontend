@@ -1,33 +1,31 @@
 <template>
-        <div class="flex-grow-1 m-3">
-            <label class="" for="ridersFile">Riders: </label>
-            <div class="mb-3 d-flex">
-                <input class="form-control" type="file" id="ridersFile" accept=".csv">
-                <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
-            </div>
-            <div class="mb-3 d-flex flex-column justify-content-start">
-                <div class="d-flex flex-column align-items-center">
-                    <table class="table table-striped w-90 border border-primary"
-                        v-for="riderClass in getSortedClasses(ridersData)" :key="riderClass">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col" colspan="2">
-                                    {{ classToName[riderClass] }}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="rider in ridersData[riderClass]" :key="rider.id">
-                                <td>{{ rider.name }}</td>
-                                <td>{{ rider.school }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <br>
-            <br>
+    <div class="d-flex flex-column flex-grow-1 m-3 align-items-center justify-content-center">
+        <label class="" for="ridersFile">Riders: </label>
+        <div class="mb-3 d-flex w-75 align-items-center justify-content-center">
+            <input class="form-control" type="file" id="ridersFile" accept=".csv">
+            <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
         </div>
+        <div class="mb-3 d-flex w-75 flex-column justify-content-start">
+            <table class="table table-striped border border-primary" v-for="riderClass in getFilteredClasses(ridersData)"
+                :key="riderClass">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col" colspan="2">
+                            {{ classToName[riderClass] }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="rider in ridersData[riderClass]" :key="rider.id">
+                        <td>{{ rider.name }}</td>
+                        <td>{{ rider.school }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <br>
+    </div>
 </template>
   
 <script>
@@ -53,6 +51,12 @@ export default {
     components: {
     },
     methods: {
+        // Filter riding classes that have no riders yet
+        getFilteredClasses() {
+            let sortedClasses = this.getSortedClasses()
+            return sortedClasses.filter((ridingClass) => this.ridersData[ridingClass].length > 0)
+        },
+
         getSortedClasses() {
             return Object.keys(this.ridersData).sort()
         },
@@ -64,7 +68,7 @@ export default {
             try {
                 var files = document.getElementById("ridersFile").files
                 this.parseFile(files[0], this.ridersDataToJson)
-            } catch(err) {
+            } catch (err) {
                 this.$notify({
                     title: 'Error',
                     text: `Error parsing file`,
@@ -97,7 +101,7 @@ export default {
                     if (row[1] == "2. _________") {
                         readData = false
                     } else {
-                        let student = { 'id': row[0], 'name': row[1], 'school': row[4], 'placing':null }
+                        let student = { 'id': row[0], 'name': row[1], 'school': row[4], 'placing': null }
                         this.ridersData[currClass].push(student)
                     }
                 }

@@ -33,21 +33,31 @@
             </ol-overlay>
         </ol-map>
         <div class="child2">
-            <div class="SchoolInfo" style="border:1px black solid;height:25%">
-                <div v-if="selectedFeature.schoolName !== undefined">School Name <input type="text" @input="updateSchoolInfo"
-                        v-model="selectedFeature.schoolName"></div><br>
-                <div v-if="selectedFeature.numOfRiders !== undefined">Number of Riders <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)"
-                        v-model="selectedFeature.numOfRiders"></div><br>
-                <div v-if="selectedFeature.isAnchorSchool !== undefined">Is Anchor School <input type="checkbox" @change="updateSchoolInfo"
-                        v-model="selectedFeature.isAnchorSchool"></div><br>
-                <div v-if="selectedFeature.region !== undefined">
-                    Region
+            <div class="container d-grid" style="border:1px black solid;height:20%; align-content: space-evenly;">
+                <div v-if="selectedFeature.schoolName !== undefined" class="row m-1">
+                    <div class="col-8 d-flex">
+                        <span class="fw-bold mx-2 mt-1">School Name: </span>
+                        <input type="text" @input="updateSchoolInfo" v-model="selectedFeature.schoolName">
+                    </div>
+                    <div class="col-4 d-flex">
+                        <span class="fw-bold mx-2  mt-1">Is Anchor School: </span>
+                        <input type="checkbox" @change="updateSchoolInfo" v-model="selectedFeature.isAnchorSchool">
+                    </div>
+                </div>
+                <div v-if="selectedFeature.numOfRiders !== undefined"  class="row m-1">
+                    <div class="col-8 d-flex">
+                        <span class="fw-bold mx-2 mt-1">Number of Riders: </span>
+                    <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)" v-model="selectedFeature.numOfRiders">
+                    </div>
+                    <div class="col-4 d-flex">
+                        <span class="fw-bold mx-2 mt-1">Region: </span>
                     <select v-model="selectedFeature.region" @change="changeRegion">
                         <option v-for="region in regions" :value="region" :key="region">{{ region }}</option>
                     </select>
+                    </div>
                 </div>
             </div>
-            <div style="border:1px black solid;height:75%">
+            <div style="border:1px black solid;height:80%">
                 <div class="regionInfo">
                     <div>
                         Region
