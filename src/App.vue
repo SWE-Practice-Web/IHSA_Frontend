@@ -1,5 +1,6 @@
 <template>
   <div>
+    <notifications class="m-2"/>
     <NavBar/>
     <router-view></router-view>
   </div>

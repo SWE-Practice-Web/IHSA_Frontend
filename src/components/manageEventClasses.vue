@@ -7,21 +7,25 @@
                     v-for="riderClass in getSortedClasses(classDraw)" :key="riderClass">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col" colspan="4" data-bs-toggle="collapse"
-                                :data-bs-target="`#collapseC${riderClass.split(' ')[1]}`" aria-expanded="false"
-                                :aria-controls="`collapseC${riderClass.split(' ')[1]}`" role="button">
-                                {{ riderClass }}
+                            <th scope="col" colspan="7">
+                                {{ classToName[riderClass] }}
                             </th>
                         </tr>
-                        <tr class="collapse" :id="`collapseC${riderClass.split(' ')[1]}`">
-                            <th scope="col">Rider name</th>
-                            <th scope="col">Rider school</th>
-                            <th scope="col">Horse name</th>
-                            <th scope="col">Horse Provider</th>
+                        <tr>
+                            <th scope="col" class="bg-white text-dark">Placing</th>
+                            <th scope="col" class="bg-white text-dark">Order</th>
+                            <th scope="col" class="bg-white text-dark">Rider id</th>
+                            <th scope="col" class="bg-white text-dark">Rider name</th>
+                            <th scope="col" class="bg-white text-dark">Rider school</th>
+                            <th scope="col" class="bg-white text-dark">Horse name</th>
+                            <th scope="col" class="bg-white text-dark">Horse Provider</th>
                         </tr>
                     </thead>
-                    <tbody class="collapse" :id="`collapseC${riderClass.split(' ')[1]}`">
+                    <tbody>
                         <tr v-for="data in classDraw[riderClass]" :key="data.rider.id">
+                            <td>{{ data.rider.placing ? data.rider.placing : "-"}}</td>
+                            <td>{{ data.rider.order}}</td>
+                            <td>{{ data.rider.id }}</td>
                             <td>{{ data.rider.name }}</td>
                             <td>{{ data.rider.school }}</td>
                             <td>{{ data.horse.name }}</td>
@@ -35,22 +39,26 @@
 </template>
   
 <script>
-import Papa from 'papaparse';
 import { reactive } from 'vue'
+import {useStore} from 'vuex'
 
 export default {
     setup() {
+        const store = useStore()
         let file = null
         let data = null
-        let ridersData = this.$eventRiders
-        let horsesData = this.$eventHorses
-        let classDraw = reactive({ 'Class 11': [], 'Class 12A': [], 'Class 12B': [], 'Class 13': [], 'Class 14': [], 'Class 15': [], 'Class 16': [], 'Class 17': [] })
+        let ridersData = reactive(store.state.eventRiders)
+        let horsesData = reactive(store.state.eventHorses)
+        let classDraw = reactive(store.state.eventClasses)
+        let classToName = store.state.classToName
+
         return {
             file,
             data,
             ridersData,
             horsesData,
-            classDraw
+            classDraw,
+            classToName
         }
     },
     name: 'AddRiders',
@@ -58,6 +66,9 @@ export default {
     },
     methods: {
         assignHorses() {
+            if (!(this.randomizeReady())) {
+                return
+            }
             
             const DEFAULTHORSE = { 'name': 'null', 'provider': 'null' }
             for (const className in this.ridersData) {
@@ -72,12 +83,20 @@ export default {
                 // Assign horses to riders within the same class
                 const numPairs = Math.min(shuffledRiders.length, shuffledHorses.length);
                 for (let i = 0; i < numPairs; i++) {
+                    shuffledRiders[i].order = i
                     this.classDraw[className].push({ 'rider': shuffledRiders[i], 'horse': shuffledHorses[i] })
                 }
 
                 // Assign default horse to riders without a horse if there are less horses than riders
                 if (riders.length > horses.length) {
+                    this.$notify({
+                        title: 'Warn',
+                        text: `Class ${className} has less horses than riders. Some riders will not have a horse assigned to them.`,
+                        type:'warn',
+                        duration: 10000,
+                    });
                     for (let i = horses.length; i < riders.length; i++) {
+                        shuffledRiders[i].order = i
                         this.classDraw[className].push({ 'rider': shuffledRiders[i], 'horse': DEFAULTHORSE })
                     }
                 }
@@ -100,74 +119,26 @@ export default {
         randomizeReady() {
             const totalRiders = Object.values(this.ridersData).reduce((acc, riders) => acc + riders.length, 0);
             const totalHorses = Object.values(this.horsesData).reduce((acc, horses) => acc + horses.length, 0);
+            if (totalRiders <= 0) {
+                this.$notify({
+                    title: 'Warn',
+                    text: "You need to add riders to the event first",
+                    type:'warn'
+                });
+            }
+            if (totalHorses <= 0) {
+                this.$notify({
+                    title: 'Warn',
+                    text: "You need to add horses to the event first",
+                    type:'warn'
+                });
+            }
             return (totalRiders > 0 && totalHorses > 0)
         },
 
         getSortedClasses() {
             return Object.keys(this.ridersData).sort()
         },
-
-        handleRidersFileUpload() {
-            var files = document.getElementById("ridersFile").files
-            this.parseFile(files[0], this.ridersDataToJson)
-        },
-
-        handleHorsesFileUpload() {
-            var files = document.getElementById("horsesFile").files
-            this.parseFile(files[0], this.horsesDataToJson)
-        },
-
-        parseFile(file, dataToJson) {
-            Papa.parse(file, {
-                header: false,
-                complete: result => {
-                    dataToJson(result.data)
-                }
-            })
-        },
-
-        ridersDataToJson(data) {
-            const regex = /Class\s\d{1,2}[AB]?/
-            let readData = false
-            let currClass = null
-            for (let row of data) {
-                if (!readData) {
-                    let match = regex.exec(row[1])
-                    if (match !== null) {
-                        readData = true
-                        currClass = match[0]
-                    }
-                } else {
-                    if (row[1] == "2. _________") {
-                        readData = false
-                    } else {
-                        let student = { 'id': row[0], 'name': row[1], 'school': row[4] }
-                        this.ridersData[currClass].push(student)
-                    }
-                }
-            }
-        },
-
-        horsesDataToJson(data) {
-            const regex = /Class\s\d{1,2}[AB]?/
-            let headers = null
-            for (let row of data) {
-                // First row is the headers
-                if (headers == null) {
-                    headers = row
-                    continue
-                }
-                let horse = { 'name': row[1], 'provider': row[2] }
-                for (let i = 3; i < row.length; i++) {
-                    if (row[i]) {
-                        let currClass = regex.exec(headers[i])
-                        for (let j = 0; j < row[i]; j++) {
-                            this.horsesData[currClass].push(horse)
-                        }
-                    }
-                }
-            }
-        }
 
     }
 }

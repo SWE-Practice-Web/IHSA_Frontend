@@ -1,7 +1,9 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import {store} from './store'
 import * as VueRouter from "vue-router"
 import OpenLayersMap from 'vue3-openlayers'
+import Notifications from '@kyvg/vue3-notification'
 import 'vue3-openlayers/dist/vue3-openlayers.css'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
@@ -38,9 +40,8 @@ const app = createApp(App);
 
 app.use(OpenLayersMap)
 app.use(router)
+app.use(store)
+app.use(Notifications)
 app.component('font-awesome-icon', FontAwesomeIcon)
-app.config.globalProperties.eventRiders = { 'Class 11': [], 'Class 12A': [], 'Class 12B': [], 'Class 13': [], 'Class 14': [], 'Class 15': [], 'Class 16': [], 'Class 17': [] }
-app.config.globalProperties.eventHorses = { 'Class 11': [], 'Class 12A': [], 'Class 12B': [], 'Class 13': [], 'Class 14': [], 'Class 15': [], 'Class 16': [], 'Class 17': [] }
-app.config.globalProperties.eventClasses = { 'Class 11': [], 'Class 12A': [], 'Class 12B': [], 'Class 13': [], 'Class 14': [], 'Class 15': [], 'Class 16': [], 'Class 17': [] }
 
 app.mount('#app')
