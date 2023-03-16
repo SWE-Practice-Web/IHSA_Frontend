@@ -52,7 +52,7 @@
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2 mt-1">Region: </span>
                     <select v-model="selectedFeature.region" @change="changeRegion">
-                        <option v-for="region in regions" :value="region" :key="region">{{ region }}</option>
+                        <option v-for="region in ['N/A', ...regions]" :value="region" :key="region">{{ region }}</option>
                     </select>
                     </div>
                 </div>
@@ -102,6 +102,7 @@ import brownMarker from '../assets/brownMarker.png' //Location icon by Icons8
 import greenMarker from '../assets/greenMarker.png' //Location icon by Icons8
 import bluedMarker from '../assets/blueMarker.png' //Location icon by Icons8
 import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by Icons8
+import yellowMarker from '../assets/yellowMarker.png' //Location icon by Icons8
 import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
@@ -141,6 +142,7 @@ export default {
         let anchoorSchoolsInRegion = ref(0)
 
         let regionToMarker = ref({
+            'N/A': yellowMarker,
             1: redMarker,
             2: brownMarker,
             3: greenMarker,
@@ -570,24 +572,28 @@ export default {
             container.className = 'ol-control-panel ol-unselectable';
             container.style = "background-color:rgba(255,255,255,0.8);display:inline-block;padding:2px;position:fixed;top:10;left:0"
 
+            const yellowContainer = document.createElement('div');
             const redContainer = document.createElement('div');
             const brownContainer = document.createElement('div');
             const greenContainer = document.createElement('div');
             const blueContainer = document.createElement('div');
             const lightBlueContainer = document.createElement('div');
 
+            yellowContainer.style = "display:flex"
             redContainer.style = "display:flex"
             brownContainer.style = "display:flex"
             greenContainer.style = "display:flex"
             blueContainer.style = "display:flex"
             lightBlueContainer.style = "display:flex"
 
-            redContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#ff5454'></div>&nbspRegion 1"
-            brownContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#50342c'></div>&nbspRegion 2"
-            greenContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#28cc94'></div>&nbspRegion 3"
-            blueContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#1034bc'></div>&nbspRegion 4"
-            lightBlueContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#d05cec'></div>&nbspRegion 5"
+            yellowContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#ffff00'></div>&nbspNo Region"
+            redContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#ff5454'></div>&nbspRegion 1"
+            brownContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#50342c'></div>&nbspRegion 2"
+            greenContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#28cc94'></div>&nbspRegion 3"
+            blueContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#1034bc'></div>&nbspRegion 4"
+            lightBlueContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#d05cec'></div>&nbspRegion 5"
             // yellowContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#e8fc54'></div>&nbspRegion 5"
+            container.appendChild(yellowContainer)
             container.appendChild(redContainer)
             container.appendChild(brownContainer)
             container.appendChild(greenContainer)
