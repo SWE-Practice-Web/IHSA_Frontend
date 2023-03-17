@@ -8,10 +8,10 @@
                 <ol-source-osm />
             </ol-tile-layer>
 
-            <ol-interaction-select  @select="handleClick" :toggleCondition="never" :condition="clickFeature" :filter="selectInteractionFilter"
-                ref="click">
+            <ol-interaction-select @select="handleClick" :toggleCondition="never" :condition="clickFeature"
+                :filter="selectInteractionFilter" ref="click">
                 <ol-style>
-                    <ol-style-icon v-if="selectOn || deleteOn" :src="handleMarker()" :scale="0.4"></ol-style-icon>
+                    <ol-style-icon v-if="selectOn || deleteOn" :src="handleSelectMarker()" :scale="0.5"></ol-style-icon>
                 </ol-style>
             </ol-interaction-select>
 
@@ -41,19 +41,22 @@
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2  mt-1">Is Anchor School: </span>
-                        <input type="checkbox" @change="updateSchoolInfo" v-model="selectedFeature.isAnchorSchool">
+                        <input type="checkbox" @change="updateSchoolInfo(); updateMarker(selectedFeature)"
+                            v-model="selectedFeature.isAnchorSchool">
                     </div>
                 </div>
-                <div v-if="selectedFeature.numOfRiders !== undefined"  class="row m-1">
+                <div v-if="selectedFeature.numOfRiders !== undefined" class="row m-1">
                     <div class="col-8 d-flex">
                         <span class="fw-bold mx-2 mt-1">Number of Riders: </span>
-                    <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)" v-model="selectedFeature.numOfRiders">
+                        <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)"
+                            v-model="selectedFeature.numOfRiders">
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2 mt-1">Region: </span>
-                    <select v-model="selectedFeature.region" @change="changeRegion">
-                        <option v-for="region in ['N/A', ...regions]" :value="region" :key="region">{{ region }}</option>
-                    </select>
+                        <select v-model="selectedFeature.region" @change="changeRegion">
+                            <option v-for="region in ['N/A', ...regions]" :value="region" :key="region">{{ region }}
+                            </option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -82,7 +85,8 @@
                     </thead>
                     <tbody>
                         <tr v-for="school in schoolsInSelectedRegion()" :key="school.featureId">
-                            <td><a class='kinda-link' @click='selectSchoolInMap(school.featureId)'>{{ school.schoolName }}</a></td>
+                            <td><a class='kinda-link' @click='selectSchoolInMap(school.featureId)'>{{ school.schoolName
+                            }}</a></td>
                             <td>{{ school.numOfRiders == "" ? 0 : school.numOfRiders }}</td>
                             <td>{{ school.isAnchorSchool ? 'yes' : 'no' }}</td>
                             <td>{{ Math.round(school.avgMileageInRegion * 100) / 100 }}</td>
@@ -103,6 +107,15 @@ import greenMarker from '../assets/greenMarker.png' //Location icon by Icons8
 import bluedMarker from '../assets/blueMarker.png' //Location icon by Icons8
 import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by Icons8
 import yellowMarker from '../assets/yellowMarker.png' //Location icon by Icons8
+
+import blackFlagMarker from '../assets/blackFlagMarker.png' //Location icon by Icons8
+import redFlagMarker from '../assets/redFlagMarker.png' //Location icon by Icons8
+import brownFlagMarker from '../assets/brownFlagMarker.png' //Location icon by Icons8
+import greenFlagMarker from '../assets/greenFlagMarker.png' //Location icon by Icons8
+import bluedFlagMarker from '../assets/blueFlagMarker.png' //Location icon by Icons8
+import lightBlueFlagMarker from '../assets/lightBlueFlagMarker.png' //Location icon by Icons8
+import yellowFlagMarker from '../assets/yellowFlagMarker.png' //Location icon by Icons8
+
 import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
@@ -149,6 +162,15 @@ export default {
             4: bluedMarker,
             5: lightBlueMarker
         })
+
+        let regionToMarkerAnchorSchool = ref({
+            'N/A': yellowFlagMarker,
+            1: redFlagMarker,
+            2: brownFlagMarker,
+            3: greenFlagMarker,
+            4: bluedFlagMarker,
+            5: lightBlueFlagMarker
+        })
         let tooltipPos;
         const tooltipPositioning = ref("bottom-left")
 
@@ -161,6 +183,7 @@ export default {
             clickFeature,
             pointerMove,
             blackMarker,
+            blackFlagMarker,
             selectOn,
             deleteOn,
             features,
@@ -184,6 +207,7 @@ export default {
             distancesInRegion,
             avgDistanceInRegion,
             anchoorSchoolsInRegion,
+            regionToMarkerAnchorSchool,
             never
         }
     },
@@ -252,6 +276,15 @@ export default {
                 feature = evt.selected[0]
                 this.$refs.tooltip.setPosition(feature.getGeometry().getCoordinates())
                 document.getElementById("tooltipContent").innerText = this.schools[feature.id_].schoolName
+                if (this.schools[feature.id_].isAnchorSchool) {
+                    const newStyle = new Style.Style({
+                        image: new Style.Icon({
+                            src: blackFlagMarker,
+                            scale: 0.6
+                        })
+                    })
+                    feature.setStyle(newStyle)
+                }
             } else {
                 this.$refs.tooltip.setPosition(undefined)
             }
@@ -269,7 +302,27 @@ export default {
             this.cleanSelectedFeatures()
             this.lastSelectedFeature.setStyle(newStyle)
             this.manuallySelectFeature(this.lastSelectedFeature)
-            
+        },
+
+        updateMarker(school) {
+            let marker;
+            let scale;
+            if (school.isAnchorSchool) {
+                marker = school.region !== null ? this.regionToMarkerAnchorSchool[school.region] : this.yellowFlagMarker
+                scale = 0.5
+            } else {
+                marker = school.region !== null ? this.regionToMarker[school.region] : this.yellowMarker
+                scale = 0.3
+            }
+            const newStyle = new Style.Style({
+                image: new Style.Icon({
+                    src: marker,
+                    scale: scale
+                })
+            })
+            this.cleanSelectedFeatures()
+            this.lastSelectedFeature.setStyle(newStyle)
+            this.manuallySelectFeature(this.lastSelectedFeature)
         },
 
         /**
@@ -291,7 +344,7 @@ export default {
             }
         },
 
-        handleMarker() {
+        handleSelectMarker() {
             if (this.lastSelectedFeature == null) {
                 return this.blackMarker
             } else {
@@ -301,7 +354,8 @@ export default {
                 }
                 const selectedSchool = this.schools[feature.id_]
                 const region = selectedSchool.region
-                return region !== null ? this.regionToMarker[region] : this.blackMarker
+                if (selectedSchool.isAnchorSchool) { return region !== null ? this.regionToMarkerAnchorSchool[region] : this.yellowFlagMarker }
+                else { return region !== null ? this.regionToMarker[region] : this.yellowMarker }
             }
         },
 
@@ -356,7 +410,14 @@ export default {
 
         preventHoverOnSelectedFeature(feature) {
             if (this.lastSelectedFeature) {
-                return !(this.lastSelectedFeature.id_ == feature.id_)
+                if (this.lastSelectedFeature.id_ == feature.id_) {
+                    const evt = {}
+                    evt.selected = [feature]
+                    this.showTooltip(evt)
+                    return false
+                } else {
+                    return true
+                }
             } else {
                 return true
             }
@@ -419,10 +480,19 @@ export default {
             featureId = featureId ? featureId !== null : newMapFeature.ol_uid
             newMapFeature.setId(featureId)
             if (geometryType == "Point") {
+                let marker;
+                let scale;
+                if (isAnchorSchool) {
+                    marker = region !== null ? this.regionToMarkerAnchorSchool[region] : this.yellowFlagMarker
+                    scale = 0.5
+                } else {
+                    marker = region !== null ? this.regionToMarker[region] : this.yellowMarker
+                    scale = 0.3
+                }
                 const iconStyle = new Style.Style({
                     image: new Style.Icon({
-                        src: region !== null ? this.regionToMarker[region] : this.blackMarker,
-                        scale: 0.3
+                        src: marker,
+                        scale: scale
                     })
                 })
                 newMapFeature.setStyle(iconStyle)
@@ -501,7 +571,7 @@ export default {
                 school['featureId'] = key
                 if (school.region == region) {
                     regionSchools.push(school)
-                    if (school.isAnchorSchool) { 
+                    if (school.isAnchorSchool) {
                         this.anchoorSchoolsInRegion += 1
                     }
                 }
@@ -510,6 +580,7 @@ export default {
             //Need to filter null values here later
             this.numOfRidersInRegion = this.sum(regionSchools.map(school => this.getInt(school.numOfRiders)))
             this.distancesInRegion = this.getDistances(regionSchools.map(school => school.featureId))
+            console.log(this.distancesInRegion)
             this.avgDistanceInRegion = this.sum(this.distancesInRegion) / this.distancesInRegion.length
         },
 
@@ -523,26 +594,35 @@ export default {
 
         getDistances(featuresIds) {
             let distances = []
+            let anchorSchools = 0
             let schoolTotalDistances = new Array(featuresIds.length).fill(0);
             let schoolMaxDistances = new Array(featuresIds.length).fill(0);
-            for (let i = 0; i < featuresIds.length - 1; i++) {
-                for (let j = i + 1; j < featuresIds.length; j++) {
-                    const featureId1 = featuresIds[i]
+            for (let i = 0; i < featuresIds.length; i++) {
+                const featureId1 = featuresIds[i]
+                if (this.schools[featureId1].isAnchorSchool) {
+                    anchorSchools += 1
+                    distances.push(0)
+                }
+                for (let j = 0; j < featuresIds.length; j++) {
+                    if (i == j) {
+                        continue
+                    }
                     const featureId2 = featuresIds[j]
                     const currDistanceInMiles = this.schools[featureId1]['distances'][featureId2]
-                    distances.push(currDistanceInMiles)
-                    if (this.schools[featureId1].region == this.schools[featureId2].region){
+                    const sameRegion = (this.schools[featureId1].region == this.schools[featureId2].region)
+                    const isAnchorSchool = this.schools[featureId2].isAnchorSchool
+                    // console.log(this.schools[featureId2])
+                    if (sameRegion && isAnchorSchool) {
+                        distances.push(currDistanceInMiles)
                         schoolTotalDistances[i] += currDistanceInMiles
-                        schoolTotalDistances[j] += currDistanceInMiles
                         schoolMaxDistances[i] = Math.max(schoolMaxDistances[i], currDistanceInMiles)
-                        schoolMaxDistances[j] = Math.max(schoolMaxDistances[j], currDistanceInMiles)
                     }
                 }
             }
             for (let i = 0; i < featuresIds.length; i++) {
                 const featureId = featuresIds[i]
                 this.schools[featureId]['maxMileageInRegion'] = schoolMaxDistances[i]
-                this.schools[featureId]['avgMileageInRegion'] = schoolTotalDistances[i] / (featuresIds.length - 1)
+                this.schools[featureId]['avgMileageInRegion'] = schoolTotalDistances[i] / anchorSchools
             }
             return distances
         },
@@ -664,7 +744,7 @@ thead {
     border: 1px black solid;
 }
 
-.regionInfo  > div{
+.regionInfo>div {
     flex-grow: 1;
     padding: 1rem 0.1rem;
     border: 1px black solid;
@@ -675,8 +755,11 @@ thead {
     width: 100%;
 }
 
-a.kinda-link:hover { cursor: pointer; text-decoration: underline;}
-.kinda-link {
-    color:blue
+a.kinda-link:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
-</style>
+
+.kinda-link {
+    color: blue
+}</style>
