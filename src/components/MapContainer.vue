@@ -658,6 +658,7 @@ export default {
             const greenContainer = document.createElement('div');
             const blueContainer = document.createElement('div');
             const lightBlueContainer = document.createElement('div');
+            const flag = document.createElement('div');
 
             yellowContainer.style = "display:flex"
             redContainer.style = "display:flex"
@@ -672,6 +673,7 @@ export default {
             greenContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#28cc94'></div>&nbspRegion 3"
             blueContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#1034bc'></div>&nbspRegion 4"
             lightBlueContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#d05cec'></div>&nbspRegion 5"
+            flag.innerText = "Flag: Anchor Schools"
             // yellowContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#e8fc54'></div>&nbspRegion 5"
             container.appendChild(yellowContainer)
             container.appendChild(redContainer)
@@ -679,6 +681,7 @@ export default {
             container.appendChild(greenContainer)
             container.appendChild(blueContainer)
             container.appendChild(lightBlueContainer)
+            container.appendChild(flag)
             /*A custom control which has container holding input elements etc*/
             var controlPanel = new Control({
                 element: container
