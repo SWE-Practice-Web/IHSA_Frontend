@@ -6,17 +6,16 @@
             <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
         </div>
         <div class="mb-3 d-flex w-75 flex-column justify-content-start">
-            <table class="table table-striped border border-primary" v-for="riderClass in getFilteredClasses(ridersData)"
-                :key="riderClass">
+            <table class="table table-striped border border-primary" v-for="section_id in getFilteredSections()" :key="section_id">
                 <thead class="table-dark">
                     <tr>
                         <th scope="col" colspan="2">
-                            {{ classToName[riderClass] }}
+                            {{ ridersData[section_id].showClass }} - {{ classToName[ridersData[section_id].class] }} - {{ ridersData[section_id].section }}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="rider in ridersData[riderClass]" :key="rider.id">
+                    <tr v-for="rider in ridersData[section_id].riders" :key="rider.id">
                         <td>{{ rider.name }}</td>
                         <td>{{ rider.school }}</td>
                     </tr>
@@ -30,14 +29,15 @@
   
 <script>
 import Papa from 'papaparse';
-import { reactive } from 'vue'
 import { useStore } from 'vuex'
+import {reactive} from 'vue'
 
 export default {
     setup() {
         const store = useStore()
         let file = null
         let data = null
+        let eventRiders = store.state.eventRider
         let ridersData = reactive(store.state.eventRiders)
         let classToName = store.state.classToName
         return {
@@ -52,18 +52,15 @@ export default {
     },
     methods: {
         // Filter riding classes that have no riders yet
-        getFilteredClasses() {
-            let sortedClasses = this.getSortedClasses()
-            return sortedClasses.filter((ridingClass) => this.ridersData[ridingClass].length > 0)
+        getFilteredSections() {
+            const section_ids = Object.keys(this.ridersData)
+            return section_ids.filter((section_id) => this.ridersData[section_id].riders.length > 0)
         },
 
-        getSortedClasses() {
-            return Object.keys(this.ridersData).sort()
-        },
 
         handleRidersFileUpload() {
-            for (let riders in this.ridersData) {
-                this.ridersData[riders] = []
+            for (let section_id in this.ridersData) {
+                this.ridersData[section_id].riders = [];
             }
             try {
                 var files = document.getElementById("ridersFile").files
@@ -87,26 +84,37 @@ export default {
         },
 
         ridersDataToJson(data) {
-            const regex = /Class\s\d{1,2}[AB]?/
+            const classRegex = /Class\s\d{1,2}[AB]?/
+            const sectionRegex = /Section [A-Z]/
             let readData = false
             let currClass = null
+            let currSection = null
+            let showClass = null
+            let section_id = null;
             for (let row of data) {
                 if (!readData) {
-                    let match = regex.exec(row[1])
-                    if (match !== null) {
+                    let classMatch = classRegex.exec(row[1])
+                    let sectionMatch = sectionRegex.exec(row[1])
+                    if (classMatch !== null) {
                         readData = true
-                        currClass = match[0]
+                        currClass = classMatch[0]
+                        currSection = sectionMatch !== null ? sectionMatch[0] : 'Section A'
+                        showClass = row[0]
+                        section_id = `${currClass} ${currSection}`
+                        this.ridersData[section_id] = {'showClass':showClass, 'class': currClass, 'section': currSection, 'riders': []}
                     }
                 } else {
-                    if (row[1] == "2. _________") {
+                    if (row[0] == "1. _________") {
                         readData = false
                     } else {
                         let student = { 'id': row[0], 'name': row[1], 'school': row[4], 'placing': null }
-                        this.ridersData[currClass].push(student)
+                        this.ridersData[section_id].riders.push(student)
                     }
                 }
             }
-            const totalRiders = Object.values(this.ridersData).reduce((acc, riders) => acc + riders.length, 0);
+            
+            const totalRiders = Object.values(this.ridersData).reduce((total, sectionData) => total + sectionData.riders.length, 0);
+
             if (totalRiders == 0) {
                 this.$notify({
                     title: 'Error',

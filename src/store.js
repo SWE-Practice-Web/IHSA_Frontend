@@ -27,18 +27,9 @@ const ridingClasses = {
 export const store = createStore({
   state() {
     return {
-      eventRiders: Object.keys(ridingClasses).reduce((myMap, currClass) => {
-        myMap[currClass] = []
-        return myMap
-      }, {}),
-      eventHorses: Object.keys(ridingClasses).reduce((myMap, currClass) => {
-        myMap[currClass] = []
-        return myMap
-      }, {}),
-      eventClasses: Object.keys(ridingClasses).reduce((myMap, currClass) => {
-        myMap[currClass] = []
-        return myMap
-      }, {}),
+      eventRiders: {},
+      eventHorses: {},
+      eventClasses: {},
       classToName: ridingClasses
     };
   }

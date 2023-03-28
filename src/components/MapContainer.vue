@@ -8,10 +8,10 @@
                 <ol-source-osm />
             </ol-tile-layer>
 
-            <ol-interaction-select  @select="handleClick" :toggleCondition="never" :condition="clickFeature" :filter="selectInteractionFilter"
-                ref="click">
+            <ol-interaction-select @select="handleClick" :toggleCondition="never" :condition="clickFeature"
+                :filter="selectInteractionFilter" ref="click">
                 <ol-style>
-                    <ol-style-icon v-if="selectOn || deleteOn" :src="handleMarker()" :scale="0.4"></ol-style-icon>
+                    <ol-style-icon v-if="selectOn || deleteOn" :src="handleSelectMarker()" :scale="0.5"></ol-style-icon>
                 </ol-style>
             </ol-interaction-select>
 
@@ -33,21 +33,34 @@
             </ol-overlay>
         </ol-map>
         <div class="child2">
-            <div class="SchoolInfo" style="border:1px black solid;height:25%">
-                <div v-if="selectedFeature.schoolName !== undefined">School Name <input type="text" @input="updateSchoolInfo"
-                        v-model="selectedFeature.schoolName"></div><br>
-                <div v-if="selectedFeature.numOfRiders !== undefined">Number of Riders <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)"
-                        v-model="selectedFeature.numOfRiders"></div><br>
-                <div v-if="selectedFeature.isAnchorSchool !== undefined">Is Anchor School <input type="checkbox" @change="updateSchoolInfo"
-                        v-model="selectedFeature.isAnchorSchool"></div><br>
-                <div v-if="selectedFeature.region !== undefined">
-                    Region
-                    <select v-model="selectedFeature.region" @change="changeRegion">
-                        <option v-for="region in regions" :value="region" :key="region">{{ region }}</option>
-                    </select>
+            <div class="container d-grid" style="border:1px black solid;height:20%; align-content: space-evenly;">
+                <div v-if="selectedFeature.schoolName !== undefined" class="row m-1">
+                    <div class="col-8 d-flex">
+                        <span class="fw-bold mx-2 mt-1">School Name: </span>
+                        <input type="text" @input="updateSchoolInfo" v-model="selectedFeature.schoolName">
+                    </div>
+                    <div class="col-4 d-flex">
+                        <span class="fw-bold mx-2  mt-1">Is Anchor School: </span>
+                        <input type="checkbox" @change="updateSchoolInfo(); updateMarker(selectedFeature)"
+                            v-model="selectedFeature.isAnchorSchool">
+                    </div>
+                </div>
+                <div v-if="selectedFeature.numOfRiders !== undefined" class="row m-1">
+                    <div class="col-8 d-flex">
+                        <span class="fw-bold mx-2 mt-1">Number of Riders: </span>
+                        <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)"
+                            v-model="selectedFeature.numOfRiders">
+                    </div>
+                    <div class="col-4 d-flex">
+                        <span class="fw-bold mx-2 mt-1">Region: </span>
+                        <select v-model="selectedFeature.region" @change="changeRegion">
+                            <option v-for="region in ['N/A', ...regions]" :value="region" :key="region">{{ region }}
+                            </option>
+                        </select>
+                    </div>
                 </div>
             </div>
-            <div style="border:1px black solid;height:75%">
+            <div style="border:1px black solid;height:80%">
                 <div class="regionInfo">
                     <div>
                         Region
@@ -72,7 +85,8 @@
                     </thead>
                     <tbody>
                         <tr v-for="school in schoolsInSelectedRegion()" :key="school.featureId">
-                            <td><a class='kinda-link' @click='selectSchoolInMap(school.featureId)'>{{ school.schoolName }}</a></td>
+                            <td><a class='kinda-link' @click='selectSchoolInMap(school.featureId)'>{{ school.schoolName
+                            }}</a></td>
                             <td>{{ school.numOfRiders == "" ? 0 : school.numOfRiders }}</td>
                             <td>{{ school.isAnchorSchool ? 'yes' : 'no' }}</td>
                             <td>{{ Math.round(school.avgMileageInRegion * 100) / 100 }}</td>
@@ -92,6 +106,16 @@ import brownMarker from '../assets/brownMarker.png' //Location icon by Icons8
 import greenMarker from '../assets/greenMarker.png' //Location icon by Icons8
 import bluedMarker from '../assets/blueMarker.png' //Location icon by Icons8
 import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by Icons8
+import yellowMarker from '../assets/yellowMarker.png' //Location icon by Icons8
+
+import blackFlagMarker from '../assets/blackFlagMarker.png' //Location icon by Icons8
+import redFlagMarker from '../assets/redFlagMarker.png' //Location icon by Icons8
+import brownFlagMarker from '../assets/brownFlagMarker.png' //Location icon by Icons8
+import greenFlagMarker from '../assets/greenFlagMarker.png' //Location icon by Icons8
+import bluedFlagMarker from '../assets/blueFlagMarker.png' //Location icon by Icons8
+import lightBlueFlagMarker from '../assets/lightBlueFlagMarker.png' //Location icon by Icons8
+import yellowFlagMarker from '../assets/yellowFlagMarker.png' //Location icon by Icons8
+
 import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
@@ -131,11 +155,21 @@ export default {
         let anchoorSchoolsInRegion = ref(0)
 
         let regionToMarker = ref({
+            'N/A': yellowMarker,
             1: redMarker,
             2: brownMarker,
             3: greenMarker,
             4: bluedMarker,
             5: lightBlueMarker
+        })
+
+        let regionToMarkerAnchorSchool = ref({
+            'N/A': yellowFlagMarker,
+            1: redFlagMarker,
+            2: brownFlagMarker,
+            3: greenFlagMarker,
+            4: bluedFlagMarker,
+            5: lightBlueFlagMarker
         })
         let tooltipPos;
         const tooltipPositioning = ref("bottom-left")
@@ -149,6 +183,7 @@ export default {
             clickFeature,
             pointerMove,
             blackMarker,
+            blackFlagMarker,
             selectOn,
             deleteOn,
             features,
@@ -172,6 +207,7 @@ export default {
             distancesInRegion,
             avgDistanceInRegion,
             anchoorSchoolsInRegion,
+            regionToMarkerAnchorSchool,
             never
         }
     },
@@ -190,27 +226,65 @@ export default {
 
     methods: {
 
+
+
+        /**
+        * Function to show a 0 instead of an empty box when inputs of type=number are being edited
+        *
+        * @param {object} school. School being updated
+        */
         preventEmptyNumber(school) {
             school.numOfRiders = school.numOfRiders == '' ? 0 : school.numOfRiders
         },
 
+
+
+        /**
+        * Function being called whenever the school information is updated. It updates the information of the region
+        * that contains that school
+        *
+        * @param {object} school. School being updated
+        */
         updateSchoolInfo() {
             if (this.selectedFeature.region == this.selectedRegion) {
                 this.getInformationForRegion()
             }
         },
 
+
+
+        /**
+        * Function to get all schools in the current selected region.
+        *
+        */
         schoolsInSelectedRegion() {
             const schools = Object.values(this.schools)
             return schools.filter(school => school.region == this.selectedRegion)
         },
 
+
+
+        /**
+        * Function to handle hover on the map. If the mouse is hovering over a school, it displays a tooltip with 
+        * the school information
+        *
+        * @param {Event} evt. Hover event being emitted.
+        */
         showTooltip(evt) {
             let feature;
             if (evt.selected && evt.selected.length) {
                 feature = evt.selected[0]
                 this.$refs.tooltip.setPosition(feature.getGeometry().getCoordinates())
                 document.getElementById("tooltipContent").innerText = this.schools[feature.id_].schoolName
+                if (this.schools[feature.id_].isAnchorSchool) {
+                    const newStyle = new Style.Style({
+                        image: new Style.Icon({
+                            src: blackFlagMarker,
+                            scale: 0.6
+                        })
+                    })
+                    feature.setStyle(newStyle)
+                }
             } else {
                 this.$refs.tooltip.setPosition(undefined)
             }
@@ -228,7 +302,27 @@ export default {
             this.cleanSelectedFeatures()
             this.lastSelectedFeature.setStyle(newStyle)
             this.manuallySelectFeature(this.lastSelectedFeature)
-            
+        },
+
+        updateMarker(school) {
+            let marker;
+            let scale;
+            if (school.isAnchorSchool) {
+                marker = school.region !== null ? this.regionToMarkerAnchorSchool[school.region] : this.yellowFlagMarker
+                scale = 0.5
+            } else {
+                marker = school.region !== null ? this.regionToMarker[school.region] : this.yellowMarker
+                scale = 0.3
+            }
+            const newStyle = new Style.Style({
+                image: new Style.Icon({
+                    src: marker,
+                    scale: scale
+                })
+            })
+            this.cleanSelectedFeatures()
+            this.lastSelectedFeature.setStyle(newStyle)
+            this.manuallySelectFeature(this.lastSelectedFeature)
         },
 
         /**
@@ -250,7 +344,7 @@ export default {
             }
         },
 
-        handleMarker() {
+        handleSelectMarker() {
             if (this.lastSelectedFeature == null) {
                 return this.blackMarker
             } else {
@@ -260,7 +354,8 @@ export default {
                 }
                 const selectedSchool = this.schools[feature.id_]
                 const region = selectedSchool.region
-                return region !== null ? this.regionToMarker[region] : this.blackMarker
+                if (selectedSchool.isAnchorSchool) { return region !== null ? this.regionToMarkerAnchorSchool[region] : this.yellowFlagMarker }
+                else { return region !== null ? this.regionToMarker[region] : this.yellowMarker }
             }
         },
 
@@ -315,7 +410,14 @@ export default {
 
         preventHoverOnSelectedFeature(feature) {
             if (this.lastSelectedFeature) {
-                return !(this.lastSelectedFeature.id_ == feature.id_)
+                if (this.lastSelectedFeature.id_ == feature.id_) {
+                    const evt = {}
+                    evt.selected = [feature]
+                    this.showTooltip(evt)
+                    return false
+                } else {
+                    return true
+                }
             } else {
                 return true
             }
@@ -378,10 +480,19 @@ export default {
             featureId = featureId ? featureId !== null : newMapFeature.ol_uid
             newMapFeature.setId(featureId)
             if (geometryType == "Point") {
+                let marker;
+                let scale;
+                if (isAnchorSchool) {
+                    marker = region !== null ? this.regionToMarkerAnchorSchool[region] : this.yellowFlagMarker
+                    scale = 0.5
+                } else {
+                    marker = region !== null ? this.regionToMarker[region] : this.yellowMarker
+                    scale = 0.3
+                }
                 const iconStyle = new Style.Style({
                     image: new Style.Icon({
-                        src: region !== null ? this.regionToMarker[region] : this.blackMarker,
-                        scale: 0.3
+                        src: marker,
+                        scale: scale
                     })
                 })
                 newMapFeature.setStyle(iconStyle)
@@ -460,7 +571,7 @@ export default {
                 school['featureId'] = key
                 if (school.region == region) {
                     regionSchools.push(school)
-                    if (school.isAnchorSchool) { 
+                    if (school.isAnchorSchool) {
                         this.anchoorSchoolsInRegion += 1
                     }
                 }
@@ -469,6 +580,7 @@ export default {
             //Need to filter null values here later
             this.numOfRidersInRegion = this.sum(regionSchools.map(school => this.getInt(school.numOfRiders)))
             this.distancesInRegion = this.getDistances(regionSchools.map(school => school.featureId))
+            console.log(this.distancesInRegion)
             this.avgDistanceInRegion = this.sum(this.distancesInRegion) / this.distancesInRegion.length
         },
 
@@ -482,26 +594,35 @@ export default {
 
         getDistances(featuresIds) {
             let distances = []
+            let anchorSchools = 0
             let schoolTotalDistances = new Array(featuresIds.length).fill(0);
             let schoolMaxDistances = new Array(featuresIds.length).fill(0);
-            for (let i = 0; i < featuresIds.length - 1; i++) {
-                for (let j = i + 1; j < featuresIds.length; j++) {
-                    const featureId1 = featuresIds[i]
+            for (let i = 0; i < featuresIds.length; i++) {
+                const featureId1 = featuresIds[i]
+                if (this.schools[featureId1].isAnchorSchool) {
+                    anchorSchools += 1
+                    distances.push(0)
+                }
+                for (let j = 0; j < featuresIds.length; j++) {
+                    if (i == j) {
+                        continue
+                    }
                     const featureId2 = featuresIds[j]
                     const currDistanceInMiles = this.schools[featureId1]['distances'][featureId2]
-                    distances.push(currDistanceInMiles)
-                    if (this.schools[featureId1].region == this.schools[featureId2].region){
+                    const sameRegion = (this.schools[featureId1].region == this.schools[featureId2].region)
+                    const isAnchorSchool = this.schools[featureId2].isAnchorSchool
+                    // console.log(this.schools[featureId2])
+                    if (sameRegion && isAnchorSchool) {
+                        distances.push(currDistanceInMiles)
                         schoolTotalDistances[i] += currDistanceInMiles
-                        schoolTotalDistances[j] += currDistanceInMiles
                         schoolMaxDistances[i] = Math.max(schoolMaxDistances[i], currDistanceInMiles)
-                        schoolMaxDistances[j] = Math.max(schoolMaxDistances[j], currDistanceInMiles)
                     }
                 }
             }
             for (let i = 0; i < featuresIds.length; i++) {
                 const featureId = featuresIds[i]
                 this.schools[featureId]['maxMileageInRegion'] = schoolMaxDistances[i]
-                this.schools[featureId]['avgMileageInRegion'] = schoolTotalDistances[i] / (featuresIds.length - 1)
+                this.schools[featureId]['avgMileageInRegion'] = schoolTotalDistances[i] / anchorSchools
             }
             return distances
         },
@@ -531,29 +652,36 @@ export default {
             container.className = 'ol-control-panel ol-unselectable';
             container.style = "background-color:rgba(255,255,255,0.8);display:inline-block;padding:2px;position:fixed;top:10;left:0"
 
+            const yellowContainer = document.createElement('div');
             const redContainer = document.createElement('div');
             const brownContainer = document.createElement('div');
             const greenContainer = document.createElement('div');
             const blueContainer = document.createElement('div');
             const lightBlueContainer = document.createElement('div');
+            const flag = document.createElement('div');
 
+            yellowContainer.style = "display:flex"
             redContainer.style = "display:flex"
             brownContainer.style = "display:flex"
             greenContainer.style = "display:flex"
             blueContainer.style = "display:flex"
             lightBlueContainer.style = "display:flex"
 
-            redContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#ff5454'></div>&nbspRegion 1"
-            brownContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#50342c'></div>&nbspRegion 2"
-            greenContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#28cc94'></div>&nbspRegion 3"
-            blueContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#1034bc'></div>&nbspRegion 4"
-            lightBlueContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#d05cec'></div>&nbspRegion 5"
+            yellowContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#ffff00'></div>&nbspNo Region"
+            redContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#ff5454'></div>&nbspRegion 1"
+            brownContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#50342c'></div>&nbspRegion 2"
+            greenContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#28cc94'></div>&nbspRegion 3"
+            blueContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#1034bc'></div>&nbspRegion 4"
+            lightBlueContainer.innerHTML = "<div style='height:12px;width:12px;background-color:#d05cec'></div>&nbspRegion 5"
+            flag.innerText = "Flag: Anchor Schools"
             // yellowContainer.innerHTML = "<div style='height:10px;width:10px;background-color:#e8fc54'></div>&nbspRegion 5"
+            container.appendChild(yellowContainer)
             container.appendChild(redContainer)
             container.appendChild(brownContainer)
             container.appendChild(greenContainer)
             container.appendChild(blueContainer)
             container.appendChild(lightBlueContainer)
+            container.appendChild(flag)
             /*A custom control which has container holding input elements etc*/
             var controlPanel = new Control({
                 element: container
@@ -619,7 +747,7 @@ thead {
     border: 1px black solid;
 }
 
-.regionInfo  > div{
+.regionInfo>div {
     flex-grow: 1;
     padding: 1rem 0.1rem;
     border: 1px black solid;
@@ -630,8 +758,11 @@ thead {
     width: 100%;
 }
 
-a.kinda-link:hover { cursor: pointer; text-decoration: underline;}
-.kinda-link {
-    color:blue
+a.kinda-link:hover {
+    cursor: pointer;
+    text-decoration: underline;
 }
-</style>
+
+.kinda-link {
+    color: blue
+}</style>

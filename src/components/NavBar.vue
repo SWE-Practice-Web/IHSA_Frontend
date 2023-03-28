@@ -6,13 +6,28 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto d-flex justify-content-between" style="width:100vw">
+            <ul class="navbar-nav mr-auto d-flex justify-content-between" style="width:100%">
                 <div class="d-flex ps-3">
                     <li class="nav-item">
                         <router-link class="nav-link" to="/">Home</router-link>
                     </li>
                     <li class="nav-item">
                         <router-link class="nav-link" to="/map">Map</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/announcements">Announcements</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/eventRiders">Manage Event Riders</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/eventHorses">Manage Event Horses</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/eventClasses">Manage Event Classes</router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/hManage">Manage Horse Information</router-link>
                     </li>
                 </div>
                 <div class="pe-3">

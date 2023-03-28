@@ -1,6 +1,7 @@
 <template>
   <div>
-    <NavBar/>
+    <notifications class="m-2"/>
+    <NavBar class="fixed-top"/>
     <router-view></router-view>
   </div>
 </template>
@@ -22,7 +23,7 @@ export default {
   font-size: 0.8rem !important;
 }
 html, body {
-  height: 100%;
+  /* height: 100%; */
   margin: 0;
 }
 
@@ -32,7 +33,8 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  height: 100vh;
-  width: 100vw;
+  height: 93vh;
+  width: 100%;
+  margin-top: 7vh;
 }
 </style>

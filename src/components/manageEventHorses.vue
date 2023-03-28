@@ -7,16 +7,16 @@
             </div>
             <div class="mb-3 d-flex w-75 flex-column justify-content-start">
                     <table class="table table-striped w-90 border border-primary"
-                        v-for="horseClass in getFilteredClasses(horsesData)" :key="horseClass">
+                        v-for="section_id in getFilteredSections()" :key="section_id">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col" colspan="2">
-                                    {{ classToName[horseClass] }}
+                                    {{ classToName[horsesData[section_id].class] }} - {{ horsesData[section_id].section }}
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="horse in horsesData[horseClass]" :key="horse.name">
+                            <tr v-for="horse in horsesData[section_id].horses" :key="horse.name">
                                 <td>{{ horse.name }}</td>
                                 <td>{{ horse.provider }}</td>
                             </tr>
@@ -49,18 +49,14 @@ export default {
     name: 'manageEventHorses',
     methods: {
         // Filter riding classes that have no horses yet
-        getFilteredClasses() {
-            let sortedClasses = this.getSortedClasses()
-            return sortedClasses.filter((ridingClass) => this.horsesData[ridingClass].length > 0)
-        },
-
-        getSortedClasses() {
-            return Object.keys(this.horsesData).sort()
+        getFilteredSections() {
+            const section_ids = Object.keys(this.horsesData)
+            return section_ids.filter((section_id) => this.horsesData[section_id].horses.length > 0)
         },
 
         handleHorsesFileUpload() {
-            for (let horses in this.horsesData) {
-                this.horsesData[horses] = []
+            for (let section_id in this.horsesData) {
+                this.horsesData[section_id].horses = []
             }
             try {
                 var files = document.getElementById("horsesFile").files
@@ -84,7 +80,8 @@ export default {
         },
 
         horsesDataToJson(data) {
-            const regex = /Class\s\d{1,2}[AB]?/
+            const classRegex = /Class\s\d{1,2}[AB]?/
+            const sectionRegex = /Section [A-Z]/
             let headers = null
             for (let row of data) {
                 // First row is the headers
@@ -95,14 +92,28 @@ export default {
                 let horse = { 'name': row[1], 'provider': row[2] }
                 for (let i = 3; i < row.length; i++) {
                     if (row[i]) {
-                        let currClass = regex.exec(headers[i])
+                        let currClass = classRegex.exec(headers[i])
+                        let match = sectionRegex.exec(headers[i])
+                        let currSection = match !== null ? match[0] : 'Section A'
+                        if (currClass === null) {
+                            continue
+                        }
+                        let section_id =  `${currClass} ${currSection}`
+                        if (!(section_id in this.horsesData)) {
+                            this.horsesData[section_id] = {}
+                        }
+                        this.horsesData[section_id].section = currSection
+                        this.horsesData[section_id].class = currClass
+                        this.horsesData[section_id].horses = this.horsesData[section_id].horses ? this.horsesData[section_id].horses : []
                         for (let j = 0; j < row[i]; j++) {
-                            this.horsesData[currClass].push(horse)
+                            this.horsesData[section_id].horses.push(horse)
                         }
                     }
                 }
             }
-            const totalHorses = Object.values(this.horsesData).reduce((acc, horses) => acc + horses.length, 0);
+
+            const totalHorses = Object.values(this.horsesData).reduce((total, sectionData) => total + sectionData.horses.length, 0);
+
             if (totalHorses == 0) {
                 this.$notify({
                     title: 'Error',
