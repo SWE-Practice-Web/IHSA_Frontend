@@ -29,7 +29,6 @@
             </div>
         </div>
     </div>
-
     <!-- pop up modal for editting pre-existing announcement -->
     <div class="modal" id="editModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -166,6 +165,9 @@ export default {
 </script>
 
 <style scoped>
+* {
+    color: white;
+}
 .announcement {
     height: 17%;
     width: 90%;

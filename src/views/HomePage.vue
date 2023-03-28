@@ -1,4 +1,23 @@
 <template class="homeContainer">
+    <div class="dropdown"> <!--This dropdown is for the events so it needs to be changed once the table is updated-->
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Select Event
+    </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Name</a></li>
+        <li><a class="dropdown-item" href="#">Age</a></li>
+        <li><a class="dropdown-item" href="#">Height</a></li>
+        <li><a class="dropdown-item" href="#">Weight</a></li>
+        <li><a class="dropdown-item" href="#">Color</a></li>
+    </ul>
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+        Select Class
+    </button>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">-- Class --</a></li>
+    </ul>
+    </div>
+
     <div class="d-flex justify-content-center align-items-center w-100 h-100 bg-light">
         <table class="table table-striped w-50 border border-primary">
             <thead class="table-dark">

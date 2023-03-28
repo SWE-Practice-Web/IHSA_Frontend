@@ -60,7 +60,6 @@ export default {
             classDraw[section_id] = []
         }
 
-
         return {
             file,
             data,
@@ -113,6 +112,7 @@ export default {
                     for (let i = horses.length; i < riders.length; i++) {
                         shuffledRiders[i].order = i
                         this.classDraw[section_id].push({ 'rider': shuffledRiders[i], 'horse': DEFAULTHORSE })
+
                     }
                 }
             }
@@ -141,7 +141,6 @@ export default {
         randomizeReady() {
             const totalRiders = Object.values(this.ridersData).reduce((total, sectionData) => total + sectionData.riders.length, 0);
             const totalHorses = Object.values(this.horsesData).reduce((total, sectionData) => total + sectionData.horses.length, 0);
-
             if (totalRiders <= 0) {
                 this.$notify({
                     title: 'Warn',
@@ -194,5 +193,4 @@ export default {
 .icon:hover {
     transform: scale(1.3);
 }
-
 </style>

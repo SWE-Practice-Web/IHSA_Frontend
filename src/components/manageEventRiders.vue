@@ -37,7 +37,7 @@ export default {
         const store = useStore()
         let file = null
         let data = null
-        // let eventRiders = store.state.eventRiders
+        let eventRiders = store.state.eventRider
         let ridersData = reactive(store.state.eventRiders)
         let classToName = store.state.classToName
         return {
@@ -114,7 +114,6 @@ export default {
             }
             
             const totalRiders = Object.values(this.ridersData).reduce((total, sectionData) => total + sectionData.riders.length, 0);
-
 
             if (totalRiders == 0) {
                 this.$notify({
