@@ -9,9 +9,6 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import 'bootstrap';
 import HomePage from "./views/HomePage.vue"
 import MapContainer from "./components/MapContainer.vue"
-import manageEventRiders from "./components/manageEventRiders.vue"
-import manageEventHorses from "./components/manageEventHorses.vue"
-import manageEventClasses from "./components/manageEventClasses.vue"
 import LoginPage from "./views/LoginPage.vue"
 import SignupPage from "./views/SignupPage.vue"
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -19,6 +16,7 @@ import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faTriangleExclamation)
 import AnnouncementPage from "./views/AnnouncementPage.vue"
+import ManageEventPage from "./views/admin/ManageEventPage.vue"
 
 const routes = [
     { path: '/', component: HomePage },
@@ -26,9 +24,7 @@ const routes = [
     { path: '/login', component: LoginPage },
     { path: '/signup', component: SignupPage },
     { path: '/announcements', component: AnnouncementPage },
-    { path: '/eventRiders', component: manageEventRiders },
-    { path: '/eventHorses', component: manageEventHorses },
-    { path: '/eventClasses', component: manageEventClasses },
+    { path: '/manage', component: ManageEventPage },
   ]
 
 const router = VueRouter.createRouter({
