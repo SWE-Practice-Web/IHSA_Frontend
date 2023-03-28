@@ -19,6 +19,7 @@ import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faTriangleExclamation)
 import AnnouncementPage from "./views/AnnouncementPage.vue"
+import ManageHorsePage from "./views/ManageHorsePage.vue"
 
 const routes = [
     { path: '/', component: HomePage },
@@ -29,6 +30,7 @@ const routes = [
     { path: '/eventRiders', component: manageEventRiders },
     { path: '/eventHorses', component: manageEventHorses },
     { path: '/eventClasses', component: manageEventClasses },
+    { path: '/hManage', component: ManageHorsePage },
   ]
 
 const router = VueRouter.createRouter({
