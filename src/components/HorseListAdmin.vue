@@ -24,13 +24,14 @@
                         <td>{{ horse.reign }}</td>
                         <td>{{ horse.mweight }}</td>
                         <td> <button @click="selectMessage(horse.desc)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Desc</button> </td>
-                        <td> <button @click="editForm(index)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editHorse">Edit</button> </td>
+                        <td> <button @click="editForm(horse, index)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editHorse">Edit</button> </td>
                         <td> <button @click="selectMessage(index)" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#areYouSure">Delete</button>  </td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHorse">Add Horse to List</button>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadFile">Add Horse Data from .csv</button>
     </div>
 
     <!-- Modal for horse description -->
@@ -116,7 +117,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" @click="addData" data-bs-dismiss="modal">Save Changes</button>
+                    <button type="submit" class="btn btn-primary" @click="addData" data-bs-dismiss="modal">Submit</button>
                 </div>
             </div>
         </div>
@@ -143,11 +144,33 @@
         </div>
     </div>
 
+    <!-- Upload .csv modal -->
+    <div class="modal fade" id="uploadFile" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        <input type="file">
+                    </h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="handleFileUpload">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </template>
 
 
 <script>
 import {ref, reactive} from 'vue'
+import Papa from 'papaparse'
     export default {
         name: 'HorseListAdmin',
         setup() {
@@ -160,7 +183,7 @@ import {ref, reactive} from 'vue'
                 {name: "Chad", provider: "ISU", spurs: "Optional", reign: "1 Hand", mweight: "120 lbs", desc: "This horse is ight"},
                 {name: "Garth", provider: "ISU", spurs: "Optional", reign: "1 Hand", mweight: "No Restriction", desc: "Blame it all on his roots"}
             ]);
-            let msg = ref("404 not found")
+            let msg = ref("404 not found");
             return {
                 horseList,
                 msg,
@@ -172,14 +195,14 @@ import {ref, reactive} from 'vue'
                     mweight: '',
                     desc: '',
                 },
-                editData: {
+                editData: reactive({
                     name: '',
                     provider: '',
                     spurs: '',
                     reign: '',
                     mweight: '',
                     desc: '',
-                },
+                }),
                 showEditForm: null
             }
 
@@ -198,12 +221,21 @@ import {ref, reactive} from 'vue'
                 this.newData.mweight = ''
                 this.newData.desc = ''
             },
-            editForm(index) {
-                this.showEditForm = index
-                this.editData = { ...this.horseList[index]}
+            editForm(horse) {
+                //console.log(horse)
+                this.showEditForm = horse
+                //this.editData = { ...this.horseList[horse]}
+                this.editData.name = horse.name
+                this.editData.provider = horse.provider
+                this.editData.spurs = horse.spurs
+                this.editData.reign = horse.reign
+                this.editData.mweight = horse.mweight
+                this.editData.desc = horse.desc
+                this.editData.index = horse.index
             },
             updateData() {
-                this.horseList.splice(this.showEditForm, 1, { ...this.editData })
+                // this.horseList.splice(this.showEditForm, 1, { ...this.editData })
+                this.horseList[this.editData.index] = this.editData
                 this.showEditForm = null
                 this.editData.name = ''
                 this.editData.provider = ''
@@ -214,7 +246,17 @@ import {ref, reactive} from 'vue'
             },
             deleteData(index) {
                 this.horseList.splice(index, 1)
-            }
+            },
+            handleFileUpload(event) {
+                const file = event.target.files[0]
+                Papa.parse(file, {
+                    header: true,
+                    complete: (results) => {
+                        this.horseList = results.data
+                    }
+                })
+            },
+
             
         }
     }
