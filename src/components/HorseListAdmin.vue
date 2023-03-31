@@ -202,8 +202,7 @@ import Papa from 'papaparse'
                     reign: '',
                     mweight: '',
                     desc: '',
-                }),
-                showEditForm: null
+                })
             }
 
         },
@@ -221,28 +220,17 @@ import Papa from 'papaparse'
                 this.newData.mweight = ''
                 this.newData.desc = ''
             },
-            editForm(horse) {
-                //console.log(horse)
-                this.showEditForm = horse
-                //this.editData = { ...this.horseList[horse]}
+            editForm(horse, index) {
                 this.editData.name = horse.name
                 this.editData.provider = horse.provider
                 this.editData.spurs = horse.spurs
                 this.editData.reign = horse.reign
                 this.editData.mweight = horse.mweight
                 this.editData.desc = horse.desc
-                this.editData.index = horse.index
+                this.editData.index = index
             },
             updateData() {
-                // this.horseList.splice(this.showEditForm, 1, { ...this.editData })
-                this.horseList[this.editData.index] = this.editData
-                this.showEditForm = null
-                this.editData.name = ''
-                this.editData.provider = ''
-                this.editData.spurs = ''
-                this.editData.reign = ''
-                this.editData.mweight = ''
-                this.editData.desc = ''
+                this.horseList[this.editData.index] = {...this.editData}
             },
             deleteData(index) {
                 this.horseList.splice(index, 1)
