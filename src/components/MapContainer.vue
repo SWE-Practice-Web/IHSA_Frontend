@@ -34,26 +34,27 @@
         </ol-map>
         <div class="child2">
             <div class="container d-grid" style="border:1px black solid;height:20%; align-content: space-evenly;">
-                <div v-if="selectedFeature.schoolName !== undefined" class="row m-1">
+                <div class="row m-1">
                     <div class="col-8 d-flex">
                         <span class="fw-bold mx-2 mt-1">School Name: </span>
-                        <input type="text" @input="updateSchoolInfo" v-model="selectedFeature.schoolName">
+                        <input type="text" @blur="patchSchool" @input="updateSchoolInfo"
+                            v-model="selectedFeature.schoolName">
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2  mt-1">Is Anchor School: </span>
-                        <input type="checkbox" @change="updateSchoolInfo(); updateMarker(selectedFeature)"
+                        <input type="checkbox" @change="updateSchoolInfo(); updateMarker(selectedFeature); patchSchool()"
                             v-model="selectedFeature.isAnchorSchool">
                     </div>
                 </div>
-                <div v-if="selectedFeature.numOfRiders !== undefined" class="row m-1">
+                <div class="row m-1">
                     <div class="col-8 d-flex">
                         <span class="fw-bold mx-2 mt-1">Number of Riders: </span>
-                        <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)"
-                            v-model="selectedFeature.numOfRiders">
+                        <input type="number" @blur="patchSchool" @input="updateSchoolInfo"
+                            @change="preventEmptyNumber(selectedFeature)" v-model="selectedFeature.numOfRiders">
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2 mt-1">Region: </span>
-                        <select v-model="selectedFeature.region" @change="changeRegion">
+                        <select v-model="selectedFeature.region" @change="changeRegion($event); patchSchool()">
                             <option v-for="region in ['N/A', ...regions]" :value="region" :key="region">{{ region }}
                             </option>
                         </select>
@@ -96,6 +97,21 @@
                 </table>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div ref="loader" class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" data-bs-keyboard="false"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
+                <div class="modal-content">
+                    <div class="modal-title fs-4">Loading...</div>
+                    <div class="modal-body">
+                        <div class="spinner-border" style="width:8rem; height:8rem" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -120,10 +136,12 @@ import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
 import { never } from 'ol/events/condition'
+import * as bootstrap from 'bootstrap/dist/js/bootstrap.min.js'
 
-import ihsa_schools from '../../public/schools.json'
+import schools_json from '../../public/schools.json'
 import {
     ref,
+    reactive,
     inject
 } from 'vue'
 export default {
@@ -140,6 +158,8 @@ export default {
         const pointerMove = selectConditions.pointerMove;
         const clickFeature = selectConditions.click;
         const regions = ref([1, 2, 3, 4, 5])
+        let loader;
+        let ihsa_schools = reactive({})
         let lastSelectedFeature = ref(null);
         let selectedRegion = ref(1);
         let selectedSchool = ref("Please select a school")
@@ -208,11 +228,29 @@ export default {
             avgDistanceInRegion,
             anchoorSchoolsInRegion,
             regionToMarkerAnchorSchool,
-            never
+            never,
+            loader
         }
     },
 
-    mounted() {
+    async mounted() {
+        let schools;
+        this.loader = new bootstrap.Modal(this.$refs.loader, {})
+        this.loader.show()
+        try {
+            schools = await this.$axios.get('/schools')
+            this.ihsa_schools = schools.data
+        } catch (err) {
+            this.ihsa_schools = schools_json
+            this.$notify({
+                title: 'Error',
+                text: `Error loading schools from database. Showing latest school info saved`,
+                type: 'error'
+            });
+            console.log(err)
+            
+        } 
+        this.loader.hide()
         for (let school of this.ihsa_schools) {
             this.addSchool(school)
         }
@@ -227,6 +265,29 @@ export default {
     methods: {
 
 
+        async patchSchool() {
+            let school = {
+                "id": this.selectedFeature.schoolId,
+                "schoolName": this.selectedFeature.schoolName,
+                "stateCode": this.selectedFeature.stateCode,
+                "latitude": this.selectedFeature.coordinates[1],
+                "longitude": this.selectedFeature.coordinates[0],
+                "region": this.selectedFeature.region,
+                "zone": this.selectedFeature.zone,
+                "numRiders": this.selectedFeature.numOfRiders,
+                "anchorSchool": this.selectedFeature.isAnchorSchool
+            }
+            try {
+                await this.$axios.put(`school/${school.id}`, school)
+            } catch (err) {
+                console.log(err)
+                this.$notify({
+                    title: 'Error',
+                    text: `Error updating school info: ${err}`,
+                    type: 'error'
+                });
+            }
+        },
 
         /**
         * Function to show a 0 instead of an empty box when inputs of type=number are being edited
@@ -334,7 +395,6 @@ export default {
             let feature;
             if (evt && evt.selected && evt.selected.length) {
                 feature = evt.selected[0]
-                // console.log(feature)
                 this.lastSelectedFeature = feature
                 if (this.selectOn) { this.selectFeature(feature) }
                 else if (this.deleteOn) { this.deleteFeature(feature) }
@@ -468,7 +528,8 @@ export default {
         */
         loadFeature(feature) {
             //Load feature properties
-            let { geometryType, featureId, coordinates, schoolName, numOfRiders, isAnchorSchool, region, distances, avgMileageInRegion, maxMileageInRegion } = feature;
+            let { geometryType, featureId, coordinates, schoolName, numOfRiders, isAnchorSchool,
+                region, distances, avgMileageInRegion, maxMileageInRegion, schoolId, zone, stateCode } = feature;
             //Add feature to map
             let newGeometry;
             if (geometryType == "Point") {
@@ -504,6 +565,7 @@ export default {
             //Add feature to this.schools
             newFeature = {
                 "schoolName": schoolName,
+                "schoolId": schoolId,
                 "numOfRiders": numOfRiders,
                 "isAnchorSchool": isAnchorSchool,
                 "coordinates": coordinates,
@@ -512,10 +574,13 @@ export default {
                 "region": region,
                 "distances": distances,
                 "avgMileageInRegion": avgMileageInRegion,
-                "maxMileageInRegion": maxMileageInRegion
+                "maxMileageInRegion": maxMileageInRegion,
+                "zone": zone,
+                "stateCode": stateCode,
             }
             this.selectedFeature = newFeature
             this.schools[featureId] = newFeature
+            this.lastSelectedFeature = newMapFeature
             return newFeature
         },
 
@@ -541,20 +606,23 @@ export default {
         * Function to add a school from the list of IHSA schools to the map. This function will be called to add all schools when the page loads
         */
         addSchool(selectedSchool) {
-            const lat = selectedSchool.lat
-            const lon = selectedSchool.lng
+            const lat = selectedSchool.latitude
+            const lon = selectedSchool.longitude
             const coordinates = [lon, lat]
 
 
-            this.createdSchools.add(selectedSchool.raw_name)
+            this.createdSchools.add(selectedSchool.schoolName)
             const newSchool = {
                 "geometryType": "Point",
                 "featureId": null,
-                "schoolName": selectedSchool.raw_name,
+                "schoolId": selectedSchool.id,
+                "schoolName": selectedSchool.schoolName,
                 "coordinates": coordinates,
-                "numOfRiders": selectedSchool.riders,
-                "isAnchorSchool": false,
+                "numOfRiders": selectedSchool.numRiders,
+                "isAnchorSchool": selectedSchool.anchorSchool,
                 "region": selectedSchool.region,
+                "zone": selectedSchool.zone,
+                "stateCode": selectedSchool.stateCode,
                 "distances": {},
                 "avgMileageInRegion": 0,
                 "maxMileageInRegion": 0,
@@ -580,7 +648,6 @@ export default {
             //Need to filter null values here later
             this.numOfRidersInRegion = this.sum(regionSchools.map(school => this.getInt(school.numOfRiders)))
             this.distancesInRegion = this.getDistances(regionSchools.map(school => school.featureId))
-            console.log(this.distancesInRegion)
             this.avgDistanceInRegion = this.sum(this.distancesInRegion) / this.distancesInRegion.length
         },
 
@@ -611,7 +678,6 @@ export default {
                     const currDistanceInMiles = this.schools[featureId1]['distances'][featureId2]
                     const sameRegion = (this.schools[featureId1].region == this.schools[featureId2].region)
                     const isAnchorSchool = this.schools[featureId2].isAnchorSchool
-                    // console.log(this.schools[featureId2])
                     if (sameRegion && isAnchorSchool) {
                         distances.push(currDistanceInMiles)
                         schoolTotalDistances[i] += currDistanceInMiles
@@ -765,4 +831,5 @@ a.kinda-link:hover {
 
 .kinda-link {
     color: blue
-}</style>
+}
+</style>

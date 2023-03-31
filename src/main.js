@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faTriangleExclamation)
 import AnnouncementPage from "./views/AnnouncementPage.vue"
 import ManageHorsePage from "./views/ManageHorsePage.vue"
+import axios from 'axios'
 
 const routes = [
     { path: '/', component: HomePage },
@@ -39,7 +40,16 @@ const router = VueRouter.createRouter({
 })
 
 const app = createApp(App);
+const axiosInstance = axios.create({
+  // baseURL: process.env.VUE_APP_BASE_URL,
+  baseURL: "https://localhost:49159",
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  },
+})
 
+app.config.globalProperties.$axios = { ...axiosInstance }
 app.use(OpenLayersMap)
 app.use(router)
 app.use(store)
