@@ -9,15 +9,23 @@
             <table class="table table-striped border border-primary" v-for="section_id in getFilteredSections()" :key="section_id">
                 <thead class="table-dark">
                     <tr>
-                        <th scope="col" colspan="2">
+                        <th scope="col" colspan="4">
                             {{ ridersData[section_id].showClass }} - {{ classToName[ridersData[section_id].class] }} - {{ ridersData[section_id].section }}
                         </th>
+                    </tr>
+                    <tr>
+                        <th scope="col" class="bg-white text-dark">Name</th>
+                        <th scope="col" class="bg-white text-dark">School</th>
+                        <th scope="col" class="bg-white text-dark">Is Height</th>
+                        <th scope="col" class="bg-white text-dark">Is Weight</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="rider in ridersData[section_id].riders" :key="rider.id">
                         <td>{{ rider.name }}</td>
                         <td>{{ rider.school }}</td>
+                        <td><input type="checkbox" v-model="rider.isHeight"></td>
+                        <td><input type="checkbox" v-model="rider.isWeight"></td>
                     </tr>
                 </tbody>
             </table>
@@ -106,7 +114,7 @@ export default {
                     if (row[0] == "1. _________") {
                         readData = false
                     } else {
-                        let student = { 'id': row[0], 'name': row[1], 'school': row[4], 'placing': null }
+                        let student = { 'id': row[0], 'name': row[1], 'school': row[4], 'placing': null, 'isHeight':false, 'isWeight':false }
                         this.ridersData[section_id].riders.push(student)
                     }
                 }

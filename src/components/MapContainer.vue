@@ -239,7 +239,7 @@ export default {
         this.loader = new Modal(this.$refs.loader, {})
         this.loader.show()
         try {
-            schools = await this.$axios.get('/schools')
+            schools = await this.$axios.get('/school')
             this.ihsa_schools = schools.data
         } catch (err) {
             this.ihsa_schools = schools_json
