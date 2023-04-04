@@ -1,24 +1,24 @@
 <template>
         <div class="d-flex flex-column flex-grow-1 m-3 align-items-center justify-content-center">
-            <label class="card-title" for="horsesFile">Horses: </label>
-            <div class="mb-3 d-flex w-75">
-                <input class="form-control" type="file" id="horsesFile" accept=".csv">
-                <button type="button" class="btn btn-primary" @click="handleHorsesFileUpload">Submit</button>
+            <div class="mb-3 d-flex w-50 justify-content-center align-items-center">
+                <input class="form-control fs-5" type="file" id="horsesFile" accept=".csv">
+                <button type="button" class="btn btn-primary fs-5" @click="handleHorsesFileUpload">Submit</button>
+                <button type="button" class="btn btn-info ms-5 w-50 fs-5">Add Horse</button>
             </div>
             <div class="mb-3 d-flex w-75 flex-column justify-content-start">
                     <table class="table table-striped w-90 border border-primary"
                         v-for="section_id in getFilteredSections()" :key="section_id">
                         <thead class="table-dark">
                             <tr>
-                                <th scope="col" colspan="2">
+                                <th scope="col" colspan="2" class="fs-3">
                                     {{ classToName[horsesData[section_id].class] }} - {{ horsesData[section_id].section }}
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="horse in horsesData[section_id].horses" :key="horse.name">
-                                <td>{{ horse.name }}</td>
-                                <td>{{ horse.provider }}</td>
+                                <td class="fs-4">{{ horse.name }}</td>
+                                <td class="fs-4">{{ horse.provider }}</td>
                             </tr>
                         </tbody>
                     </table>

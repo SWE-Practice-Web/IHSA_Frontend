@@ -1,23 +1,23 @@
 <template>
     <div class="d-flex flex-column flex-grow-1 m-3 align-items-center justify-content-center">
-        <label class="" for="ridersFile">Riders: </label>
-        <div class="mb-3 d-flex w-75 align-items-center justify-content-center">
-            <input class="form-control" type="file" id="ridersFile" accept=".csv">
-            <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
+        <div class="mb-3 d-flex w-50 justify-content-center align-items-center">
+            <input class="form-control fs-5" type="file" id="ridersFile" accept=".csv">
+            <button type="button" class="btn btn-primary fs-5" @click="handleRidersFileUpload">Submit</button>
+            <button type="button" class="btn btn-info ms-5 w-50 fs-5">Add Rider</button>
         </div>
         <div class="mb-3 d-flex w-75 flex-column justify-content-start">
             <table class="table table-striped border border-primary" v-for="section_id in getFilteredSections()" :key="section_id">
                 <thead class="table-dark">
                     <tr>
-                        <th scope="col" colspan="2">
+                        <th scope="col" colspan="2" class="fs-3">
                             {{ ridersData[section_id].showClass }} - {{ classToName[ridersData[section_id].class] }} - {{ ridersData[section_id].section }}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="rider in ridersData[section_id].riders" :key="rider.id">
-                        <td>{{ rider.name }}</td>
-                        <td>{{ rider.school }}</td>
+                        <td class="fs-4">{{ rider.name }}</td>
+                        <td class="fs-4">{{ rider.school }}</td>
                     </tr>
                 </tbody>
             </table>

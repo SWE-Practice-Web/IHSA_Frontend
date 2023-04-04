@@ -1,10 +1,10 @@
 <template>
-    <div class="container bg-info">
+    <div class="container">
         <div class="row pt-3">
             <div class="col">
             </div>
             <div class="col">
-                <button class="btn btn-lg fs-5">Create New Event</button>
+                <button class="btn btn-lg fs-5 bg-success" @click="createNew">Create New Event</button>
             </div>
         </div>
         <div class="row pt-3">
@@ -23,13 +23,25 @@
             </div>
         </div>
     </div>
-    <eventInfoTable v-if="aspectSelected=='info'" :eventSelected="eventSelected" :aspectSelected="aspectSelected" />
-
+    <eventInfoTable v-if="aspectSelected=='info'" :eventSelected="eventSelected" />
+    <manageEventRiders v-if="aspectSelected=='riders'" />
+    <manageEventHorses v-if="aspectSelected=='horses'" />
+    <manageEventClasses v-if="aspectSelected=='classes'" />
+    <div class="modal" id="createNewModal">
+        <div class="modal-xl modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <eventInfoTable :eventSelected="{ id: null, name: null, admins: null, date: null, description: null, riders: null}"/>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
 import { reactive, ref } from 'vue'
 import eventInfoTable from '../../components/eventInfoTable.vue'
+import manageEventRiders from '../../components/manageEventRiders.vue'
+import manageEventHorses from '../../components/manageEventHorses.vue'
+import manageEventClasses from '../../components/manageEventClasses.vue'
 
 export default {
     name: 'ManageEventPage',
@@ -49,10 +61,16 @@ export default {
         }
     },
     methods: {
-        
+        createNew: function() {
+            let createModal = document.getElementById('createNewModal')
+            createModal.style.display = 'block'
+        }
     },
     components: {
         eventInfoTable,
+        manageEventRiders,
+        manageEventHorses,
+        manageEventClasses,
     }
 }
 </script>
