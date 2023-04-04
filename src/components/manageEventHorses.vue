@@ -113,6 +113,8 @@ export default {
             }
 
             const totalHorses = Object.values(this.horsesData).reduce((total, sectionData) => total + sectionData.horses.length, 0);
+            console.log(this.horsesData)
+
 
             if (totalHorses == 0) {
                 this.$notify({

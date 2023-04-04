@@ -7,8 +7,8 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col" colspan="7">
-                            {{ ridersData[section_id].showClass }} - {{ classToName[ridersData[section_id].class] }} - {{
-                                ridersData[section_id].section }}
+                            {{ classDraw[section_id].showClass }} - {{ classToName[classDraw[section_id].class] }} - {{
+                                classDraw[section_id].section }}
                             <font-awesome-icon class="ps-3 icon" v-if="classWarning[section_id]" style="color: yellow"
                                 icon="fa-solid fa-triangle-exclamation" title="This class does not have enough horses" />
                         </th>
@@ -24,7 +24,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="data in classDraw[section_id]" :key="data.rider.id">
+                    <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
                         <td>{{ data.rider.placing ? data.rider.placing : "-" }}</td>
                         <td>{{ data.rider.order }}</td>
                         <td>{{ data.rider.id }}</td>
@@ -57,7 +57,7 @@ export default {
 
         // Initialize classDraw sections
         for (let section_id of Object.keys(ridersData)) {
-            classDraw[section_id] = []
+            classDraw[section_id] = {'showClass':'', 'class':'', 'section':'', 'riders':[]}
         }
 
         return {
@@ -84,7 +84,9 @@ export default {
 
             const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
             for (const section_id of Object.keys(this.ridersData)) {
-                this.classDraw[section_id] = []
+                this.classDraw[section_id]['showClass'] = this.ridersData[section_id].showClass
+                this.classDraw[section_id]['class'] = this.ridersData[section_id].class
+                this.classDraw[section_id]['section'] = this.ridersData[section_id].section
                 this.classWarning[section_id] = false
                 const riders = this.ridersData[section_id].riders;
                 const horses = section_id in this.horsesData ? this.horsesData[section_id].horses : []
@@ -97,7 +99,7 @@ export default {
                 const numPairs = Math.min(shuffledRiders.length, shuffledHorses.length);
                 for (let i = 0; i < numPairs; i++) {
                     shuffledRiders[i].order = i
-                    this.classDraw[section_id].push({ 'rider': shuffledRiders[i], 'horse': shuffledHorses[i] })
+                    this.classDraw[section_id]['riders'].push({ 'rider': shuffledRiders[i], 'horse': shuffledHorses[i] })
                 }
 
                 // Assign default horse to riders without a horse if there are less horses than riders
@@ -111,11 +113,12 @@ export default {
                     });
                     for (let i = horses.length; i < riders.length; i++) {
                         shuffledRiders[i].order = i
-                        this.classDraw[section_id].push({ 'rider': shuffledRiders[i], 'horse': DEFAULTHORSE })
+                        this.classDraw[section_id]['riders'].push({ 'rider': shuffledRiders[i], 'horse': DEFAULTHORSE })
 
                     }
                 }
             }
+            console.log(this.classDraw)
         },
 
 
@@ -165,7 +168,7 @@ export default {
 
             const section_ids = Object.keys(this.ridersData)
             // return section_ids
-            return section_ids.filter((section_id) => this.classDraw[section_id].length > 0)
+            return section_ids.filter((section_id) => this.classDraw[section_id]['riders'].length > 0)
         },
 
     }
