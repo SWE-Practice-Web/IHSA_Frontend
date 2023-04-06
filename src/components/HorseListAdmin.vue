@@ -154,7 +154,7 @@
                 </div>
                 <div class="modal-body">
                     <h5>
-                        <input type="file">
+                        <input class="form-control" type="file" accept=".csv" ref="fileInput">
                     </h5>
                 </div>
                 <div class="modal-footer">
@@ -235,15 +235,23 @@ import Papa from 'papaparse'
             deleteData(index) {
                 this.horseList.splice(index, 1)
             },
-            handleFileUpload(event) {
-                const file = event.target.files[0]
-                Papa.parse(file, {
-                    header: true,
-                    complete: (results) => {
-                        this.horseList = results.data
+            handleFileUpload() {
+                const file = this.$refs.fileInput.files[0]
+                const reader = new FileReader()
+                reader.readAsText(file)
+                reader.onload = () => {
+                    const csvData = reader.result
+                    const results = Papa.parse(csvData, {header: true})
+                    const newHorses = results.data
+                    for (let horse of newHorses) {
+                        this.horseList.push(horse)
                     }
-                })
-            },
+                    this.horseList.pop() //This prevents an empty element being added to the list.
+                    //console.log(this.horseList)
+                    
+                }
+            }
+             
 
             
         }
