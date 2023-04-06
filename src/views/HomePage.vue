@@ -1,7 +1,7 @@
 <template class="homeContainer">
     <div class="m-3 d-flex flex-column justify-content-center align-items-center">
         <div class="w-75 d-flex justify-content-between mt-3">
-            <button class="btn btn-secondary dropdown-toggle w-25" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle w-25" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
             Select Event
             </button>
             <ul class="dropdown-menu">
