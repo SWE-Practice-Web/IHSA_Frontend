@@ -7,8 +7,8 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col" colspan="7">
-                            {{ ridersData[section_id].showClass }} - {{ classToName[ridersData[section_id].class] }} - {{
-                                ridersData[section_id].section }}
+                            {{ classDraw[section_id].showClass }} - {{ classToName[classDraw[section_id].class] }} - {{
+                                classDraw[section_id].section }}
                             <font-awesome-icon class="ps-3 icon" v-if="classWarning[section_id]" style="color: yellow"
                                 icon="fa-solid fa-triangle-exclamation" title="This class does not have enough horses" />
                         </th>
@@ -24,7 +24,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="data in classDraw[section_id]" :key="data.rider.id">
+                    <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
                         <td>{{ data.rider.placing ? data.rider.placing : "-" }}</td>
                         <td>{{ data.rider.order }}</td>
                         <td>{{ data.rider.id }}</td>
@@ -46,6 +46,7 @@ import { useStore } from 'vuex'
 export default {
     setup() {
         const store = useStore()
+        const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
         let myHover = ref(true)
         let file = null
         let data = null
@@ -57,7 +58,7 @@ export default {
 
         // Initialize classDraw sections
         for (let section_id of Object.keys(ridersData)) {
-            classDraw[section_id] = []
+            classDraw[section_id] = { 'showClass': '', 'class': '', 'section': '', 'riders': [] }
         }
 
         return {
@@ -68,53 +69,84 @@ export default {
             classDraw,
             classToName,
             classWarning,
-            myHover
+            myHover,
+            DEFAULTHORSE
         }
     },
     name: 'AddRiders',
     methods: {
         handleTooltip(hover) {
             this.myHover = hover
-            console.log(this.myHover)
         },
+
+
+        matchRiders(order, section_id, riders, horses, filterFunc) {
+            // Match riders in ridersHeightAndWeight to horses
+            for (let rider of riders) {
+                rider.order = order++
+                let horseIndex;
+                let matched = false
+                for (let i = 0; i < horses.length; i++) {
+                    if (filterFunc(horses[i])) {
+                        this.classDraw[section_id]['riders'].push({ 'rider': rider, 'horse': horses[i] })
+                        matched = true
+                        horseIndex = i
+                        break
+                    }
+                }
+                if (matched) {
+                    // If a horse was matched with the rider we remove it from the horses array to not reuse it later
+                    horses.splice(horseIndex, 1)
+                } else {
+                    // If no horse was matched just assign default horse to the rider
+                    this.classDraw[section_id]['riders'].push({ 'rider': rider, 'horse': this.DEFAULTHORSE })
+                }
+            }
+            return [horses, order]
+        },
+
+
         assignHorses() {
             if (!(this.randomizeReady())) {
                 return
             }
 
-            const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
             for (const section_id of Object.keys(this.ridersData)) {
-                this.classDraw[section_id] = []
+                let order = 0;
+                this.classDraw[section_id].riders = []
+                this.classDraw[section_id]['showClass'] = this.ridersData[section_id].showClass
+                this.classDraw[section_id]['class'] = this.ridersData[section_id].class
+                this.classDraw[section_id]['section'] = this.ridersData[section_id].section
                 this.classWarning[section_id] = false
                 const riders = this.ridersData[section_id].riders;
                 const horses = section_id in this.horsesData ? this.horsesData[section_id].horses : []
 
                 // Shuffle the riders and horses arrays using the Fisher-Yates algorithm
                 const shuffledRiders = this.shuffleArray(riders)
-                const shuffledHorses = this.shuffleArray(horses)
+                let shuffledHorses = this.shuffleArray(horses)
 
-                // Assign horses to riders within the same class
-                const numPairs = Math.min(shuffledRiders.length, shuffledHorses.length);
-                for (let i = 0; i < numPairs; i++) {
-                    shuffledRiders[i].order = i
-                    this.classDraw[section_id].push({ 'rider': shuffledRiders[i], 'horse': shuffledHorses[i] })
-                }
+                // Split riders into 4 groups: RiderIsHeightandWeight, RiderIsHeight, RiderIsWeight, RidersRegular
+                const ridersHeightAndWeight = riders.filter((rider) => (rider.isHeight && rider.isWeight))
+                const ridersHeight = shuffledRiders.filter((rider) => (rider.isHeight && !(rider.isWeight)))
+                const ridersWeight = shuffledRiders.filter((rider) => (!(rider.isHeight) && rider.isWeight))
+                const ridersRegular = shuffledRiders.filter((rider) => (!(rider.isHeight) && !(rider.isWeight)))
 
-                // Assign default horse to riders without a horse if there are less horses than riders
-                if (riders.length > horses.length) {
-                    this.classWarning[section_id] = true
-                    this.$notify({
-                        title: 'Warn',
-                        text: `Class ${section_id} has less horses than riders. Some riders will not have a horse assigned to them.`,
-                        type: 'warn',
-                        duration: 10000,
-                    });
-                    for (let i = horses.length; i < riders.length; i++) {
-                        shuffledRiders[i].order = i
-                        this.classDraw[section_id].push({ 'rider': shuffledRiders[i], 'horse': DEFAULTHORSE })
 
-                    }
-                }
+                // Match riders in ridersHeightAndWeight to horses
+                const filterFunc1 = (horse) => {return horse.takesHeight && horse.takesWeight}
+                [shuffledHorses, order] = this.matchRiders(order, section_id, ridersHeightAndWeight, shuffledHorses, filterFunc1)
+
+                // Match riders in ridersHeightAndWeight to horses
+                const filterFunc2 = (horse) => {return horse.takesHeight}
+                [shuffledHorses, order] = this.matchRiders(order, section_id, ridersHeight, shuffledHorses, filterFunc2)
+
+                // Match riders in ridersHeightAndWeight to horses
+                const filterFunc3 = (horse) => {return horse.takesWeight}
+                [shuffledHorses, order] = this.matchRiders(order, section_id, ridersWeight, shuffledHorses, filterFunc3)
+
+                // Match riders in ridersHeightAndWeight to horses
+                const filterFunc4 = (_horse) => {return true}
+                [shuffledHorses, order] = this.matchRiders(order, section_id, ridersRegular, shuffledHorses, filterFunc4)
             }
         },
 
@@ -165,7 +197,7 @@ export default {
 
             const section_ids = Object.keys(this.ridersData)
             // return section_ids
-            return section_ids.filter((section_id) => this.classDraw[section_id].length > 0)
+            return section_ids.filter((section_id) => this.classDraw[section_id]['riders'].length > 0)
         },
 
     }

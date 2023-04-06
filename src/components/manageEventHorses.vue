@@ -10,15 +10,23 @@
                         v-for="section_id in getFilteredSections()" :key="section_id">
                         <thead class="table-dark">
                             <tr>
-                                <th scope="col" colspan="2">
+                                <th scope="col" colspan="4">
                                     {{ classToName[horsesData[section_id].class] }} - {{ horsesData[section_id].section }}
                                 </th>
+                            </tr>
+                            <tr>
+                                <th scope="col" class="bg-white text-dark">Name</th>
+                                <th scope="col" class="bg-white text-dark">Provider</th>
+                                <th scope="col" class="bg-white text-dark">Takes Height</th>
+                                <th scope="col" class="bg-white text-dark">Takes Weight</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="horse in horsesData[section_id].horses" :key="horse.name">
                                 <td>{{ horse.name }}</td>
                                 <td>{{ horse.provider }}</td>
+                                <td><input type="checkbox" v-model="horse.takesHeight"></td>
+                                <td><input type="checkbox" v-model="horse.takesWeight"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -89,7 +97,7 @@ export default {
                     headers = row
                     continue
                 }
-                let horse = { 'name': row[1], 'provider': row[2] }
+                let horse = { 'name': row[1], 'provider': row[2], 'takesHeight':true, 'takesWeight':true }
                 for (let i = 3; i < row.length; i++) {
                     if (row[i]) {
                         let currClass = classRegex.exec(headers[i])
@@ -113,6 +121,8 @@ export default {
             }
 
             const totalHorses = Object.values(this.horsesData).reduce((total, sectionData) => total + sectionData.horses.length, 0);
+            console.log(this.horsesData)
+
 
             if (totalHorses == 0) {
                 this.$notify({

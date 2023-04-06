@@ -136,7 +136,7 @@ import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
 import { never } from 'ol/events/condition'
-import * as bootstrap from 'bootstrap/dist/js/bootstrap.min.js'
+import { Modal } from 'bootstrap';
 
 import schools_json from '../../public/schools.json'
 import {
@@ -229,16 +229,17 @@ export default {
             anchoorSchoolsInRegion,
             regionToMarkerAnchorSchool,
             never,
-            loader
+            loader,
+            Modal
         }
     },
 
     async mounted() {
         let schools;
-        this.loader = new bootstrap.Modal(this.$refs.loader, {})
+        this.loader = new Modal(this.$refs.loader, {})
         this.loader.show()
         try {
-            schools = await this.$axios.get('/schools')
+            schools = await this.$axios.get('/school')
             this.ihsa_schools = schools.data
         } catch (err) {
             this.ihsa_schools = schools_json

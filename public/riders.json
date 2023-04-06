@@ -1,0 +1,746 @@
+{
+    "Class 17 Section A": {
+        "showClass": "Show Class 1",
+        "class": "Class 17",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "754",
+                "name": "Lily Zomparelli",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "760",
+                "name": "Josie Spratt",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "763",
+                "name": "Anna Wilhelm",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "795",
+                "name": "Morgan DeBuhr",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "279",
+                "name": "Brayden Gruben",
+                "school": "Missouri State University",
+                "placing": null
+            }
+        ]
+    },
+    "Class 13 Section A": {
+        "showClass": "Show Class 2",
+        "class": "Class 13",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "765",
+                "name": "Taylor Yordy",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "850",
+                "name": "Carlie Wasmund",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "296",
+                "name": "Cheyenne Town",
+                "school": "Kansas State University",
+                "placing": null
+            },
+            {
+                "id": "838",
+                "name": "Myah Swanson",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "840",
+                "name": "Heather Police",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 15 Section A": {
+        "showClass": "Show Class 3",
+        "class": "Class 15",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "287",
+                "name": "Samantha Lind",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "855",
+                "name": "Autumn Cary",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "797",
+                "name": "Jessica Theobald",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "411",
+                "name": "Cambrie Gani",
+                "school": "Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "214",
+                "name": "]",
+                "school": "Southern Illinois University Carbondale",
+                "placing": null
+            },
+            {
+                "id": "215",
+                "name": "Torino Wick",
+                "school": "Southern Illinois University Carbondale",
+                "placing": null
+            },
+            {
+                "id": "835",
+                "name": "Rachel Burkard",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 13 Section B": {
+        "showClass": "Show Class 4",
+        "class": "Class 13",
+        "section": "Section B",
+        "riders": [
+            {
+                "id": "771",
+                "name": "Grace Barman",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "796",
+                "name": "Lauren McFadden",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "788",
+                "name": "Adrien Seabloom",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "846",
+                "name": "Samantha Gudeman",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "240",
+                "name": "Zoe Goldberg",
+                "school": "Washington University in St. Louis",
+                "placing": null
+            }
+        ]
+    },
+    "Class 15 Section B": {
+        "showClass": "Show Class 5",
+        "class": "Class 15",
+        "section": "Section B",
+        "riders": [
+            {
+                "id": "422",
+                "name": "Jordan Rydl",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "849",
+                "name": "Heather Marz",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "781",
+                "name": "Lauren Johnson",
+                "school": "Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "897",
+                "name": "McKell Norris",
+                "school": "Northwest Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "266",
+                "name": "Kia Davis",
+                "school": "Southern Illinois University Carbondale",
+                "placing": null
+            },
+            {
+                "id": "641",
+                "name": "Ashley Carns",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 16 Section A": {
+        "showClass": "Show Class 6",
+        "class": "Class 16",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "754",
+                "name": "Lily Zomparelli",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "760",
+                "name": "Josie Spratt",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "763",
+                "name": "Anna Wilhelm",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "795",
+                "name": "Morgan DeBuhr",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "279",
+                "name": "Brayden Gruben",
+                "school": "Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "845",
+                "name": "Sara Blume",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 13 Section C": {
+        "showClass": "Show Class 7",
+        "class": "Class 13",
+        "section": "Section C",
+        "riders": [
+            {
+                "id": "784",
+                "name": "Korryn Baraks",
+                "school": "Augustana College",
+                "placing": null
+            },
+            {
+                "id": "418",
+                "name": "Natalie Rolling",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "799",
+                "name": "Kathryn Pietka",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "839",
+                "name": "Aliza Jacobs",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "408",
+                "name": "Arielle Smith",
+                "school": "Washington University in St. Louis",
+                "placing": null
+            }
+        ]
+    },
+    "Class 14 Section A": {
+        "showClass": "Show Class 8",
+        "class": "Class 14",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "287",
+                "name": "Samantha Lind",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "797",
+                "name": "Jessica Theobald",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "849",
+                "name": "Heather Marz",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "411",
+                "name": "Cambrie Gani",
+                "school": "Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "266",
+                "name": "Kia Davis",
+                "school": "Southern Illinois University Carbondale",
+                "placing": null
+            },
+            {
+                "id": "409",
+                "name": "Payton Koopman",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "641",
+                "name": "Ashley Carns",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 12B Section A": {
+        "showClass": "Show Class 9",
+        "class": "Class 12B",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "761",
+                "name": "Brooke Kiefer",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "766",
+                "name": "Sarah Korthals",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "294",
+                "name": "Kylie Novak",
+                "school": "Illinois State University",
+                "placing": null
+            },
+            {
+                "id": "864",
+                "name": "Kammi Bishop",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "200",
+                "name": "Anna Cooper",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "844",
+                "name": "Tyler Jones",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 14 Section B": {
+        "showClass": "Show Class 10",
+        "class": "Class 14",
+        "section": "Section B",
+        "riders": [
+            {
+                "id": "422",
+                "name": "Jordan Rydl",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "865",
+                "name": "Ella Carlson",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "897",
+                "name": "McKell Norris",
+                "school": "Northwest Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "214",
+                "name": "Cara Driskell",
+                "school": "Southern Illinois University Carbondale",
+                "placing": null
+            },
+            {
+                "id": "215",
+                "name": "Torino Wick",
+                "school": "Southern Illinois University Carbondale",
+                "placing": null
+            },
+            {
+                "id": "835",
+                "name": "Rachel Burkard",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 11 Section A": {
+        "showClass": "Show Class 11",
+        "class": "Class 11",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "288",
+                "name": "Mya Kirgan",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "405",
+                "name": "Sydney Taylor",
+                "school": "Illinois State University",
+                "placing": null
+            },
+            {
+                "id": "854",
+                "name": "Brooke Lee",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "787",
+                "name": "Blake Curry",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "836",
+                "name": "Kimberly Van Donsel",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "412",
+                "name": "Mikayla Bridges",
+                "school": "Washington University in St. Louis",
+                "placing": null
+            }
+        ]
+    },
+    "Class 12B Section B": {
+        "showClass": "Show Class 12",
+        "class": "Class 12B",
+        "section": "Section B",
+        "riders": [
+            {
+                "id": "759",
+                "name": "Haley Bucher",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "794",
+                "name": "Emily Joenks",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "260",
+                "name": "Lauren Kastner",
+                "school": "Kansas State University",
+                "placing": null
+            },
+            {
+                "id": "776",
+                "name": "Mary Alhorn",
+                "school": "Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "791",
+                "name": "Sydnie Andell",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "413",
+                "name": "Heidi Reed",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            }
+        ]
+    },
+    "Class 11 Section B": {
+        "showClass": "Show Class 13",
+        "class": "Class 11",
+        "section": "Section B",
+        "riders": [
+            {
+                "id": "764",
+                "name": "Aleah Wykert",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "798",
+                "name": "Averi Sievert",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "533",
+                "name": "Joseph Wilkin",
+                "school": "Southern Illinois University Carbondale",
+                "placing": null
+            },
+            {
+                "id": "201",
+                "name": "Cassandra Seuferling",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "278",
+                "name": "Danielle Hagen",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "359",
+                "name": "Courtney Longenecker",
+                "school": "Western Illinois University",
+                "placing": null
+            }
+        ]
+    },
+    "Class 12A Section A": {
+        "showClass": "Show Class 14",
+        "class": "Class 12A",
+        "section": "Section A",
+        "riders": [
+            {
+                "id": "785",
+                "name": "Carina Martinez",
+                "school": "Augustana College",
+                "placing": null
+            },
+            {
+                "id": "863",
+                "name": "Hailey Gandrup",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "780",
+                "name": "Alexia Bridges",
+                "school": "Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "414",
+                "name": "Chloe Knieling",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "783",
+                "name": "Isaac Stevenson",
+                "school": "Western Illinois University",
+                "placing": null
+            }
+        ]
+    },
+    "Class 11 Section C": {
+        "showClass": "Show Class 15",
+        "class": "Class 11",
+        "section": "Section C",
+        "riders": [
+            {
+                "id": "857",
+                "name": "Kayla Jiras",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "415",
+                "name": "Zoie Havick",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "403",
+                "name": "Bailey Groves",
+                "school": "Missouri State University",
+                "placing": null
+            },
+            {
+                "id": "843",
+                "name": "Rachel Stokdyk",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "416",
+                "name": "Lindsey Tassell",
+                "school": "Western Illinois University",
+                "placing": null
+            }
+        ]
+    },
+    "Class 12B Section C": {
+        "showClass": "Show Class 16",
+        "class": "Class 12B",
+        "section": "Section C",
+        "riders": [
+            {
+                "id": "767",
+                "name": "Makenna Pidgeon",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "800",
+                "name": "Tianna Charlson",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "402",
+                "name": "Jenna Fiscus",
+                "school": "Kansas State University",
+                "placing": null
+            },
+            {
+                "id": "786",
+                "name": "Kaitlyn Crawford",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "842",
+                "name": "Madeline Besch",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "241",
+                "name": "Lorey Golden",
+                "school": "Washington University in St. Louis",
+                "placing": null
+            }
+        ]
+    },
+    "Class 11 Section D": {
+        "showClass": "Show Class 17",
+        "class": "Class 11",
+        "section": "Section D",
+        "riders": [
+            {
+                "id": "757",
+                "name": "Hope Lock",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "295",
+                "name": "Madeline Confiliano",
+                "school": "Illinois State University",
+                "placing": null
+            },
+            {
+                "id": "277",
+                "name": "Emily Sheen",
+                "school": "University of Wisconsin-Platteville",
+                "placing": null
+            },
+            {
+                "id": "417",
+                "name": "Aishah Al-Mohamedi",
+                "school": "Washington University in St. Louis",
+                "placing": null
+            },
+            {
+                "id": "852",
+                "name": "Amber Allen",
+                "school": "Western Illinois University",
+                "placing": null
+            }
+        ]
+    },
+    "Class 12B Section D": {
+        "showClass": "Show Class 18",
+        "class": "Class 12B",
+        "section": "Section D",
+        "riders": [
+            {
+                "id": "755",
+                "name": "Kelsey Doty",
+                "school": "Black Hawk College",
+                "placing": null
+            },
+            {
+                "id": "293",
+                "name": "Alison Weiser",
+                "school": "Illinois State University",
+                "placing": null
+            },
+            {
+                "id": "792",
+                "name": "Kyleigh Meyeres",
+                "school": "Iowa State University",
+                "placing": null
+            },
+            {
+                "id": "202",
+                "name": "Olivia Noack",
+                "school": "Truman State University",
+                "placing": null
+            },
+            {
+                "id": "242",
+                "name": "Annelise Molavi",
+                "school": "Washington University in St. Louis",
+                "placing": null
+            },
+            {
+                "id": "867",
+                "name": "Emma Lowe",
+                "school": "Western Illinois University",
+                "placing": null
+            }
+        ]
+    }
+}
