@@ -12,11 +12,13 @@ import MapContainer from "./components/MapContainer.vue"
 import LoginPage from "./views/LoginPage.vue"
 import SignupPage from "./views/SignupPage.vue"
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faTriangleExclamation, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faTriangleExclamation)
+library.add(faCircleInfo)
 import AnnouncementPage from "./views/AnnouncementPage.vue"
-import ManageEventPage from "./views/admin/ManageEventPage.vue"
+import ManageHorsePage from "./views/ManageHorsePage.vue"
+import axios from 'axios'
 
 const routes = [
     { path: '/', component: HomePage },
@@ -24,7 +26,10 @@ const routes = [
     { path: '/login', component: LoginPage },
     { path: '/signup', component: SignupPage },
     { path: '/announcements', component: AnnouncementPage },
-    { path: '/manage', component: ManageEventPage },
+    { path: '/eventRiders', component: manageEventRiders },
+    { path: '/eventHorses', component: manageEventHorses },
+    { path: '/eventClasses', component: manageEventClasses },
+    { path: '/hManage', component: ManageHorsePage },
   ]
 
 const router = VueRouter.createRouter({
@@ -33,7 +38,16 @@ const router = VueRouter.createRouter({
 })
 
 const app = createApp(App);
+const axiosInstance = axios.create({
+  // baseURL: process.env.VUE_APP_BASE_URL,
+  baseURL: "https://localhost:49169",
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  },
+})
 
+app.config.globalProperties.$axios = { ...axiosInstance }
 app.use(OpenLayersMap)
 app.use(router)
 app.use(store)

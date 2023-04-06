@@ -1,0 +1,454 @@
+{
+    "Class 15 Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 15"
+        ],
+        "horses": [
+            {
+                "name": "Dustin",
+                "provider": "BHC"
+            },
+            {
+                "name": "Dustin",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sierra",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rey",
+                "provider": "UWP"
+            },
+            {
+                "name": "Doughnut",
+                "provider": "UWP"
+            },
+            {
+                "name": "Super Pete",
+                "provider": "UWP"
+            }
+        ]
+    },
+    "Class 15 Section B": {
+        "section": "Section B",
+        "class": [
+            "Class 15"
+        ],
+        "horses": [
+            {
+                "name": "Dustin",
+                "provider": "BHC"
+            },
+            {
+                "name": "Henry",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rey",
+                "provider": "UWP"
+            },
+            {
+                "name": "Rey",
+                "provider": "UWP"
+            },
+            {
+                "name": "Doughnut",
+                "provider": "UWP"
+            },
+            {
+                "name": "Super Pete",
+                "provider": "UWP"
+            }
+        ]
+    },
+    "Class 12B Section B": {
+        "section": "Section B",
+        "class": [
+            "Class 12B"
+        ],
+        "horses": [
+            {
+                "name": "Dustin",
+                "provider": "BHC"
+            },
+            {
+                "name": "Henry",
+                "provider": "BHC"
+            },
+            {
+                "name": "Doughnut",
+                "provider": "UWP"
+            },
+            {
+                "name": "Super Pete",
+                "provider": "UWP"
+            }
+        ]
+    },
+    "Class 12B Section D": {
+        "section": "Section D",
+        "class": [
+            "Class 12B"
+        ],
+        "horses": [
+            {
+                "name": "Dustin",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rico",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 16 Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 16"
+        ],
+        "horses": [
+            {
+                "name": "Fred",
+                "provider": "BHC"
+            },
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Wayne",
+                "provider": "BHC"
+            },
+            {
+                "name": "Wayne",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 14 Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 14"
+        ],
+        "horses": [
+            {
+                "name": "Fred",
+                "provider": "BHC"
+            },
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rico",
+                "provider": "BHC"
+            },
+            {
+                "name": "Wayne",
+                "provider": "BHC"
+            },
+            {
+                "name": "Wayne",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 14 Section B": {
+        "section": "Section B",
+        "class": [
+            "Class 14"
+        ],
+        "horses": [
+            {
+                "name": "Fred",
+                "provider": "BHC"
+            },
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rico",
+                "provider": "BHC"
+            },
+            {
+                "name": "Wayne",
+                "provider": "BHC"
+            },
+            {
+                "name": "Wayne",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 11 Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 11"
+        ],
+        "horses": [
+            {
+                "name": "Fred",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sheldon",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rey",
+                "provider": "UWP"
+            }
+        ]
+    },
+    "Class 11 Section B": {
+        "section": "Section B",
+        "class": [
+            "Class 11"
+        ],
+        "horses": [
+            {
+                "name": "Fred",
+                "provider": "BHC"
+            },
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sheldon",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 11 Section C": {
+        "section": "Section C",
+        "class": [
+            "Class 11"
+        ],
+        "horses": [
+            {
+                "name": "Fred",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sheldon",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 11 Section D": {
+        "section": "Section D",
+        "class": [
+            "Class 11"
+        ],
+        "horses": [
+            {
+                "name": "Fred",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sheldon",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 17 Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 17"
+        ],
+        "horses": [
+            {
+                "name": "Henry",
+                "provider": "BHC"
+            },
+            {
+                "name": "Henry",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sierra",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sierra",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rey",
+                "provider": "UWP"
+            }
+        ]
+    },
+    "Class 12B Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 12B"
+        ],
+        "horses": [
+            {
+                "name": "Henry",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sierra",
+                "provider": "BHC"
+            },
+            {
+                "name": "Doughnut",
+                "provider": "UWP"
+            },
+            {
+                "name": "Super Pete",
+                "provider": "UWP"
+            }
+        ]
+    },
+    "Class 12B Section C": {
+        "section": "Section C",
+        "class": [
+            "Class 12B"
+        ],
+        "horses": [
+            {
+                "name": "Henry",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sierra",
+                "provider": "BHC"
+            },
+            {
+                "name": "Doughnut",
+                "provider": "UWP"
+            },
+            {
+                "name": "Super Pete",
+                "provider": "UWP"
+            }
+        ]
+    },
+    "Class 13 Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 13"
+        ],
+        "horses": [
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sheldon",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rico",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 13 Section B": {
+        "section": "Section B",
+        "class": [
+            "Class 13"
+        ],
+        "horses": [
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sheldon",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rico",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 13 Section C": {
+        "section": "Section C",
+        "class": [
+            "Class 13"
+        ],
+        "horses": [
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Archie",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sheldon",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rico",
+                "provider": "BHC"
+            }
+        ]
+    },
+    "Class 12A Section A": {
+        "section": "Section A",
+        "class": [
+            "Class 12A"
+        ],
+        "horses": [
+            {
+                "name": "Hooker",
+                "provider": "BHC"
+            },
+            {
+                "name": "Sierra",
+                "provider": "BHC"
+            },
+            {
+                "name": "Rey",
+                "provider": "UWP"
+            },
+            {
+                "name": "Doughnut",
+                "provider": "UWP"
+            },
+            {
+                "name": "Super Pete",
+                "provider": "UWP"
+            }
+        ]
+    }
+}
