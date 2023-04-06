@@ -15,9 +15,10 @@ import manageEventClasses from "./components/manageEventClasses.vue"
 import LoginPage from "./views/LoginPage.vue"
 import SignupPage from "./views/SignupPage.vue"
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faTriangleExclamation, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 library.add(faTriangleExclamation)
+library.add(faCircleInfo)
 import AnnouncementPage from "./views/AnnouncementPage.vue"
 import ManageHorsePage from "./views/ManageHorsePage.vue"
 import axios from 'axios'

@@ -1,6 +1,10 @@
 <template>
     <div class="d-flex flex-column flex-grow-1 m-3 align-items-center justify-content-center">
-        <label class="" for="ridersFile">Riders: </label>
+        <h3 class="pt-1">Riders: 
+            <button class="btn" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Click here for more info">
+                <font-awesome-icon role="button" data-bs-toggle="modal" data-bs-target="#infoModal" class="icon" icon="fa-solid fa-circle-info"/>
+            </button>
+        </h3>
         <div class="mb-3 d-flex w-75 align-items-center justify-content-center">
             <input class="form-control" type="file" id="ridersFile" accept=".csv">
             <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
@@ -33,16 +37,57 @@
         <br>
         <br>
     </div>
+
+    <!-- Information modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <header>CSV format nformation</header>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body fs-5 p-5">
+                    Download csv template <a class="fs-5" :href="`${publicPath}RidersListTemplate.csv`" download>here</a><br/><br/>
+                    <section class="fs-5 text-start">
+                        To avoid any errors try to follow the template format as much as possible. However, here is a list of important rules to keep in mind:<br/><br/>
+                        <ul >
+                            <li class="pb-1 fs-6 text-start">First column of section headers (section headers mean the row above the row with the first rider of a section) 
+                                should contain show class in the format 'Show Class (Number here)'. E.g. 'Show Class 1'
+                            </li>
+                            <li class="pb-1 fs-6 text-start">
+                                Second column of section headers should contain rider class in the format 'Rider Class (id here)'. E.g. 'Rider Class 12a'.
+                                Here is a list of all the available class ids and what their corresponding class is
+                                <ul>
+                                    <li class="fs-6 text-start" v-for="(className, classId) in classToName" :key="classId">
+                                        {{classId}}: {{className}}
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="pb-1 fs-6 text-start">If a class has multiple sections (like Section A and Section B, etc..), 
+                                the second column of section headers should also contain section information in the format 'Section (uppercase letter here)'. E.g. 'Section A'.
+                            </li>
+                            <li class="pb-1 fs-6 text-start">
+                                There should be at least one row between the last row of a section (the row right below the last rider for the section) and the first row of the next section
+                                (the header row). Preferably keep the empty placements in that row. E.g. "1. _________	2. _________	3. _________	4. _________	5. _________	6. _________"
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
   
 <script>
 import Papa from 'papaparse';
 import { useStore } from 'vuex'
 import {reactive} from 'vue'
+import { Tooltip } from 'bootstrap';
 
 export default {
     setup() {
         const store = useStore()
+        const templateInfo = "Click here to see format rules and access a csv template."
         let file = null
         let data = null
         let ridersData = reactive(store.state.eventRiders)
@@ -51,12 +96,19 @@ export default {
             file,
             data,
             ridersData,
-            classToName
+            classToName,
+            publicPath: process.env.BASE_URL,
+            templateInfo
         }
     },
-    name: 'manageEventRiders',
-    components: {
+    mounted () {
+        // Activate bootstrap tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new Tooltip(tooltipTriggerEl)
+        })
     },
+    name: 'manageEventRiders',
     methods: {
         // Filter riding classes that have no riders yet
         getFilteredSections() {
@@ -91,8 +143,8 @@ export default {
         },
 
         ridersDataToJson(data) {
-            const classRegex = /Class\s\d{1,2}[AB]?/
-            const sectionRegex = /Section [A-Z]/
+            const classRegex = /Class\s\d{1,2}[AB]?/i;
+            const sectionRegex = /Section [A-Z]/i;
             let readData = false
             let currClass = null
             let currSection = null
@@ -104,14 +156,14 @@ export default {
                     let sectionMatch = sectionRegex.exec(row[1])
                     if (classMatch !== null) {
                         readData = true
-                        currClass = classMatch[0]
-                        currSection = sectionMatch !== null ? sectionMatch[0] : 'Section A'
-                        showClass = row[0]
+                        currClass = classMatch[0].toUpperCase()
+                        currSection = sectionMatch !== null ? sectionMatch[0].toUpperCase() : 'SECTION A'
+                        showClass = row[0].toUpperCase()
                         section_id = `${currClass} ${currSection}`
                         this.ridersData[section_id] = {'showClass':showClass, 'class': currClass, 'section': currSection, 'riders': []}
                     }
                 } else {
-                    if (row[0] == "1. _________") {
+                    if (!(row[0]) || (row[0] && row[0].length != 3)) {
                         readData = false
                     } else {
                         let student = { 'id': row[0], 'name': row[1], 'school': row[4], 'placing': null, 'isHeight':false, 'isWeight':false }
@@ -150,4 +202,14 @@ export default {
 .collapse:not(.show) {
     display: none !important;
 }
+
+.icon {
+    height:15px;
+    width:15px;
+}
+
+/* hover state */
+/* .icon:hover {
+    transform: scale(1.3);
+} */
 </style>

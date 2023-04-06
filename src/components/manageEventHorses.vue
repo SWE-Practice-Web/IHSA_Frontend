@@ -1,6 +1,11 @@
 <template>
         <div class="d-flex flex-column flex-grow-1 m-3 align-items-center justify-content-center">
-            <label class="card-title" for="horsesFile">Horses: </label>
+            <h3 class="pt-1">
+                Horses
+                <button v-if="true" class="btn" role="button" data-bs-toggle="tooltip" data-bs-placement="top" title="Click here for more info">
+                    <font-awesome-icon role="button" data-bs-toggle="modal" data-bs-target="#infoModal" class="icon" icon="fa-solid fa-circle-info"/>
+                </button>
+            </h3>
             <div class="mb-3 d-flex w-75">
                 <input class="form-control" type="file" id="horsesFile" accept=".csv">
                 <button type="button" class="btn btn-primary" @click="handleHorsesFileUpload">Submit</button>
@@ -32,12 +37,54 @@
                     </table>
             </div>
         </div>
+
+
+
+    <!-- Information modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <header>CSV format nformation</header>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body fs-5 p-5">
+                    Download csv template <a class="fs-5" :href="`${publicPath}HorsesListTemplate.csv`" download>here</a><br/><br/>
+                    <section class="fs-5 text-start">
+                        To avoid any errors try to follow the template format as much as possible. However, here is a list of important rules to keep in mind:<br/><br/>
+                        <ul >
+                            <li class="pb-1 fs-6 text-start">First row of the .csv should contain headers. First header should be `Horses` and second header
+                                should be `Provider`, following headers should be specific classes/sections
+                            </li>
+                            <li class="pb-1 fs-6 text-start">
+                                Headers for specific classes/sections should contain rider class in the format 'Class (id here)'. E.g. 'Class 12A'. 
+                                If the class name includes a letter like `Class 2A` or `Class 2B` make sure that letter is uppercase.
+                                Here is a list of all the available class ids and what their corresponding class is
+                                <ul>
+                                    <li class="fs-6 text-start" v-for="(className, classId) in classToName" :key="classId">
+                                        {{classId}}: {{className}}
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="pb-1 fs-6 text-start">If a class has multiple sections (like Section A and Section B, etc..), 
+                                the second column of section headers should also contain section information in the format 'Section (uppercase letter here)'. E.g. 'Section A'.
+                            </li>
+                            <li class="pb-1 fs-6 text-start">After the row corresponding to the last horse there should be no more data.</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
   
 <script>
 import Papa from 'papaparse';
 import { reactive } from 'vue'
 import { useStore } from 'vuex'
+import { Tooltip } from 'bootstrap';
+import { TRUE } from 'ol/functions';
+
 
 
 export default {
@@ -53,6 +100,13 @@ export default {
             horsesData,
             classToName
         }
+    },
+    mounted () {
+        // Activate bootstrap tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new Tooltip(tooltipTriggerEl)
+        })
     },
     name: 'manageEventHorses',
     methods: {
@@ -88,8 +142,8 @@ export default {
         },
 
         horsesDataToJson(data) {
-            const classRegex = /Class\s\d{1,2}[AB]?/
-            const sectionRegex = /Section [A-Z]/
+            const classRegex = /Class\s\d{1,2}[AB]?/i;
+            const sectionRegex = /Section [A-Z]/i;
             let headers = null
             for (let row of data) {
                 // First row is the headers
@@ -97,15 +151,16 @@ export default {
                     headers = row
                     continue
                 }
-                let horse = { 'name': row[1], 'provider': row[2], 'takesHeight':true, 'takesWeight':true }
+                let horse = { 'name': row[0], 'provider': row[1], 'takesHeight':true, 'takesWeight':true }
                 for (let i = 3; i < row.length; i++) {
                     if (row[i]) {
                         let currClass = classRegex.exec(headers[i])
                         let match = sectionRegex.exec(headers[i])
-                        let currSection = match !== null ? match[0] : 'Section A'
+                        let currSection = match !== null ? match[0].toUpperCase() : 'SECTION A'
                         if (currClass === null) {
                             continue
                         }
+                        currClass = currClass[0].toUpperCase()
                         let section_id =  `${currClass} ${currSection}`
                         if (!(section_id in this.horsesData)) {
                             this.horsesData[section_id] = {}
@@ -152,5 +207,10 @@ export default {
 
 .collapse:not(.show) {
     display: none !important;
+}
+
+.icon {
+    height:15px;
+    width:15px;
 }
 </style>
