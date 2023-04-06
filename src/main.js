@@ -9,9 +9,6 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import 'bootstrap';
 import HomePage from "./views/HomePage.vue"
 import MapContainer from "./components/MapContainer.vue"
-import manageEventRiders from "./components/manageEventRiders.vue"
-import manageEventHorses from "./components/manageEventHorses.vue"
-import manageEventClasses from "./components/manageEventClasses.vue"
 import LoginPage from "./views/LoginPage.vue"
 import SignupPage from "./views/SignupPage.vue"
 import { library } from '@fortawesome/fontawesome-svg-core'

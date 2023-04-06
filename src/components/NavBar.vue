@@ -18,13 +18,7 @@
                         <router-link class="nav-link" to="/announcements">Announcements</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/eventRiders">Manage Event Riders</router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link class="nav-link" to="/eventHorses">Manage Event Horses</router-link>
-                    </li>
-                    <li class="nav-item">
-                        <router-link class="nav-link" to="/eventClasses">Manage Event Classes</router-link>
+                        <router-link class="nav-link" to="/manage">Manage Events</router-link>
                     </li>
                     <li class="nav-item">
                         <router-link class="nav-link" to="/hManage">Manage Horse Information</router-link>

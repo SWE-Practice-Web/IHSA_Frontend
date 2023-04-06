@@ -1,11 +1,12 @@
 <template>
     <div>
-        <button type="button" class="btn btn-primary w-50 m-3" @click="assignHorses">Randomize Classes</button>
+        <button type="button" class="btn btn-primary m-3 fs-4" @click="assignHorses">Randomize Classes</button>
         <div class="m-3 d-flex flex-column justify-content-center align-items-center">
             <table class="table table-striped w-75 border border-primary" v-for="section_id in getFilteredClasses()"
                 :key="section_id">
                 <thead class="table-dark">
                     <tr>
+
                         <th scope="col" colspan="7">
                             {{ classDraw[section_id].showClass }} - {{ classToName[classDraw[section_id].class] }} - {{
                                 classDraw[section_id].section }}
@@ -14,16 +15,17 @@
                         </th>
                     </tr>
                     <tr>
-                        <th scope="col" class="bg-white text-dark">Placing</th>
-                        <th scope="col" class="bg-white text-dark">Order</th>
-                        <th scope="col" class="bg-white text-dark">Rider id</th>
-                        <th scope="col" class="bg-white text-dark">Rider name</th>
-                        <th scope="col" class="bg-white text-dark">Rider school</th>
-                        <th scope="col" class="bg-white text-dark">Horse name</th>
-                        <th scope="col" class="bg-white text-dark">Horse Provider</th>
+                        <th scope="col" class="bg-white text-dark fs-5">Placing</th>
+                        <th scope="col" class="bg-white text-dark fs-5">Order</th>
+                        <th scope="col" class="bg-white text-dark fs-5">Rider id</th>
+                        <th scope="col" class="bg-white text-dark fs-5">Rider name</th>
+                        <th scope="col" class="bg-white text-dark fs-5">Rider school</th>
+                        <th scope="col" class="bg-white text-dark fs-5">Horse name</th>
+                        <th scope="col" class="bg-white text-dark fs-5">Horse Provider</th>
                     </tr>
                 </thead>
                 <tbody>
+
                     <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
                         <td>{{ data.rider.placing ? data.rider.placing : "-" }}</td>
                         <td>{{ data.rider.order }}</td>
