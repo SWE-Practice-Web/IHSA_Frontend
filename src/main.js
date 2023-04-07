@@ -18,6 +18,10 @@ library.add(faTriangleExclamation)
 library.add(faCircleInfo)
 import AnnouncementPage from "./views/AnnouncementPage.vue"
 import ManageHorsePage from "./views/ManageHorsePage.vue"
+import ManageEventPage from "./views/admin/ManageEventPage.vue"
+import manageEventRiders from "./components/manageEventRiders.vue"
+import manageEventHorses from "./components/manageEventHorses.vue"
+import manageEventClasses from "./components/manageEventClasses.vue"
 import axios from 'axios'
 
 const routes = [
@@ -29,6 +33,7 @@ const routes = [
     { path: '/eventRiders', component: manageEventRiders },
     { path: '/eventHorses', component: manageEventHorses },
     { path: '/eventClasses', component: manageEventClasses },
+    { path: '/manage', component: ManageEventPage },
     { path: '/hManage', component: ManageHorsePage },
   ]
 

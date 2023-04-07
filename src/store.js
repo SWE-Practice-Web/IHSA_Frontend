@@ -27,12 +27,10 @@ const ridingClasses = {
 
 
 export const store = createStore({
-  state() {
-    return {
-      eventRiders: {},
-      eventHorses: {},
-      eventClasses: {},
-      classToName: ridingClasses
-    };
+  state: {
+    eventRiders: {},
+    eventHorses: {},
+    eventClasses: {},
+    classToName: ridingClasses
   }
 });

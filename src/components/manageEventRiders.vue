@@ -171,7 +171,6 @@ export default {
                     }
                 }
             }
-            console.log(this.ridersData)
             
             const totalRiders = Object.values(this.ridersData).reduce((total, sectionData) => total + sectionData.riders.length, 0);
 

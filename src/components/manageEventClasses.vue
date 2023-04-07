@@ -1,7 +1,7 @@
 <template>
     <div>
-        <button type="button" class="btn btn-primary m-3 fs-4" @click="assignHorses">Randomize Classes</button>
-        <div class="m-3 d-flex flex-column justify-content-center align-items-center">
+        <button type="button" class="btn btn-primary m-3 fs-7" @click="assignHorses">Randomize Classes</button>
+        <div class="m-1 d-flex flex-column justify-content-center align-items-center">
             <table class="table table-striped w-75 border border-primary" v-for="section_id in getFilteredClasses()"
                 :key="section_id">
                 <thead class="table-dark">
@@ -10,24 +10,26 @@
                         <th scope="col" colspan="7">
                             {{ classDraw[section_id].showClass }} - {{ classToName[classDraw[section_id].class] }} - {{
                                 classDraw[section_id].section }}
-                            <font-awesome-icon class="ps-3 icon" v-if="classWarning[section_id]" style="color: yellow"
+                            <font-awesome-icon 
+                                class="ps-3 icon" v-if="classWarning[section_id]" style="color: yellow"
+                                data-bs-toggle="tooltip" data-bs-placement="top" 
                                 icon="fa-solid fa-triangle-exclamation" title="This class does not have enough horses" />
                         </th>
                     </tr>
                     <tr>
-                        <th scope="col" class="bg-white text-dark fs-5">Placing</th>
-                        <th scope="col" class="bg-white text-dark fs-5">Order</th>
-                        <th scope="col" class="bg-white text-dark fs-5">Rider id</th>
-                        <th scope="col" class="bg-white text-dark fs-5">Rider name</th>
-                        <th scope="col" class="bg-white text-dark fs-5">Rider school</th>
-                        <th scope="col" class="bg-white text-dark fs-5">Horse name</th>
-                        <th scope="col" class="bg-white text-dark fs-5">Horse Provider</th>
+                        <th scope="col" class="bg-white text-dark fs-8">Placing</th>
+                        <th scope="col" class="bg-white text-dark fs-8">Order</th>
+                        <th scope="col" class="bg-white text-dark fs-8">Rider id</th>
+                        <th scope="col" class="bg-white text-dark fs-8">Rider name</th>
+                        <th scope="col" class="bg-white text-dark fs-8">Rider school</th>
+                        <th scope="col" class="bg-white text-dark fs-8">Horse name</th>
+                        <th scope="col" class="bg-white text-dark fs-8">Horse Provider</th>
                     </tr>
                 </thead>
                 <tbody>
 
                     <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
-                        <td>{{ data.rider.placing ? data.rider.placing : "-" }}</td>
+                        <td><input type="number" v-model="data.rider.placing" min="0" class="w-25 text-center"></td>
                         <td>{{ data.rider.order }}</td>
                         <td>{{ data.rider.id }}</td>
                         <td>{{ data.rider.name }}</td>
@@ -58,8 +60,11 @@ export default {
         let classToName = store.state.classToName
         let classWarning = {}
 
-        // Initialize classDraw sections
+        // Initialize classDraw sections if it is not initialized yet
         for (let section_id of Object.keys(ridersData)) {
+            if (section_id in classDraw) {
+                continue
+            }
             classDraw[section_id] = { 'showClass': '', 'class': '', 'section': '', 'riders': [] }
         }
 
@@ -72,15 +77,12 @@ export default {
             classToName,
             classWarning,
             myHover,
-            DEFAULTHORSE
+            DEFAULTHORSE,
+            store
         }
     },
     name: 'AddRiders',
     methods: {
-        handleTooltip(hover) {
-            this.myHover = hover
-        },
-
 
         matchRiders(order, section_id, riders, horses, filterFunc) {
             // Match riders in ridersHeightAndWeight to horses
@@ -100,6 +102,7 @@ export default {
                     // If a horse was matched with the rider we remove it from the horses array to not reuse it later
                     horses.splice(horseIndex, 1)
                 } else {
+                    this.classWarning[section_id] = true
                     // If no horse was matched just assign default horse to the rider
                     this.classDraw[section_id]['riders'].push({ 'rider': rider, 'horse': this.DEFAULTHORSE })
                 }
@@ -150,6 +153,7 @@ export default {
                 const filterFunc4 = (_horse) => {return true}
                 [shuffledHorses, order] = this.matchRiders(order, section_id, ridersRegular, shuffledHorses, filterFunc4)
             }
+
         },
 
 
@@ -194,9 +198,6 @@ export default {
 
         // Filter riding classes that have no horses yet
         getFilteredClasses() {
-            // let sortedClasses = this.getSortedClasses()
-            // return sortedClasses.filter((ridingClass) => this.classDraw[ridingClass].length > 0)
-
             const section_ids = Object.keys(this.ridersData)
             // return section_ids
             return section_ids.filter((section_id) => this.classDraw[section_id]['riders'].length > 0)

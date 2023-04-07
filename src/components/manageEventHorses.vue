@@ -83,7 +83,6 @@ import Papa from 'papaparse';
 import { reactive } from 'vue'
 import { useStore } from 'vuex'
 import { Tooltip } from 'bootstrap';
-import { TRUE } from 'ol/functions';
 
 
 
@@ -152,7 +151,7 @@ export default {
                     continue
                 }
                 let horse = { 'name': row[0], 'provider': row[1], 'takesHeight':true, 'takesWeight':true }
-                for (let i = 3; i < row.length; i++) {
+                for (let i = 2; i < row.length; i++) {
                     if (row[i]) {
                         let currClass = classRegex.exec(headers[i])
                         let match = sectionRegex.exec(headers[i])
@@ -176,8 +175,6 @@ export default {
             }
 
             const totalHorses = Object.values(this.horsesData).reduce((total, sectionData) => total + sectionData.horses.length, 0);
-            console.log(this.horsesData)
-
 
             if (totalHorses == 0) {
                 this.$notify({
