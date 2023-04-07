@@ -1,8 +1,9 @@
 <template class="homeContainer">
     <div class="m-3 d-flex flex-column justify-content-center align-items-center">
         <div class="w-75 d-flex justify-content-between mt-3">
-            <button class="btn btn-secondary dropdown-toggle w-25" type="button" data-bs-toggle="dropdown" aria-expanded="false" disabled>
-            Select Event
+            <button class="btn btn-secondary dropdown-toggle w-25" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false" disabled>
+                Select Event
             </button>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Name</a></li>
@@ -13,57 +14,65 @@
             </ul>
             <select v-model="selectedClass" class="form-select w-25" aria-label="Default select example">
                 <option value="null" selected>Select a class</option>
-                <option v-for="ridingClass in availableRidingClasses" :key="ridingClass" ><a class="dropdown-item" href="#">{{ ridingClass }}</a></option>
+                <option v-for="ridingClass in availableRidingClasses" :key="ridingClass"><a class="dropdown-item"
+                        href="#">{{ ridingClass }}</a></option>
             </select>
         </div>
     </div>
 
     <div class="m-3 d-flex flex-column justify-content-center align-items-center">
-            <table class="table table-striped w-75 border border-primary" v-for="section_id in getFilteredClasses"
-                :key="section_id">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col" colspan="7">
-                            {{ classDraw[section_id].showClass }} - {{ classToName[classDraw[section_id].class] }} - {{
-                                classDraw[section_id].section }}
-                        </th>
-                    </tr>
-                    <tr>
-                        <th scope="col" class="bg-white text-dark">Placing</th>
-                        <th scope="col" class="bg-white text-dark">Order</th>
-                        <th scope="col" class="bg-white text-dark">Rider id</th>
-                        <th scope="col" class="bg-white text-dark">Rider name</th>
-                        <th scope="col" class="bg-white text-dark">Rider school</th>
-                        <th scope="col" class="bg-white text-dark">Horse name</th>
-                        <th scope="col" class="bg-white text-dark">Horse Provider</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
-                        <td>{{ data.rider.placing ? data.rider.placing : "-" }}</td>
-                        <td>{{ data.rider.order }}</td>
-                        <td>{{ data.rider.id }}</td>
-                        <td>{{ data.rider.name }}</td>
-                        <td>{{ data.rider.school }}</td>
-                        <td>{{ data.horse.name }}</td>
-                        <td>{{ data.horse.provider }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <table class="table table-striped w-75 border border-primary" v-for="section_id in getFilteredClasses"
+            :key="section_id">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col" colspan="7">
+                        {{ classDraw[section_id].showClass }} - {{ classToName[classDraw[section_id].class] }} - {{
+                            classDraw[section_id].section }}
+                        <a class="p-2" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="This class does not have enough horses"
+                            v-if="classDraw[section_id]['riders'].some(noHorseAssigned)">
+                            <font-awesome-icon style="color: yellow" class="icon" icon="fa-solid fa-triangle-exclamation" />
+                        </a>
+                    </th>
+                </tr>
+                <tr>
+                    <th scope="col" class="bg-white text-dark">Placing</th>
+                    <th scope="col" class="bg-white text-dark">Order</th>
+                    <th scope="col" class="bg-white text-dark">Rider id</th>
+                    <th scope="col" class="bg-white text-dark">Rider name</th>
+                    <th scope="col" class="bg-white text-dark">Rider school</th>
+                    <th scope="col" class="bg-white text-dark">Horse name</th>
+                    <th scope="col" class="bg-white text-dark">Horse Provider</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
+                    <td>{{ data.rider.placing ? data.rider.placing : "-" }}</td>
+                    <td>{{ data.rider.order }}</td>
+                    <td>{{ data.rider.id }}</td>
+                    <td>{{ data.rider.name }}</td>
+                    <td>{{ data.rider.school }}</td>
+                    <td>{{ data.horse.name }}</td>
+                    <td>{{ data.horse.provider }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
 import classDraw from '../../public/classDraw.json'
 import { useStore } from 'vuex'
-import {ref} from 'vue'
+import { ref } from 'vue'
+import { Tooltip } from 'bootstrap'
 
 export default {
     name: 'HomePage',
     setup() {
         const store = useStore()
+        const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
         let events = ["Sample Event"]
-        let eventInfo = {"classDraw": classDraw}
+        let eventInfo = { "classDraw": classDraw }
         let classToName = store.state.classToName
         let selectedClass = ref("null")
         return {
@@ -71,9 +80,18 @@ export default {
             eventInfo,
             classToName,
             classDraw,
-            selectedClass
+            selectedClass,
+            DEFAULTHORSE
         }
     },
+    mounted() {
+        // Activate bootstrap tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new Tooltip(tooltipTriggerEl)
+        })
+    },
+
     computed: {
         getFilteredClasses() {
             const section_ids = Object.keys(this.classDraw)
@@ -93,6 +111,9 @@ export default {
         }
     },
     methods: {
+        noHorseAssigned(draw) {
+            return draw.horse.name == this.DEFAULTHORSE.name && draw.horse.provider == this.DEFAULTHORSE.provider;
+        },
     }
 }
 
