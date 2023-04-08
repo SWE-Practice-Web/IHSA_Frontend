@@ -35,6 +35,7 @@ const routes = [
     { path: '/eventClasses', component: manageEventClasses },
     { path: '/manage', component: ManageEventPage },
     { path: '/hManage', component: ManageHorsePage },
+    { path: '/permissions', component: ManagePermissions },
   ]
 
 const router = VueRouter.createRouter({
