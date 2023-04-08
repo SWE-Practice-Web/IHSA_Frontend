@@ -22,7 +22,7 @@ import ManageEventPage from "./views/admin/ManageEventPage.vue"
 import manageEventRiders from "./components/manageEventRiders.vue"
 import manageEventHorses from "./components/manageEventHorses.vue"
 import manageEventClasses from "./components/manageEventClasses.vue"
-import ManagePermissions from "./components/ManagePermissions.vue"
+import ManagePermissions from "./views/admin/ManagePermissions.vue"
 import axios from 'axios'
 
 const routes = [

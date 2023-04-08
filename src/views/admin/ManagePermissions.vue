@@ -81,7 +81,7 @@ const user = [
     {id: 8, first: 'Bronson', last: 'George', email: 'gbronson@gmail.com', school: '', permission: ''}
 ];
 function filteredList() {
-    return u.filter((u) => u.toLowerCase().includes(input.value.toLowerCase()));
+    return user.filter((user) => user.toLowerCase().includes(input.value.toLowerCase()));
 }
 </script>
 
