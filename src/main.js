@@ -22,6 +22,7 @@ import ManageEventPage from "./views/admin/ManageEventPage.vue"
 import manageEventRiders from "./components/manageEventRiders.vue"
 import manageEventHorses from "./components/manageEventHorses.vue"
 import manageEventClasses from "./components/manageEventClasses.vue"
+import ManagePermissions from "./views/admin/ManagePermissions.vue"
 import axios from 'axios'
 
 const routes = [
@@ -35,6 +36,7 @@ const routes = [
     { path: '/eventClasses', component: manageEventClasses },
     { path: '/manage', component: ManageEventPage },
     { path: '/hManage', component: ManageHorsePage },
+    { path: '/permissions', component: ManagePermissions },
   ]
 
 const router = VueRouter.createRouter({

@@ -32,6 +32,9 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/hManage">Manage Horse Information</router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link class="nav-link" to="/permissions">Manage Permissions</router-link>
+                    </li>
                 </div>
                 <div class="pe-3">
                     <li class="nav-item dropdown dropleft">
