@@ -6,13 +6,19 @@
                     <font-awesome-icon role="button" data-bs-toggle="modal" data-bs-target="#infoModal" class="icon" icon="fa-solid fa-circle-info"/>
                 </button>
             </h3>
-            <div class="mb-3 d-flex w-75">
-                <input class="form-control" type="file" id="horsesFile" accept=".csv">
-                <button type="button" class="btn btn-primary" @click="handleHorsesFileUpload">Submit</button>
+            <div class="mb-3 d-flex w-75 justify-content-between">
+                <div class="d-flex">
+                    <input class="form-control" type="file" id="horsesFile" accept=".csv">
+                    <button type="button" class="btn btn-primary" @click="handleHorsesFileUpload">Submit</button>
+                </div>
+                <select v-model="selectedClass" class="form-select w-25" aria-label="Default select example">
+                    <option value="null" selected>Select a class</option>
+                    <option v-for="ridingClass in availableRidingClasses" :key="ridingClass" ><a class="dropdown-item" href="#">{{ ridingClass }}</a></option>
+                </select>
             </div>
             <div class="mb-3 d-flex w-75 flex-column justify-content-start">
                     <table class="table table-striped w-90 border border-primary"
-                        v-for="section_id in getFilteredSections()" :key="section_id">
+                        v-for="section_id in getFilteredSections" :key="section_id">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col" colspan="4">
@@ -80,10 +86,9 @@
   
 <script>
 import Papa from 'papaparse';
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import { Tooltip } from 'bootstrap';
-import { TRUE } from 'ol/functions';
 
 
 
@@ -94,11 +99,13 @@ export default {
         let data = null
         let horsesData = reactive(store.state.eventHorses)
         let classToName = store.state.classToName
+        let selectedClass = ref("null")
         return {
             file,
             data,
             horsesData,
-            classToName
+            classToName,
+            selectedClass
         }
     },
     mounted () {
@@ -108,13 +115,26 @@ export default {
             return new Tooltip(tooltipTriggerEl)
         })
     },
-    name: 'manageEventHorses',
-    methods: {
-        // Filter riding classes that have no horses yet
+    computed: {
         getFilteredSections() {
             const section_ids = Object.keys(this.horsesData)
-            return section_ids.filter((section_id) => this.horsesData[section_id].horses.length > 0)
+            // return section_ids
+            let filtered_sections = section_ids.filter((section_id) => this.horsesData[section_id]['horses'].length > 0)
+            if (this.selectedClass != "null") {
+                return filtered_sections.filter((section_id) => this.selectedClass == this.classToName[this.horsesData[section_id].class])
+            } else {
+                return filtered_sections
+            }
         },
+
+        availableRidingClasses() {
+            const section_data = Object.values(this.horsesData)
+            // return section_ids
+            return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
+        }
+    },
+    name: 'manageEventHorses',
+    methods: {
 
         handleHorsesFileUpload() {
             for (let section_id in this.horsesData) {
@@ -152,7 +172,7 @@ export default {
                     continue
                 }
                 let horse = { 'name': row[0], 'provider': row[1], 'takesHeight':true, 'takesWeight':true }
-                for (let i = 3; i < row.length; i++) {
+                for (let i = 2; i < row.length; i++) {
                     if (row[i]) {
                         let currClass = classRegex.exec(headers[i])
                         let match = sectionRegex.exec(headers[i])
@@ -176,8 +196,6 @@ export default {
             }
 
             const totalHorses = Object.values(this.horsesData).reduce((total, sectionData) => total + sectionData.horses.length, 0);
-            console.log(this.horsesData)
-
 
             if (totalHorses == 0) {
                 this.$notify({

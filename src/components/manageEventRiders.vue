@@ -5,12 +5,18 @@
                 <font-awesome-icon role="button" data-bs-toggle="modal" data-bs-target="#infoModal" class="icon" icon="fa-solid fa-circle-info"/>
             </button>
         </h3>
-        <div class="mb-3 d-flex w-75 align-items-center justify-content-center">
-            <input class="form-control" type="file" id="ridersFile" accept=".csv">
-            <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
+        <div class="mb-3 d-flex w-75 align-items-center justify-content-between">
+            <div class="d-flex">
+                <input class="form-control" type="file" id="ridersFile" accept=".csv">
+                <button type="button" class="btn btn-primary" @click="handleRidersFileUpload">Submit</button>
+            </div>
+            <select v-model="selectedClass" class="form-select w-25" aria-label="Default select example">
+                <option value="null" selected>Select a class</option>
+                <option v-for="ridingClass in availableRidingClasses" :key="ridingClass" ><a class="dropdown-item" href="#">{{ ridingClass }}</a></option>
+            </select>
         </div>
         <div class="mb-3 d-flex w-75 flex-column justify-content-start">
-            <table class="table table-striped border border-primary" v-for="section_id in getFilteredSections()" :key="section_id">
+            <table class="table table-striped border border-primary" v-for="section_id in getFilteredClasses" :key="section_id">
                 <thead class="table-dark">
                     <tr>
                         <th scope="col" colspan="4">
@@ -81,7 +87,7 @@
 <script>
 import Papa from 'papaparse';
 import { useStore } from 'vuex'
-import {reactive} from 'vue'
+import {reactive, ref} from 'vue'
 import { Tooltip } from 'bootstrap';
 
 export default {
@@ -92,13 +98,15 @@ export default {
         let data = null
         let ridersData = reactive(store.state.eventRiders)
         let classToName = store.state.classToName
+        let selectedClass = ref("null")
         return {
             file,
             data,
             ridersData,
             classToName,
             publicPath: process.env.BASE_URL,
-            templateInfo
+            templateInfo,
+            selectedClass
         }
     },
     mounted () {
@@ -108,15 +116,26 @@ export default {
             return new Tooltip(tooltipTriggerEl)
         })
     },
-    name: 'manageEventRiders',
-    methods: {
-        // Filter riding classes that have no riders yet
-        getFilteredSections() {
+    computed: {
+        getFilteredClasses() {
             const section_ids = Object.keys(this.ridersData)
-            return section_ids.filter((section_id) => this.ridersData[section_id].riders.length > 0)
+            // return section_ids
+            let filtered_sections = section_ids.filter((section_id) => this.ridersData[section_id]['riders'].length > 0)
+            if (this.selectedClass != "null") {
+                return filtered_sections.filter((section_id) => this.selectedClass == this.classToName[this.ridersData[section_id].class])
+            } else {
+                return filtered_sections
+            }
         },
 
-
+        availableRidingClasses() {
+            const section_data = Object.values(this.ridersData)
+            // return section_ids
+            return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
+        }
+    },
+    name: 'manageEventRiders',
+    methods: {
         handleRidersFileUpload() {
             for (let section_id in this.ridersData) {
                 this.ridersData[section_id].riders = [];
@@ -171,7 +190,6 @@ export default {
                     }
                 }
             }
-            console.log(this.ridersData)
             
             const totalRiders = Object.values(this.ridersData).reduce((total, sectionData) => total + sectionData.riders.length, 0);
 
