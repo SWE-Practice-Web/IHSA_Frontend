@@ -80,14 +80,14 @@
                     </h5>
                     <br/>
                     <h4>ID: 
-                        <input type="text" v-model="newData.provider" placeholder="Aa">
+                        <input type="text" v-model="newData.id" placeholder="Aa">
                     </h4>
                     <br>
                     <h4>University: 
-                        <input type="text" v-model="newData.spurs" placeholder="Aa">
+                        <input type="text" v-model="newData.university" placeholder="Aa">
                     </h4>
                     <h4>Height: 
-                        <input type="text" v-model="newData.reign" placeholder="Aa">
+                        <input type="text" v-model="newData.height" placeholder="Aa">
                     </h4>
                     <h4>Weight: 
                         <input type="text" v-model="newData.weight" placeholder="Aa">
@@ -152,18 +152,18 @@
         name: 'RiderListAdmin',
         setup() {
             let riderList = reactive([
-                {name: 'Alison Weiser', id: '405', university: 'Illinois State University', height: "6'1", weight: '100lbs'},
-                {name: 'Kylie Novak', id: '120', university: 'Illinois State University', height: "5'9", weight: '156lbs3'},
-                {name: 'Brooke Lee', id: '234', university: 'Iowa State University', height: "5'7", weight: '150lbs'},
-                {name: 'Heather Marz', id: '321', university: 'Kansas State University', height: "5'9", weight: '200lbs'},
-                {name: 'Kammi Bishop', id: '543', university: 'Iowa State University', height: "6'1", weight: '134lbs'},
-                {name: 'Zoie Havick', id: '839', university: 'Kansas State University', height: "5'7", weight: '120lbs'},
-                {name: 'Bailey Groves', id: '983', university: 'Kansas State University', height: "", weight: ''}
+                {name: 'Alison Weiser', id: '405', university: 'Illinois State University', height: "6'1", weight: '100 lbs'},
+                {name: 'Kylie Novak', id: '120', university: 'Illinois State University', height: "5'9", weight: '156 lbs'},
+                {name: 'Brooke Lee', id: '234', university: 'Iowa State University', height: "5'7", weight: '150 lbs'},
+                {name: 'Heather Marz', id: '321', university: 'Kansas State University', height: "5'9", weight: '200 lbs'},
+                {name: 'Kammi Bishop', id: '543', university: 'Iowa State University', height: "6'1", weight: '134 lbs'},
+                {name: 'Zoie Havick', id: '839', university: 'Kansas State University', height: "5'7", weight: '120 lbs'},
+                {name: 'Bailey Groves', id: '983', university: 'Kansas State University', height: "5'7", weight: '150 lbs'}
             ]);
-            let msg = ref('404 not found')
+            let msg = ref('404 not found');
             return {
                 riderList,
-                //msg,
+                msg,
                 newData: {
                     name: '',
                     id: '',
@@ -203,7 +203,7 @@
             updateData() {
                 this.riderList[this.editData.index] = {...this.editData}
             },
-            deleteData () {
+            deleteData(index) {
                 this.riderList.splice(index, 1)
             },
             handleFileUpload() {

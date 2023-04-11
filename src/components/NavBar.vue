@@ -33,6 +33,9 @@
                         <router-link class="nav-link" to="/hManage">Manage Horse Information</router-link>
                     </li>
                     <li class="nav-item">
+                        <router-link class="nav-link" to="rManage">Manage Rider Information</router-link>
+                    </li>
+                    <li class="nav-item">
                         <router-link class="nav-link" to="/permissions">Manage Permissions</router-link>
                     </li>
                 </div>
