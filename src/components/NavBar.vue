@@ -17,19 +17,19 @@
                     <li class="nav-item">
                         <router-link class="nav-link" to="/announcements">Announcements</router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="admin coach user">
                         <router-link class="nav-link" to="/eventRiders">Manage Event Riders</router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="admin user">
                         <router-link class="nav-link" to="/eventHorses">Manage Event Horses</router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="admin user">
                         <router-link class="nav-link" to="/eventClasses">Manage Event Classes</router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="admin user">
                         <router-link class="nav-link" to="/manage">Manage Events</router-link>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="admin user">
                         <router-link class="nav-link" to="/hManage">Manage Horse Information</router-link>
                     </li>
                 </div>
@@ -60,6 +60,13 @@
 export default {
     name: 'NavBar',
     components: {
+    }
+    ,data(){
+        return{
+            admin: true,
+            coach: true,
+            user: false
+        }
     }
 }
 </script>
