@@ -1,15 +1,17 @@
 <template>
-    <input type="text" v-model="input" placeholder="Search"/>
-    <div class="item" v-for="user in filteredList()" :key="user.id">
-        <p>{{ user.id }}</p>
-    </div>
-    <div class="error" v-if="input&&!filteredList().length">
-        <p>No results found!</p>
+    <div class="d-flex justify-content-between align-items-center">
+        <input class="h-25 w-50 form-control" type="text" v-model="input" placeholder="Search"/>
+
+        <select v-model="selected_role" class="form-select h-25 w-25">
+            <option value="null">All roles</option>
+            <option v-for="role in roles" :value="role" :key="role">{{ role }}</option>
+        </select>
     </div>
     <div>
         <table class="table">
             <thead>
                 <tr>
+                    <th scope="col">Rider ID</th>
                     <th scope="col">First</th>
                     <th scope="col">Last</th>
                     <th scope="col">Email</th>
@@ -18,7 +20,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="user in filteredList()" :key="user.id">
+                <tr v-for="user in filteredList" :key="user.id">
                     <th scope="row">{{ user.id }}</th>
                     <td>{{ user.first }}</td>
                     <td>{{ user.last }}</td>
@@ -26,21 +28,9 @@
                     <td>{{ user.school }}</td>
                     <!--Modified column-->
                     <td>
-                        <div class="dropdown">
-                            <button
-                            class="btn btn-secondary dropdown-toggle"
-                            type="button"
-                            id="dropdownMenuButton"
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            > {{user.permission || 'Select Permission'}} </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" :href="'/user/' + user.id">User</a>
-                                <a class="dropdown-item" :href="'/coach/' + user.id">Coach</a>
-                                <a class="dropdown-item" :href="'/admin/' + user.id">Admin</a>
-                            </div>
-                        </div>
+                        <select v-model="user.role" class="form-select">
+                            <option v-for="role in roles" :value="role" :key="role">{{ role }}</option>
+                        </select>
                     </td>
                 </tr>
             </tbody>
@@ -49,39 +39,48 @@
 </template>
 
 <script>
-import {ref} from "vue";
-
+import {ref} from 'vue'
 export default {
     name: 'managePermissions',
-    data() {
+    setup() {
+        let user = ref(null)
+        let input = ref("")
+        let selected_role = ref(null)
+        let roles = ["User", "Admin", "Coach"]
+        let users = [
+            {id: 1, first: 'Chase', last: 'Smith', email: 'smithchase@gmail.com', school: '', role: 'User'},
+            {id: 2, first: 'Morgan', last: 'Johnson', email: 'mjohnson@hotmail.com', school: '', role: 'User'},
+            {id: 3, first: 'Blake', last: 'Hosey', email: 'blakeboss@gmail.com', school: '', role: 'User'},
+            {id: 4, first: 'Jasmine', last: 'Ghoul', email: 'brojas@gmail.com', school: '', role: 'User'},
+            {id: 5, first: 'Yote', last: 'Weaver', email: 'yweaver@gmail.com', school: '', role: 'User'},
+            {id: 6, first: 'Becky', last: 'Cash', email: 'cashbecky@gmail.com', school: '', role: 'User'},
+            {id: 7, first: 'Harry', last: 'Pope', email: 'wizardpope@gmail.com', school: '', role: 'User'},
+            {id: 8, first: 'Bronson', last: 'George', email: 'gbronson@gmail.com', school: '', role: 'User'}
+        ]
         return {
-            users: [
-                {id: 1, first: 'Chase', last: 'Smith', email: 'smithchase@gmail.com', school: '', permission: ''},
-                {id: 2, first: 'Morgan', last: 'Johnson', email: 'mjohnson@hotmail.com', school: '', permission: ''},
-                {id: 3, first: 'Blake', last: 'Hosey', email: 'blakeboss@gmail.com', school: '', permission: ''},
-                {id: 4, first: 'Jasmine', last: 'Ghoul', email: 'brojas@gmail.com', school: '', permission: ''},
-                {id: 5, first: 'Yote', last: 'Weaver', email: 'yweaver@gmail.com', school: '', permission: ''},
-                {id: 6, first: 'Becky', last: 'Cash', email: 'cashbecky@gmail.com', school: '', permission: ''},
-                {id: 7, first: 'Harry', last: 'Pope', email: 'wizardpope@gmail.com', school: '', permission: ''},
-                {id: 8, first: 'Bronson', last: 'George', email: 'gbronson@gmail.com', school: '', permission: ''}
-            ]
+            user,
+            input,
+            users,
+            roles,
+            selected_role
+        }
+    },
+    computed: {
+        filteredList() {
+            return this.users.filter((user) => {
+                const elements_to_check = [user.first, user.last, user.email, user.school]
+                const check_function = (text) => text.toLowerCase().startsWith(this.input.toLowerCase())
+                if (this.selected_role && user.role != this.selected_role) {
+                    return false
+                }
+                if (this.input == "") {
+                    return true
+                } else {
+                    return elements_to_check.some(check_function)
+                }
+            })
         }
     }
-}
-
-let input = ref("");
-const user = [
-    {id: 1, first: 'Chase', last: 'Smith', email: 'smithchase@gmail.com', school: '', permission: ''},
-    {id: 2, first: 'Morgan', last: 'Johnson', email: 'mjohnson@hotmail.com', school: '', permission: ''},
-    {id: 3, first: 'Blake', last: 'Hosey', email: 'blakeboss@gmail.com', school: '', permission: ''},
-    {id: 4, first: 'Jasmine', last: 'Ghoul', email: 'brojas@gmail.com', school: '', permission: ''},
-    {id: 5, first: 'Yote', last: 'Weaver', email: 'yweaver@gmail.com', school: '', permission: ''},
-    {id: 6, first: 'Becky', last: 'Cash', email: 'cashbecky@gmail.com', school: '', permission: ''},
-    {id: 7, first: 'Harry', last: 'Pope', email: 'wizardpope@gmail.com', school: '', permission: ''},
-    {id: 8, first: 'Bronson', last: 'George', email: 'gbronson@gmail.com', school: '', permission: ''}
-];
-function filteredList() {
-    return user.filter((user) => user.toLowerCase().includes(input.value.toLowerCase()));
 }
 </script>
 
@@ -101,7 +100,7 @@ body {
     background-color: rgb(234, 242, 255);
 }
 
-input {
+/* input {
     display: block;
     width: 350px;
     margin: 20px auto;
@@ -113,7 +112,7 @@ input {
     border-radius: 5px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
      rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-}
+} */
 
 .item {
     width: 350px;

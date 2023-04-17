@@ -188,6 +188,7 @@ export default {
                 [shuffledHorses, order] = this.matchRiders(order, section_id, ridersRegular, shuffledHorses, filterFunc4)
             }
 
+            this.postEventClasses()
         },
 
 
@@ -229,6 +230,37 @@ export default {
             }
             return (totalRiders > 0 && totalHorses > 0)
         },
+
+
+        postEventClasses() {
+            const riders = this.classDraw
+            var ret = []
+            var ret_i = 0
+
+            for (let i in riders) {
+                ret.push({
+                    showClass: riders[i].showClass,
+                    class: riders[i].class,
+                    section: riders[i].section,
+                    pairs: []
+                })
+
+                for (let pair of riders[i].riders) {
+                    ret[ret_i].pairs.push({
+                        riderId: pair.rider.id,
+                        riderPlacing: pair.rider.placing,
+                        order: pair.rider.order,
+                        horseName: pair.horse.name,
+                        horseProvider: pair.horse.provider
+                    })
+                }
+
+                ret_i += 1
+            }
+
+            this.$axios.post('/event/0/BatchAddEventOrder', ret)
+            // fs.writeFileSync('./classDraw-2.json', JSON.stringify(ret, null, 2), 'utf8')
+        }
     }
 }
 </script>
