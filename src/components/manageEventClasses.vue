@@ -2,7 +2,9 @@
     <div>
         <div class="d-flex align-items-center justify-content-center">
             <div class="d-flex w-75 justify-content-between my-3">
-                <button type="button" class="btn btn-primary fs-7" @click="assignHorses">Randomize Classes</button>
+                <button type="button" class="btn btn-primary fs-7" @click="randomize">
+                    Randomize Classes
+                </button>
                 <select v-model="selectedClass" class="form-select w-25" aria-label="Default select example">
                     <option value="null" selected>Select a class</option>
                     <option v-for="ridingClass in availableRidingClasses" :key="ridingClass"><a class="dropdown-item"
@@ -40,7 +42,8 @@
                 <tbody>
 
                     <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
-                        <td><input type="number" v-model="data.rider.placing" min="0" class="w-25 text-center"></td>
+                        <td><input type="number" v-model="data.rider.placing" min="0" class="w-25 text-center"
+                                @input="this.notSavedInfo = true"></td>
                         <td>{{ data.rider.order }}</td>
                         <td>{{ data.rider.id }}</td>
                         <td>{{ data.rider.name }}</td>
@@ -51,20 +54,52 @@
                 </tbody>
             </table>
         </div>
+        <div>
+            <button type="button" class="btn btn-primary fs-7 mb-3 w-75" @click="postPlacings">
+                Update placings
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Confirm Modal -->
+    <div ref="confirmModal" class="modal fade" id="randomizeModal" tabindex="-1" aria-labelledby="randomizeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body fs-2">
+                    Are you sure you want to randomize riders and horses?
+                    Continuing will remove the current class draw and create a new one. {{ this.notSavedInfo }}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger btn-lg fs-6 d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-lg fs-6 d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal" @click="assignHorses">Randomize</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
   
 <script>
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
+import { Modal } from 'bootstrap';
 
 export default {
+    name: 'manageEventClasses',
     setup() {
         const store = useStore()
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
+        let notSavedInfo = false;
         let myHover = ref(true)
         let file = null
         let data = null
+        let confirmModal;
         let ridersData = reactive(store.state.eventRiders)
         let horsesData = reactive(store.state.eventHorses)
         let classDraw = reactive(store.state.eventClasses)
@@ -91,10 +126,12 @@ export default {
             myHover,
             DEFAULTHORSE,
             store,
-            selectedClass
+            selectedClass,
+            confirmModal,
+            Modal,
+            notSavedInfo
         }
     },
-    name: 'AddRiders',
     computed: {
         getFilteredClasses() {
             const section_ids = Object.keys(this.classDraw)
@@ -113,7 +150,20 @@ export default {
             return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
         }
     },
+    beforeRouteLeave() {
+        const confirmMessage = "You have unsaved changes. If you leave without saving, all new placing data will be lost (Update placings button is at the bottom of the page)"
+        if (this.notSavedInfo) {
+            const answer = window.confirm(confirmMessage)
+            if (!answer) return false
+        }
+    },
     methods: {
+        confirm_leaving(evt) {
+            const unsaved_changes_warning = "You have unsaved changes. Are you sure you wish to leave?";
+            evt.returnValue = unsaved_changes_warning;
+            return unsaved_changes_warning;
+        },
+
         noHorseAssigned(draw) {
             return draw.horse.name == this.DEFAULTHORSE.name && draw.horse.provider == this.DEFAULTHORSE.provider;
         },
@@ -144,12 +194,22 @@ export default {
             return [horses, order]
         },
 
-
-        assignHorses() {
+        randomize() {
             if (!(this.randomizeReady())) {
                 return
             }
+            else if (this.getFilteredClasses.length > 0) {
+                this.confirmModal = new Modal(this.$refs.confirmModal, {})
+                this.confirmModal.show()
+            } else {
+                this.assignHorses()
+            }
 
+
+        },
+
+
+        assignHorses() {
             for (const section_id of Object.keys(this.ridersData)) {
                 let order = 0;
                 this.classDraw[section_id].riders = []
@@ -188,7 +248,7 @@ export default {
                 [shuffledHorses, order] = this.matchRiders(order, section_id, ridersRegular, shuffledHorses, filterFunc4)
             }
 
-            this.postEventClasses()
+            // this.postEventClasses()
         },
 
 
@@ -260,6 +320,11 @@ export default {
 
             this.$axios.post('/event/0/BatchAddEventOrder', ret)
             // fs.writeFileSync('./classDraw-2.json', JSON.stringify(ret, null, 2), 'utf8')
+        },
+
+
+        postPlacings() {
+            this.notSavedInfo = false
         }
     }
 }

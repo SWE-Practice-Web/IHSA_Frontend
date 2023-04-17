@@ -250,7 +250,8 @@ export default {
                 }
                 return riderObj
             })
-            this.$axios.post('/Rider/BatchCreate', postData)
+
+            // this.$axios.post('/Rider/BatchCreate', postData)
 
         }
 

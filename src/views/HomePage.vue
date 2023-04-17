@@ -21,16 +21,15 @@
     </div>
 
     <div class="m-3 d-flex flex-column justify-content-center align-items-center">
-        <table class="table table-striped w-75 border border-primary" v-for="section_id in getFilteredClasses"
-            :key="section_id">
+        <table class="table table-striped w-75 border border-primary" v-for="section in getFilteredClasses"
+            :key="section.showClass">
             <thead class="table-dark">
                 <tr>
                     <th scope="col" colspan="7">
-                        {{ classDraw[section_id].showClass }} - {{ classToName[classDraw[section_id].class] }} - {{
-                            classDraw[section_id].section }}
+                        {{ section.showClass }} - {{ classToName[section.class] }} - {{
+                            section.section }}
                         <a class="p-2" data-bs-toggle="tooltip" data-bs-placement="top"
-                            title="This class does not have enough horses"
-                            v-if="classDraw[section_id]['riders'].some(noHorseAssigned)">
+                            title="This class does not have enough horses" v-if="section.riders.some(noHorseAssigned)">
                             <font-awesome-icon style="color: yellow" class="icon" icon="fa-solid fa-triangle-exclamation" />
                         </a>
                     </th>
@@ -46,7 +45,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
+                <tr v-for="data in section.riders" :key="data.rider.id">
                     <td>{{ data.rider.placing ? data.rider.placing : "-" }}</td>
                     <td>{{ data.rider.order }}</td>
                     <td>{{ data.rider.id }}</td>
@@ -61,9 +60,9 @@
 </template>
 
 <script>
-import classDraw from '../../public/classDraw.json'
+import eventInfo from '../../public/classDrawNew.json'
 import { useStore } from 'vuex'
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import { Tooltip } from 'bootstrap'
 
 export default {
@@ -72,17 +71,19 @@ export default {
         const store = useStore()
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
         let events = ["Sample Event"]
-        let eventInfo = { "classDraw": classDraw }
         let classToName = store.state.classToName
+        eventInfo.classDraw = reactive({})
         let selectedClass = ref("null")
         return {
             events,
             eventInfo,
             classToName,
-            classDraw,
             selectedClass,
             DEFAULTHORSE
         }
+    },
+    created() {
+        this.initClassDraw()
     },
     mounted() {
         // Activate bootstrap tooltips
@@ -94,18 +95,18 @@ export default {
 
     computed: {
         getFilteredClasses() {
-            const section_ids = Object.keys(this.classDraw)
+            const sections = Object.values(this.eventInfo.classDraw)
             // return section_ids
-            let filtered_sections = section_ids.filter((section_id) => this.classDraw[section_id]['riders'].length > 0)
+            let filtered_sections = sections.filter((section) => section.riders.length > 0)
             if (this.selectedClass != "null") {
-                return filtered_sections.filter((section_id) => this.selectedClass == this.classToName[this.classDraw[section_id].class])
+                return filtered_sections.filter((section) => this.selectedClass == this.classToName[section.class])
             } else {
                 return filtered_sections
             }
         },
 
         availableRidingClasses() {
-            const section_data = Object.values(this.classDraw)
+            const section_data = Object.values(this.eventInfo.classDraw)
             // return section_ids
             return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
         }
@@ -114,6 +115,36 @@ export default {
         noHorseAssigned(draw) {
             return draw.horse.name == this.DEFAULTHORSE.name && draw.horse.provider == this.DEFAULTHORSE.provider;
         },
+
+        initClassDraw() {
+            for (let section of eventInfo.eventOrder) {
+                let riders = section.pairs.map((pair) => {
+                    let rider = {
+                        "id": pair.riderId,
+                        "name": pair.riderName,
+                        "school": pair.riderSchool,
+                        "placing": pair.placing,
+                        "isHeight": null,
+                        "isWeight": null,
+                        "order": pair.order
+                    }
+                    let horse = {
+                        "name": pair.horseName,
+                        "provider": pair.horseProvider,
+                        "takesHeight": null,
+                        "takesWeight": null
+                    }
+                    return { 'rider': rider, "horse": horse }
+                })
+
+                this.eventInfo.classDraw[`${section.class} ${section.section}`] = {
+                    'showClass': section.showClass,
+                    'class': section.class,
+                    'section': section.section,
+                    'riders': riders
+                }
+            }
+        }
     }
 }
 

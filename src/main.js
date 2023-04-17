@@ -26,7 +26,6 @@ import ManagePermissions from "./views/admin/ManagePermissions.vue"
 import axios from 'axios'
 import ManageRiderPage from "./views/ManageRiderPage.vue"
 
-
 const routes = [
     { path: '/', component: HomePage },
     { path: '/map', component: MapContainer },
@@ -50,7 +49,7 @@ const router = VueRouter.createRouter({
 const app = createApp(App);
 const axiosInstance = axios.create({
   // baseURL: process.env.VUE_APP_BASE_URL,
-  baseURL: "https://localhost:49191",
+  baseURL: "https://localhost:49195",
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
