@@ -12,7 +12,7 @@
 </template>
 
 <script>
-    import HorseListAdmin from '../components/HorseListAdmin.vue'
+    import HorseListAdmin from '../../components/HorseListAdmin.vue'
     
     export default {
         name: 'ManageHorsePage',

@@ -4,7 +4,7 @@
       <div class="card-body">
         <div class="card">
           <div class="hello">
-            <img alt="IHSA logo" src="../assets/ihsalogo.png" height="150" width="200">
+            <img alt="IHSA logo" src="../../assets/ihsalogo.png" height="150" width="200">
             <div>
               <br>
               <div class="signup">
@@ -83,7 +83,7 @@ a {
 .hero-image {
   height: 93vh;
   width: 100%;
-  background-image: url("../assets/ihsabackground.jpg");
+  background-image: url("../../assets/ihsabackground.jpg");
   background-size: cover;
   display: flex;
   align-items: center;

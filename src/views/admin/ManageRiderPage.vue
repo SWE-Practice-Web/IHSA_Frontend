@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import RiderListAdmin from '../components/RiderListAdmin.vue'
+    import RiderListAdmin from '../../components/RiderListAdmin.vue'
 
     export default {
         name: 'ManageRiderPage',

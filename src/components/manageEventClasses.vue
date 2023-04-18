@@ -54,34 +54,6 @@
                 </tbody>
             </table>
         </div>
-        <div>
-            <button type="button" class="btn btn-primary fs-7 mb-3 w-75" @click="postPlacings">
-                Update placings
-            </button>
-        </div>
-    </div>
-
-
-    <!-- Confirm Modal -->
-    <div ref="confirmModal" class="modal fade" id="randomizeModal" tabindex="-1" aria-labelledby="randomizeModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body fs-2">
-                    Are you sure you want to randomize riders and horses?
-                    Continuing will remove the current class draw and create a new one. {{ this.notSavedInfo }}
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-danger btn-lg fs-6 d-flex align-items-center justify-content-center"
-                        data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-success btn-lg fs-6 d-flex align-items-center justify-content-center"
-                        data-bs-dismiss="modal" @click="assignHorses">Randomize</button>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
   
@@ -132,6 +104,11 @@ export default {
             notSavedInfo
         }
     },
+    beforeUnmount() {
+        if (this.notSavedInfo) {
+            this.postPlacings()
+        }
+    },
     computed: {
         getFilteredClasses() {
             const section_ids = Object.keys(this.classDraw)
@@ -148,13 +125,6 @@ export default {
             const section_data = Object.values(this.classDraw)
             // return section_ids
             return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
-        }
-    },
-    beforeRouteLeave() {
-        const confirmMessage = "You have unsaved changes. If you leave without saving, all new placing data will be lost (Update placings button is at the bottom of the page)"
-        if (this.notSavedInfo) {
-            const answer = window.confirm(confirmMessage)
-            if (!answer) return false
         }
     },
     methods: {
@@ -324,7 +294,7 @@ export default {
 
 
         postPlacings() {
-            this.notSavedInfo = false
+            console.log("Posting placings")
         }
     }
 }

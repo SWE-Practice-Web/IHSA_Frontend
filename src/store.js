@@ -31,6 +31,7 @@ export const store = createStore({
     eventRiders: {},
     eventHorses: {},
     eventClasses: {},
+    eventInfo: {},
     classToName: ridingClasses
   }
 });

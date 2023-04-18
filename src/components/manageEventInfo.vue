@@ -1,31 +1,31 @@
 <template>
-    <div class="container mt-3 bg-secondary rounded w-75">
+    <div class="container mt-3 p-4 bg-secondary rounded w-75">
         <div class="col">
             <div class="row">
                 <div class="input-group m-2">
-                    <span class="input-group-text fs-3">Name</span>
-                    <input type="text" class="form-control fs-3" :value="eventSelected.name">
+                    <span class="input-group-text fs-4">Name</span>
+                    <input type="text" class="form-control fs-4" :value="eventInfo.location">
                 </div>
             </div>
             <div class="row">
                 <div class="input-group m-2">
-                    <span class="input-group-text fs-3">Admins</span>
-                    <input type="text" class="form-control fs-3" :value="selectedAdmins">
+                    <span class="input-group-text fs-4">Admins</span>
+                    <input type="text" class="form-control fs-4" :value="selectedAdmins">
                     <select class="select w-100"  @change="onChange" multiple>
-                        <option v-for="admin in admins" :value="admin" :key="admin" class="fs-3">{{ admin }}</option>
+                        <option v-for="admin in admins" :value="admin" :key="admin" class="fs-4">{{ admin }}</option>
                     </select>
                 </div>
             </div>
             <div class="row">
                 <div class="input-group m-2">
-                    <span class="input-group-text fs-3">Date</span>
-                    <input type="text" class="form-control fs-3" :value="eventSelected.date">
+                    <span class="input-group-text fs-4">Date</span>
+                    <input type="text" class="form-control fs-4" :value="eventInfo.eventTime">
                 </div>
             </div>
             <div class="row">
                 <div class="input-group m-2">
-                    <span class="input-group-text fs-3">Description</span>
-                    <input type="text" class="form-control fs-3" :value="eventSelected.description">
+                    <span class="input-group-text fs-4">Description</span>
+                    <input type="text" class="form-control fs-4" :value="eventInfo.description">
                 </div>
             </div>
         </div>
@@ -33,16 +33,22 @@
 </template>
 
 <script>
-import { ref } from 'vue' 
+import { useStore } from 'vuex'
+import { ref, reactive } from 'vue' 
 
 export default {
     setup() {
         let admins = ['Bert Young', 'Brenda Ghost', 'Jackie Brown']
         let selectedAdmins = ref([])
+        const store = useStore()
+        let eventInfo = reactive(store.state.eventInfo)
+
+
 
         return {
             admins,
             selectedAdmins,
+            eventInfo
         }
     },
     methods: {
@@ -58,7 +64,6 @@ export default {
             this.selectedAdmins = temp
         }
     },
-    props: ['eventSelected'],
     name: 'eventInfoTable',
 }
 </script>
