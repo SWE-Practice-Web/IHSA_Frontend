@@ -185,12 +185,16 @@
                 this.msg = mess
             },
             addData() {
-                this.riderList.push({ ...this.newData })
-                this.riderList.name = ''
-                this.riderList.id = ''
-                this.riderList.university = ''
-                this.riderList.height = ''
-                this.riderList.weight = ''
+                if(this.riderList.some((rider) => rider.id === this.newData.id)){
+                    alert("Error! Duplicate ID!")
+                } else{
+                    this.riderList.push({ ...this.newData })
+                    this.riderList.name = ''
+                    this.riderList.id = ''
+                    this.riderList.university = ''
+                    this.riderList.height = ''
+                    this.riderList.weight = ''
+                }
             },
             editForm(rider, index) {
                 this.editData.name = rider.name
@@ -214,8 +218,8 @@
                     const csvData = reader.result
                     const results = Papa.parse(csvData, {header: true})
                     const newRiders = results.data
-                    for (let rider of newRiders) {
-                        this.riderList.push(rider)
+                    for (let riders of newRiders) {
+                        this.riderList.push(riders)
                     }
                     this.riderList.pop()
                 }
