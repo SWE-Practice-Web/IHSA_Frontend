@@ -60,7 +60,7 @@
 <script>
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
-import { Modal } from 'bootstrap';
+import { Tooltip } from 'bootstrap'
 
 export default {
     name: 'manageEventClasses',
@@ -71,7 +71,6 @@ export default {
         let myHover = ref(true)
         let file = null
         let data = null
-        let confirmModal;
         let ridersData = reactive(store.state.eventRiders)
         let horsesData = reactive(store.state.eventHorses)
         let classDraw = reactive(store.state.eventClasses)
@@ -99,9 +98,8 @@ export default {
             DEFAULTHORSE,
             store,
             selectedClass,
-            confirmModal,
-            Modal,
-            notSavedInfo
+            notSavedInfo,
+            Tooltip
         }
     },
     beforeUnmount() {
@@ -128,11 +126,14 @@ export default {
         }
     },
     methods: {
-        confirm_leaving(evt) {
-            const unsaved_changes_warning = "You have unsaved changes. Are you sure you wish to leave?";
-            evt.returnValue = unsaved_changes_warning;
-            return unsaved_changes_warning;
+        activeTooltips() {
+            // Activate bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new Tooltip(tooltipTriggerEl)
+            })
         },
+
 
         noHorseAssigned(draw) {
             return draw.horse.name == this.DEFAULTHORSE.name && draw.horse.provider == this.DEFAULTHORSE.provider;
@@ -168,13 +169,8 @@ export default {
             if (!(this.randomizeReady())) {
                 return
             }
-            else if (this.getFilteredClasses.length > 0) {
-                this.confirmModal = new Modal(this.$refs.confirmModal, {})
-                this.confirmModal.show()
-            } else {
-                this.assignHorses()
-            }
-
+            this.assignHorses()
+            this.activeTooltips()
 
         },
 

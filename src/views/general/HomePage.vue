@@ -2,10 +2,11 @@
     <div class="backgroundColor">
         <div class="m-3 d-flex flex-column justify-content-center align-items-center">
             <div class="w-75 d-flex justify-content-between mt-3">
-                <button class="btn btn-secondary dropdown-toggle w-25" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false" disabled>
-                    Select Event
-                </button>
+                <div>
+                <select class="form-select form-select-lg fs-6" v-model="eventInfo">
+                    <option v-for="event in events" :value="event" :key="event.id" class="fs-3">{{ event.location }}</option>
+                </select>
+            </div>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Name</a></li>
                     <li><a class="dropdown-item" href="#">Age</a></li>
@@ -13,7 +14,7 @@
                     <li><a class="dropdown-item" href="#">Weight</a></li>
                     <li><a class="dropdown-item" href="#">Color</a></li>
                 </ul>
-                <select v-model="selectedClass" class="form-select w-25" aria-label="Default select example">
+                <select v-model="selectedClass" class="form-select w-25 fs-6" aria-label="Default select example">
                     <option value="null" selected>Select a class</option>
                     <option v-for="ridingClass in availableRidingClasses" :key="ridingClass"><a class="dropdown-item"
                             href="#">{{ ridingClass }}</a></option>
@@ -73,7 +74,7 @@ export default {
     setup() {
         const store = useStore()
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
-        let events = ["Sample Event"]
+        let events = [eventInfo]
         let classToName = store.state.classToName
         eventInfo.classDraw = reactive({})
         let selectedClass = ref("null")
@@ -89,11 +90,7 @@ export default {
         this.initClassDraw()
     },
     mounted() {
-        // Activate bootstrap tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new Tooltip(tooltipTriggerEl)
-        })
+        this.activeTooltips()
     },
 
     computed: {
@@ -115,6 +112,14 @@ export default {
         }
     },
     methods: {
+        activeTooltips() {
+            // Activate bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new Tooltip(tooltipTriggerEl)
+            })
+        },
+
         noHorseAssigned(draw) {
             return draw.horse.name == this.DEFAULTHORSE.name && draw.horse.provider == this.DEFAULTHORSE.provider;
         },

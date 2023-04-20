@@ -51,12 +51,12 @@ export default {
         let roles = ["User", "Admin", "Coach"]
         let users = [
             { id: 1, first: 'Chase', last: 'Smith', email: 'smithchase@gmail.com', school: '', role: 'User' },
-            { id: 2, first: 'Morgan', last: 'Johnson', email: 'mjohnson@hotmail.com', school: '', role: 'User' },
+            { id: 2, first: 'Morgan', last: 'Johnson', email: 'mjohnson@hotmail.com', school: '', role: 'Admin' },
             { id: 3, first: 'Blake', last: 'Hosey', email: 'blakeboss@gmail.com', school: '', role: 'User' },
-            { id: 4, first: 'Jasmine', last: 'Ghoul', email: 'brojas@gmail.com', school: '', role: 'User' },
-            { id: 5, first: 'Yote', last: 'Weaver', email: 'yweaver@gmail.com', school: '', role: 'User' },
+            { id: 4, first: 'Jasmine', last: 'Ghoul', email: 'brojas@gmail.com', school: '', role: 'Coach' },
+            { id: 5, first: 'Yote', last: 'Weaver', email: 'yweaver@gmail.com', school: '', role: 'Admin' },
             { id: 6, first: 'Becky', last: 'Cash', email: 'cashbecky@gmail.com', school: '', role: 'User' },
-            { id: 7, first: 'Harry', last: 'Pope', email: 'wizardpope@gmail.com', school: '', role: 'User' },
+            { id: 7, first: 'Harry', last: 'Pope', email: 'wizardpope@gmail.com', school: '', role: 'Coach' },
             { id: 8, first: 'Bronson', last: 'George', email: 'gbronson@gmail.com', school: '', role: 'User' }
         ]
         return {
