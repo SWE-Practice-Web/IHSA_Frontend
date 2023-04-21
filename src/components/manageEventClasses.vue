@@ -177,7 +177,7 @@ export default {
 
         assignHorses() {
             for (const section_id of Object.keys(this.ridersData)) {
-                let order = 0;
+                let order = 1;
                 this.classDraw[section_id].riders = []
                 this.classDraw[section_id]['showClass'] = this.ridersData[section_id].showClass
                 this.classDraw[section_id]['class'] = this.ridersData[section_id].class
