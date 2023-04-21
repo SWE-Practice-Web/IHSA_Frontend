@@ -93,13 +93,21 @@ import { Tooltip } from 'bootstrap';
 
 
 export default {
-    setup() {
+    name: 'manageEventHorses',
+    props: ['event'],
+    setup(props) {
         const store = useStore()
         let file = null
         let data = null
-        let horsesData = reactive(store.state.eventHorses)
         let classToName = store.state.classToName
         let selectedClass = ref("null")
+
+        let eventsHorses = reactive(store.state.eventsHorses)
+        if (!(props.event.id in eventsHorses)) {
+            eventsHorses[props.event.id] = {}
+        }
+        let horsesData = reactive(eventsHorses[props.event.id])
+
         return {
             file,
             data,
@@ -133,7 +141,6 @@ export default {
             return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
         }
     },
-    name: 'manageEventHorses',
     methods: {
 
         handleHorsesFileUpload() {

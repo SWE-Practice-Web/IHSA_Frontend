@@ -81,10 +81,27 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Loading Modal -->
+    <div ref="loader" class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static"
+        data-bs-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
+            <div class="modal-content">
+                <div class="modal-title fs-4">Loading...</div>
+                <div class="modal-body">
+                    <div class="spinner-border" style="width:8rem; height:8rem" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
 import { reactive, ref } from 'vue'
+import { Modal } from 'bootstrap';
 import eventInfoTable from '../../components/manageEventInfo.vue'
 import manageEventRiders from '../../components/manageEventRiders.vue'
 import manageEventHorses from '../../components/manageEventHorses.vue'
@@ -118,26 +135,29 @@ export default {
             selectedEvent,
             newEvent,
             eventData,
-            EMPTY_EVENT
+            EMPTY_EVENT,
+            Modal
         }
     },
-    async created() {
-        const eventsData = await this.getEvents()
-        console.log(eventsData)
-        this.events.push(...eventsData)
-        this.selectedEvent = eventsData[0]
+    async mounted() {
+        this.loader = new Modal(this.$refs.loader, {})
+        this.loader.show()
+        await this.getEvents()
+            .then((res) => {
+                this.events.push(...res.data)
+                this.selectedEvent = this.sortedEvents[0]
+            })
+            .catch(err => console.log(err))
+        this.loader.hide()
     },
     computed: {
         sortedEvents() {
-            return this.events.slice().sort((a,b) => new Date(b.eventTime) - new Date(a.eventTime))
+            return this.events.slice().sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
         }
     },
     methods: {
-        getEvents() {
+        async getEvents() {
             return this.$axios.get("/Event")
-                .then(res => res.data)
-                .catch(err => console.log(err))
-            // return eventData
         },
 
         initEvent() {

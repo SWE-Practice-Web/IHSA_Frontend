@@ -827,7 +827,7 @@
   ],
   "location": "Black Hawk College Western Show",
   "description": "Event description",
-  "ridingPatterns": "riding patterns link",
+  "ridingPattern": "riding patterns link",
   "eventTime": "2023-04-17T14:10:20.821Z",
   "zone": 0
 }

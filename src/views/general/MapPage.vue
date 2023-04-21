@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <!-- Modal -->
+        <!-- Loading Modal -->
         <div ref="loader" class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel"
             data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered d-flex justify-content-center">

@@ -104,14 +104,23 @@ import { reactive, ref } from 'vue'
 import { Tooltip } from 'bootstrap';
 
 export default {
-    setup() {
+    name: 'manageEventRiders',
+    props:['event'],
+    setup(props) {
         const store = useStore()
         const templateInfo = "Click here to see format rules and access a csv template."
         let file = null
         let data = null
-        let ridersData = reactive(store.state.eventRiders)
         let classToName = store.state.classToName
         let selectedClass = ref("null")
+        
+        let eventsRiders = reactive(store.state.eventsRiders)
+        if (!(props.event.id in eventsRiders)) {
+            eventsRiders[props.event.id] = {}
+        }
+        let ridersData = reactive(eventsRiders[props.event.id])
+
+
         return {
             file,
             data,
@@ -147,7 +156,6 @@ export default {
             return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
         }
     },
-    name: 'manageEventRiders',
     methods: {
         handleRidersFileUpload() {
             for (let section_id in this.ridersData) {

@@ -28,9 +28,9 @@ const ridingClasses = {
 
 export const store = createStore({
   state: {
-    eventRiders: {},
-    eventHorses: {},
-    eventClasses: {},
+    eventsRiders: {},
+    eventsHorses: {},
+    eventsClasses: {},
     eventInfo: {},
     classToName: ridingClasses
   }

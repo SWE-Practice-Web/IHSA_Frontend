@@ -64,18 +64,34 @@ import { Tooltip } from 'bootstrap'
 
 export default {
     name: 'manageEventClasses',
-    setup() {
+    props:['event'],
+    setup(props) {
         const store = useStore()
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
         let notSavedInfo = false;
         let myHover = ref(true)
         let file = null
         let data = null
-        let ridersData = reactive(store.state.eventRiders)
-        let horsesData = reactive(store.state.eventHorses)
-        let classDraw = reactive(store.state.eventClasses)
+        // Get ridersData
+        let eventsRiders = reactive(store.state.eventsRiders)
+        if (!(props.event.id in eventsRiders)) {
+            eventsRiders[props.event.id] = {}
+        }
+        let ridersData = reactive(eventsRiders[props.event.id])
+        // Get horsesData
+        let eventsHorses = reactive(store.state.eventsHorses)
+        if (!(props.event.id in eventsHorses)) {
+            eventsHorses[props.event.id] = {}
+        }
+        let horsesData = reactive(eventsHorses[props.event.id])
+        // Get classDraw data
+        let eventsClasses = reactive(store.state.eventsClasses)
+        if (!(props.event.id in eventsClasses)) {
+            eventsClasses[props.event.id] = {}
+        }
+        let classDraw = reactive(eventsClasses[props.event.id])
+
         let classToName = store.state.classToName
-        let classWarning = {}
         let selectedClass = ref("null")
 
         // Initialize classDraw sections if it is not initialized yet
@@ -93,7 +109,6 @@ export default {
             horsesData,
             classDraw,
             classToName,
-            classWarning,
             myHover,
             DEFAULTHORSE,
             store,
@@ -157,7 +172,6 @@ export default {
                     // If a horse was matched with the rider we remove it from the horses array to not reuse it later
                     horses.splice(horseIndex, 1)
                 } else {
-                    this.classWarning[section_id] = true
                     // If no horse was matched just assign default horse to the rider
                     this.classDraw[section_id]['riders'].push({ 'rider': rider, 'horse': this.DEFAULTHORSE })
                 }
@@ -182,7 +196,6 @@ export default {
                 this.classDraw[section_id]['showClass'] = this.ridersData[section_id].showClass
                 this.classDraw[section_id]['class'] = this.ridersData[section_id].class
                 this.classDraw[section_id]['section'] = this.ridersData[section_id].section
-                this.classWarning[section_id] = false
                 const riders = this.ridersData[section_id].riders;
                 const horses = section_id in this.horsesData ? this.horsesData[section_id].horses : []
 
