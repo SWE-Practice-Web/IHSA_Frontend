@@ -1,5 +1,5 @@
 <template>
-    <div class="container mt-3 bg-secondary rounded w-75">
+    <div class="container mt-3 bg-secondary rounded w-75" id="eventInfo">
         <div class="col">
             <div class="row">
                 <div class="input-group m-2">
@@ -10,16 +10,25 @@
             <div class="row">
                 <div class="input-group m-2">
                     <span class="input-group-text fs-3">Admins</span>
-                    <input type="text" class="form-control fs-3" :value="selectedAdmins">
-                    <select class="select w-100"  @change="onChange" multiple>
-                        <option v-for="admin in admins" :value="admin" :key="admin" class="fs-3">{{ admin }}</option>
-                    </select>
+                </div>
+            </div>
+            <div class="row"></div>
+                <ul class="list-group">
+                    <li class="list-group-item m-2 rounded d-flex justify-content-start" v-for="admin in admins" :key="admin">
+                        <input class="form-check-input fs-3 mx-3" type="checkbox" :value="admin" v-bind:checked="eventSelected.admins.includes(admin)">
+                        <label class="form-check-label fs-3">{{ admin }}</label>
+                    </li>
+                </ul>
+            <div class="row">
+                <div class="input-group m-2">
+                    <span class="input-group-text fs-3">Date</span>
+                    <input type="date" class="form-control fs-3" :value="eventSelected.date">
                 </div>
             </div>
             <div class="row">
                 <div class="input-group m-2">
-                    <span class="input-group-text fs-3">Date</span>
-                    <input type="text" class="form-control fs-3" :value="eventSelected.date">
+                    <span class="input-group-text fs-3">Riding Patterns</span>
+                    <input type="text" class="form-control fs-3" :value="eventSelected.ridingPattern">
                 </div>
             </div>
             <div class="row">
@@ -28,37 +37,42 @@
                     <input type="text" class="form-control fs-3" :value="eventSelected.description">
                 </div>
             </div>
+            <div v-if="eventSelected.id != -1" class="row d-flex justify-content-end">
+                <button class="btn btn-success m-2 fs-3" style="width:200px;" @click="saveEventInfo(eventSelected.id, admins.length)">Save Changes</button>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
-import { ref } from 'vue' 
-
 export default {
     setup() {
-        let admins = ['Bert Young', 'Brenda Ghost', 'Jackie Brown']
-        let selectedAdmins = ref([])
-
-        return {
-            admins,
-            selectedAdmins,
-        }
     },
     methods: {
-        onChange: function(event) {
-            let selected = event.target.selectedOptions
-            let temp = []
-            
-            for (let i = 0; i < selected.length; i++)
-            {
-                let admin = selected[i].value
-                temp.push(admin)
+        saveEventInfo: function(eventId, numAdmins) {
+            let eventInfo = document.getElementById('eventInfo')
+            let inputs = eventInfo.querySelectorAll('input')
+            let eventName = inputs[0].value
+            let eventAdmins = []
+            for (let i = 1; i < numAdmins + 1; i++) {
+                if (inputs[i].checked) {
+                    eventAdmins.push(inputs[i].value)
+                }
             }
-            this.selectedAdmins = temp
+            let eventDate = inputs[numAdmins+1].value
+            let eventPatterns = inputs[numAdmins+2].value.split(',').map(word => word.trim())
+            let eventDescription = inputs[numAdmins+3].value
+
+            // use this info to write to db
+            console.log('eventID: ' + eventId)
+            console.log('eventName: ' + eventName)
+            console.log('eventAdmins: ' + eventAdmins)
+            console.log('eventDate: ' + eventDate)
+            console.log('eventPatterns: ' + eventPatterns)
+            console.log('eventDescription: ' + eventDescription)
         }
     },
-    props: ['eventSelected'],
+    props: ['eventSelected', 'admins'],
     name: 'eventInfoTable',
 }
 </script>

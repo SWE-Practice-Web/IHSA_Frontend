@@ -4,7 +4,7 @@
             <div class="col">
             </div>
             <div class="col">
-                <button class="btn btn-lg fs-5 bg-success" @click="createNew">Create New Event</button>
+                <button class="btn btn-lg fs-5 bg-success" data-bs-toggle="modal" data-bs-target="#createNewModal">Create New Event</button>
             </div>
         </div>
         <div class="row pt-3">
@@ -27,10 +27,20 @@
     <manageEventRiders v-if="aspectSelected=='riders'" />
     <manageEventHorses v-if="aspectSelected=='horses'" />
     <manageEventClasses v-if="aspectSelected=='classes'" />
-    <div class="modal" id="createNewModal">
+    <div class="modal bg-secondary" id="createNewModal">
         <div class="modal-xl modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-                <eventInfoTable :eventSelected="{ id: null, name: null, date: null, description: null, riders: null}"/>
+                <div class="modal-header">
+                    <div class="modal-title fs-3">New Event</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <eventInfoTable :eventSelected="{ id: -1, name: '', admins: [], date: '', ridingPattern: [], description: ''}" :admins="admins"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-lg btn-primary" data-bs-dismiss="modal" @click="createEvent">Save changes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -47,23 +57,39 @@ export default {
     name: 'ManageEventPage',
     setup() {
         let events = reactive([
-            { id: 1, name: 'Black Hawk College Western Show', date: '03/26/2023', description: 'Saturday show at Black Hawk College', riders: [{id: 123, name: 'BHShow Rider 1', university: 'Truman State', isHeight: false, isWeight: false}, {id: 553, name: 'BHShow Rider 2', university: 'UMKC', isHeight: false, isWeight: true}, {id: 122, name: 'BHShow Rider 3', university: 'Graceland U', isHeight: false, isWeight: false}]},
-            { id: 2, name: 'Iowa State Western Show', date: '02/14/2023', description: 'Annual Iowa State Western show', riders: [{id: 653, name: 'Iowa State Show Rider 1', university: 'MWSU', isHeight: true, isWeight: true}, {id: 900, name: 'Iowa State Rider 2', university: 'UCM', isHeight: false, isWeight: true}, {id: 993, name: 'Iowa State Show Rider 3', university: 'Iowa State', isHeight: true, isWeight: false}]},
-            { id: 3, name: 'Northwest MO State Western Show', date: '01/19/2023', description: 'Saturday afternoon show in Maryville, MO', riders: [{id: 123, name: 'NWShow Rider 1', university: 'BlackHawk', isHeight: true, isWeight: false}, {id: 234, name: 'NWShow Rider 2', university: 'NWMSU', isHeight: false, isWeight: false}, {id: 444, name: 'NWShow Rider 3', university: 'Iowa State', isHeight: true, isWeight: true}]},
+            { id: 1, name: 'Black Hawk College Western Show', admins: ['Bert Young'], date: '2023-04-06', ridingPattern: ['linkToPattern1.pdf', 'linkToPatter2.pdf'], description: 'Saturday show at Black Hawk College'},
+            { id: 2, name: 'Iowa State Western Show', admins: ['Brenda Ghost'], date: '2023-04-05', ridingPattern: ['linkToPattern3.pdf', 'linkToPattern4.pdf'], description: 'Annual Iowa State Western show'},
+            { id: 3, name: 'Northwest MO State Western Show', admins: ['Jackie Brown'], date: '2023-04-03', ridingPattern: ['linkToPattern5.pdf', 'linkToPatter6.pdf'], description: 'Saturday afternoon show in Maryville, MO'},
         ])
+        let admins = ['Bert Young', 'Brenda Ghost', 'Jackie Brown']
         let eventSelected = ref(null)
         let aspectSelected = ref(null)
 
         return {
             events,
+            admins,
             eventSelected,
             aspectSelected,
         }
     },
     methods: {
-        createNew: function() {
-            let createModal = document.getElementById('createNewModal')
-            createModal.style.display = 'block'
+        // is called after save button is clicked when creating a new event, save to db?
+        createEvent: function() {
+            let createNewModal = document.getElementById('createNewModal')
+            let inputs = createNewModal.querySelectorAll('input')
+            let numAdmins = this.admins.length
+            let eventName = inputs[0].value
+            let eventAdmins = []
+            for (let i = 1; i < numAdmins + 1; i++) {
+                if (inputs[i].checked) {
+                    eventAdmins.push(inputs[i].value)
+                }
+            }
+            let eventDate = inputs[numAdmins+1].value
+            let eventPatterns = inputs[numAdmins+2].value.split(',').map(word => word.trim())
+            let eventDescription = inputs[numAdmins+3].value
+            let newEvent = { id:888, name: eventName, admins: eventAdmins, date: eventDate, ridingPattern: eventPatterns, description: eventDescription}
+            this.events.push(newEvent)
         }
     },
     components: {
