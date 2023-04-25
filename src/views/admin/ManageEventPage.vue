@@ -4,7 +4,7 @@
             <div class="col">
             </div>
             <div class="col">
-                <button class="btn btn-lg fs-5 bg-success" data-bs-toggle="modal" data-bs-target="#createNewModal">Create New Event</button>
+                <button class="btn btn-lg fs-5 bg-success" style="color:white;" data-bs-toggle="modal" data-bs-target="#createNewModal">Create New Event</button>
             </div>
         </div>
         <div class="row pt-3">
@@ -88,6 +88,8 @@ export default {
             let eventDate = inputs[numAdmins+1].value
             let eventPatterns = inputs[numAdmins+2].value.split(',').map(word => word.trim())
             let eventDescription = inputs[numAdmins+3].value
+
+            // TODO update the db with the new event
             let newEvent = { id:888, name: eventName, admins: eventAdmins, date: eventDate, ridingPattern: eventPatterns, description: eventDescription}
             this.events.push(newEvent)
         }

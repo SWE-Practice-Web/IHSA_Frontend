@@ -1,5 +1,5 @@
 <template>
-    <div class="container mt-3 bg-secondary rounded w-75" id="eventInfo">
+    <div class="container mt-3 text-bg-light rounded w-75" id="eventInfo">
         <div class="col">
             <div class="row">
                 <div class="input-group m-2">
@@ -78,5 +78,9 @@ export default {
 </script>
 
 <style>
+#eventInfo {
+    outline: 1px solid rgb(206, 206, 206);
+    background-color: rgb(235,235,235);
+}
 
 </style>
