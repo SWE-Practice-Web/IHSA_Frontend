@@ -64,7 +64,7 @@ import { Tooltip } from 'bootstrap'
 
 export default {
     name: 'manageEventClasses',
-    props:['event'],
+    props: ['event'],
     setup(props) {
         const store = useStore()
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
@@ -84,6 +84,7 @@ export default {
             eventsHorses[props.event.id] = {}
         }
         let horsesData = reactive(eventsHorses[props.event.id])
+
         // Get classDraw data
         let eventsClasses = reactive(store.state.eventsClasses)
         if (!(props.event.id in eventsClasses)) {
@@ -91,9 +92,11 @@ export default {
         }
         let classDraw = reactive(eventsClasses[props.event.id])
 
+
+
+
         let classToName = store.state.classToName
         let selectedClass = ref("null")
-
         // Initialize classDraw sections if it is not initialized yet
         for (let section_id of Object.keys(ridersData)) {
             if (section_id in classDraw) {
@@ -227,7 +230,7 @@ export default {
                 [shuffledHorses, order] = this.matchRiders(order, section_id, ridersRegular, shuffledHorses, filterFunc4)
             }
 
-            // this.postEventClasses()
+            this.postEventClasses()
         },
 
 
@@ -297,7 +300,19 @@ export default {
                 ret_i += 1
             }
 
-            this.$axios.post('/event/0/BatchAddEventOrder', ret)
+            this.$axios.post(`/event/${this.event.id}/BatchAddEventOrder`, ret)
+                .then(() => {
+                    this.$notify({
+                        title: 'Success updating class draw',
+                        type: 'success'
+                    });
+                }).catch((err) => {
+                    this.$notify({
+                        title: 'Error',
+                        text: `Error updating class draw: ${err}`,
+                        type: 'error'
+                    });
+                })
             // fs.writeFileSync('./classDraw-2.json', JSON.stringify(ret, null, 2), 'utf8')
         },
 

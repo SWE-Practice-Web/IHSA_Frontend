@@ -101,6 +101,7 @@
 
 <script>
 import { reactive, ref } from 'vue'
+import { useStore } from 'vuex'
 import { Modal } from 'bootstrap';
 import eventInfoTable from '../../components/manageEventInfo.vue'
 import manageEventRiders from '../../components/manageEventRiders.vue'
@@ -119,10 +120,12 @@ const EMPTY_EVENT = {
 export default {
     name: 'ManageEventPage',
     setup() {
+        const store = useStore()
         let events = reactive([])
         let selectedEvent = ref(null)
         let aspectSelected = ref("info")
         let newEvent = ref(EMPTY_EVENT)
+        let eventsClasses = reactive(store.state.eventsClasses)
         return {
             aspectSelected,
             views: {
@@ -136,7 +139,8 @@ export default {
             newEvent,
             eventData,
             EMPTY_EVENT,
-            Modal
+            Modal,
+            eventsClasses
         }
     },
     async mounted() {
@@ -144,8 +148,14 @@ export default {
         this.loader.show()
         await this.getEvents()
             .then((res) => {
+                // Add events to events list
                 this.events.push(...res.data)
+                // Select latest event
                 this.selectedEvent = this.sortedEvents[0]
+                // Add event draws to store eventsClasses
+                for (let id of Object.keys(this.events)) {
+                    this.formatClassDraw(this.events[id])
+                }
             })
             .catch(err => console.log(err))
         this.loader.hide()
@@ -180,6 +190,39 @@ export default {
                         type: 'error'
                     });
                 })
+        },
+
+
+        formatClassDraw(eventInfo) {
+            eventInfo.classDraw = {}
+            for (let section of eventInfo.eventOrder) {
+                let riders = section.pairs.map((pair) => {
+                    let rider = {
+                        "id": pair.riderId,
+                        "name": pair.riderName,
+                        "school": pair.riderSchool,
+                        "placing": pair.placing,
+                        "isHeight": null,
+                        "isWeight": null,
+                        "order": pair.order
+                    }
+                    let horse = {
+                        "name": pair.horseName,
+                        "provider": pair.horseProvider,
+                        "takesHeight": null,
+                        "takesWeight": null
+                    }
+                    return { 'rider': rider, "horse": horse }
+                })
+                eventInfo.classDraw[`${section.class} ${section.section}`] = {
+                    'showClass': section.showClass,
+                    'class': section.class,
+                    'section': section.section,
+                    'riders': riders
+                }
+            }
+
+            this.eventsClasses[eventInfo.id] = eventInfo.classDraw
         }
     },
     components: {

@@ -83,7 +83,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="school in schoolsInSelectedRegion()" :key="school.featureId">
+                        <tr v-for="school in schoolsInSelectedRegion" :key="school.featureId">
                             <td><a class='kinda-link' @click='selectSchoolInMap(school.featureId)'>{{ school.schoolName
                             }}</a></td>
                             <td>{{ school.numOfRiders == "" ? 0 : school.numOfRiders }}</td>
@@ -142,6 +142,7 @@ import {
     reactive,
     inject
 } from 'vue'
+
 export default {
     setup() {
         const center = ref([-87.86, 42.45])
@@ -156,7 +157,7 @@ export default {
         const pointerMove = selectConditions.pointerMove;
         const clickFeature = selectConditions.click;
         const regions = ref([1, 2, 3, 4, 5])
-        let unsavedChanges = false;
+        let schoolsToUpdate = {};
         let loader;
         let ihsa_schools = reactive({})
         let lastSelectedFeature = ref(null);
@@ -230,14 +231,35 @@ export default {
             never,
             loader,
             Modal,
-            unsavedChanges
+            schoolsToUpdate
         }
     },
-    beforeUnmount() {
-        if (this.unsavedChanges) {
-            console.log("Posting unsaved changes")
+    computed: {
+        /**
+        * Function to get all schools in the current selected region.
+        *
+        */
+        schoolsInSelectedRegion() {
+            const schools = Object.values(this.schools)
+            return schools.filter(school => school.region == this.selectedRegion)
+        },
+    },
+
+    async beforeUnmount() {
+        // If there are schools to be updated, update them
+        if (Object.keys(this.schoolsToUpdate).length > 0) {
+            try {
+                await this.$axios.put("/School/BatchUpdate", Object.values(this.schoolsToUpdate))
+            } catch(err) {
+                this.$notify({
+                    title: 'Error',
+                    text: `Error saving school info: ${err}`,
+                    type: 'error'
+                });
+            }
         }
     },
+
     async mounted() {
         let schools;
         this.loader = new Modal(this.$refs.loader, {})
@@ -268,6 +290,21 @@ export default {
     },
 
     methods: {
+
+
+        addSchoolToUpdateList(feature) {
+            this.schoolsToUpdate[feature.featureId] = {
+                "schoolName": feature.schoolName,
+                "stateCode": feature.stateCode,
+                "latitude": feature.coordinates[1],
+                "longitude": feature.coordinates[0],
+                "region": feature.region,
+                "zone": feature.zone,
+                "numRiders": feature.numOfRiders,
+                "isAnchorSchool": feature.isAnchorSchool,
+                "id": feature.schoolId
+            }
+        },
 
         updateSchoolRegion(evt) {
             this.changeRegion(evt)
@@ -322,21 +359,10 @@ export default {
         * @param {object} school. School being updated
         */
         updateSchoolInfo() {
-            this.unsavedChanges = true
+            this.addSchoolToUpdateList(this.selectedFeature)
             if (this.selectedFeature.region == this.selectedRegion) {
                 this.getInformationForRegion()
             }
-        },
-
-
-
-        /**
-        * Function to get all schools in the current selected region.
-        *
-        */
-        schoolsInSelectedRegion() {
-            const schools = Object.values(this.schools)
-            return schools.filter(school => school.region == this.selectedRegion)
         },
 
 

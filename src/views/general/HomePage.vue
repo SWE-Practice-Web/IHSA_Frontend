@@ -3,10 +3,11 @@
         <div class="m-3 d-flex flex-column justify-content-center align-items-center">
             <div class="w-75 d-flex justify-content-between mt-3">
                 <div>
-                <select class="form-select form-select-lg fs-6" v-model="eventInfo">
-                    <option v-for="event in events" :value="event" :key="event.id" class="fs-3">{{ event.location }}</option>
-                </select>
-            </div>
+                    <select class="form-select form-select-lg fs-6" v-model="selectedEvent">
+                        <option v-for="event in events" :value="event" :key="event.id" class="fs-3">{{ event.location }}
+                        </option>
+                    </select>
+                </div>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Name</a></li>
                     <li><a class="dropdown-item" href="#">Age</a></li>
@@ -20,6 +21,9 @@
                             href="#">{{ ridingClass }}</a></option>
                 </select>
             </div>
+        </div>
+        <div v-if="selectedEvent" class="d-flex justify-content-center m-3">
+            <div class="fs-5 w-75 text-start">Riding patterns <a class="link-primary fs-5" :href="selectedEvent.ridingPattern">here</a></div>
         </div>
 
         <div class="m-3 d-flex flex-column justify-content-center align-items-center">
@@ -61,41 +65,87 @@
             </table>
         </div>
     </div>
+
+    <!-- Loading Modal -->
+    <div ref="loader" class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static"
+        data-bs-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
+            <div class="modal-content">
+                <div class="modal-title fs-4">Loading...</div>
+                <div class="modal-body">
+                    <div class="spinner-border" style="width:8rem; height:8rem" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
-import eventInfo from '../../../public/classDrawNew.json'
+import eventData from '../../../public/classDrawNew.json'
 import { useStore } from 'vuex'
 import { ref, reactive } from 'vue'
-import { Tooltip } from 'bootstrap'
+import { Tooltip, Modal } from 'bootstrap'
+
 
 export default {
     name: 'HomePage',
     setup() {
         const store = useStore()
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
-        let events = [eventInfo]
+        let events = reactive([])
+        let selectedEvent = ref(null)
+        let eventsClasses = reactive(store.state.eventsClasses)
         let classToName = store.state.classToName
-        eventInfo.classDraw = reactive({})
         let selectedClass = ref("null")
         return {
             events,
-            eventInfo,
             classToName,
             selectedClass,
-            DEFAULTHORSE
+            selectedEvent,
+            DEFAULTHORSE,
+            eventsClasses,
+            Modal,
+            eventData
         }
     },
-    created() {
-        this.initClassDraw()
-    },
-    mounted() {
+    async mounted() {
+        this.loader = new Modal(this.$refs.loader, {})
+        this.loader.show()
+        const events = await this.getEvents()
+            .then((res) => {
+                return res.data
+            })
+            .catch(err => {
+                this.$notify({
+                    title: 'Error',
+                    text: `Error loading events: ${err}`,
+                    type: 'error'
+                });
+                return [this.eventData]
+            })
+        
+        // Add events to events list
+        this.events.push(...events)
+        // Select latest event
+        this.selectedEvent = this.sortedEvents[0]
+        // Add event draws to store eventsClasses
+        for (let id of Object.keys(this.events)) {
+            this.formatClassDraw(this.events[id])
+        }
+        this.loader.hide()
         this.activeTooltips()
     },
 
     computed: {
+        sortedEvents() {
+            return this.events.slice().sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
+        },
+
         getFilteredClasses() {
-            const sections = Object.values(this.eventInfo.classDraw)
+            if (!(this.selectedEvent)) { return [] }
+            const sections = Object.values(this.selectedEvent.classDraw)
             // return section_ids
             let filtered_sections = sections.filter((section) => section.riders.length > 0)
             if (this.selectedClass != "null") {
@@ -106,12 +156,18 @@ export default {
         },
 
         availableRidingClasses() {
-            const section_data = Object.values(this.eventInfo.classDraw)
+            if (!(this.selectedEvent)) { return [] }
+            const section_data = Object.values(this.selectedEvent.classDraw)
             // return section_ids
             return [...new Set(section_data.map((section_data) => this.classToName[section_data.class]))]
         }
     },
     methods: {
+
+        async getEvents() {
+            return this.$axios.get("/Event")
+        },
+
         activeTooltips() {
             // Activate bootstrap tooltips
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -124,8 +180,9 @@ export default {
             return draw.horse.name == this.DEFAULTHORSE.name && draw.horse.provider == this.DEFAULTHORSE.provider;
         },
 
-        initClassDraw() {
-            for (let section of eventInfo.eventOrder) {
+        formatClassDraw(selectedEvent) {
+            selectedEvent.classDraw = {}
+            for (let section of selectedEvent.eventOrder) {
                 let riders = section.pairs.map((pair) => {
                     let rider = {
                         "id": pair.riderId,
@@ -144,14 +201,15 @@ export default {
                     }
                     return { 'rider': rider, "horse": horse }
                 })
-
-                this.eventInfo.classDraw[`${section.class} ${section.section}`] = {
+                selectedEvent.classDraw[`${section.class} ${section.section}`] = {
                     'showClass': section.showClass,
                     'class': section.class,
                     'section': section.section,
                     'riders': riders
                 }
             }
+
+            this.eventsClasses[selectedEvent.id] = selectedEvent.classDraw
         }
     }
 }
@@ -160,6 +218,6 @@ export default {
 
 <style>
 .backgroundColor {
-  background-color: rgb(234, 242, 255);
+    background-color: rgb(234, 242, 255);
 }
 </style>

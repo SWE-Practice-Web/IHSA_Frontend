@@ -105,7 +105,7 @@ import { Tooltip } from 'bootstrap';
 
 export default {
     name: 'manageEventRiders',
-    props:['event'],
+    props: ['event'],
     setup(props) {
         const store = useStore()
         const templateInfo = "Click here to see format rules and access a csv template."
@@ -113,7 +113,7 @@ export default {
         let data = null
         let classToName = store.state.classToName
         let selectedClass = ref("null")
-        
+
         let eventsRiders = reactive(store.state.eventsRiders)
         if (!(props.event.id in eventsRiders)) {
             eventsRiders[props.event.id] = {}
@@ -220,12 +220,6 @@ export default {
                     text: `Error loading riders`,
                     type: 'error'
                 });
-            } else {
-                this.$notify({
-                    title: 'Success',
-                    text: `Riders uploaded succesfully`,
-                    type: 'success'
-                });
             }
 
             this.postRiders()
@@ -239,7 +233,13 @@ export default {
                 ridersData = ridersData.concat(classData.riders)
             }
 
-            let postData = ridersData.map((rider) => {
+            let riders = []
+            let uniqueIds = new Set()
+            for (let rider of ridersData) {
+                if (uniqueIds.has(rider.id)) {
+                    continue
+                }
+                uniqueIds.add(rider.id)
                 let names = rider.name.split(" ")
                 let riderObj = {
                     "username": `${rider.name}`,
@@ -256,10 +256,22 @@ export default {
                     ],
                     "playsFor": rider.school
                 }
-                return riderObj
-            })
+                riders.push(riderObj)
+            }
 
-            // this.$axios.post('/Rider/BatchCreate', postData)
+            this.$axios.post('/Rider/BatchCreate', riders)
+                .then(() => {
+                    this.$notify({
+                        title: 'Success posting riders data',
+                        type: 'success'
+                    });
+                }).catch((err) => {
+                    this.$notify({
+                        title: 'Error',
+                        text: `Error posting riders data: ${err}`,
+                        type: 'error'
+                    });
+                })
 
         }
 
@@ -284,4 +296,5 @@ export default {
 /* hover state */
 /* .icon:hover {
     transform: scale(1.3);
-} */</style>
+} */
+</style>

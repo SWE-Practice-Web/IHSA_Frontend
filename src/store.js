@@ -26,8 +26,13 @@ const ridingClasses = {
 
 
 
-export const store = createStore({
+const store = createStore({
   state: {
+    role: 1,
+    numToRole: {
+      1: 'user',
+      4: 'admin'
+    },
     eventsRiders: {},
     eventsHorses: {},
     eventsClasses: {},
@@ -35,3 +40,9 @@ export const store = createStore({
     classToName: ridingClasses
   }
 });
+
+export default function () {
+  return store
+}
+
+export { store }

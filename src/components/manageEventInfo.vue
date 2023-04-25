@@ -26,14 +26,19 @@
                 </div>
             </div>
         </div>
-        <button class="btn btn-lg btn-primary fs-4 mt-2" @click="updateEvent">
-            Save Event
-        </button>
+        <div class="d-flex justify-content-between">
+            <button class="btn btn-lg btn-primary fs-4 mt-2" @click="deleteEvent">
+                Delete Event
+            </button>
+            <button class="btn btn-lg btn-primary fs-4 mt-2" @click="updateEvent">
+                Save Event
+            </button>
+        </div>
     </div>
 </template>
 
 <script>
-import { ref } from 'vue' 
+import { ref } from 'vue'
 
 export default {
     name: 'eventInfoTable',
@@ -69,11 +74,26 @@ export default {
                         type: 'error'
                     });
                 })
+        },
+
+        deleteEvent() {
+            this.$axios.delete(`/Event/${this.eventInfo.id}`)
+                .then(() => {
+                    this.$notify({
+                        title: 'Success deleting event',
+                        type: 'success'
+                    });
+                    this.$router.go()
+                }).catch((err) => {
+                    this.$notify({
+                        title: 'Error',
+                        text: `Error deleting event: ${err}`,
+                        type: 'error'
+                    });
+                })
         }
     },
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

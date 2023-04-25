@@ -18,16 +18,16 @@
                         <router-link class="nav-link" to="/announcements">Announcements</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/manage">Manage Events</router-link>
+                        <router-link class="nav-link" v-if="role=='user'" to="/manage">Manage Events</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/hManage">Manage Horse Information</router-link>
+                        <router-link class="nav-link" v-if="role=='user'" to="/hManage">Manage Horse Information</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="rManage">Manage Rider Information</router-link>
+                        <router-link class="nav-link" v-if="role=='user'" to="rManage">Manage Rider Information</router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link class="nav-link" to="/permissions">Manage Permissions</router-link>
+                        <router-link class="nav-link" v-if="role=='user'" to="/permissions">Manage Permissions</router-link>
                     </li>
                 </div>
                 <div class="pe-3">
@@ -54,9 +54,19 @@
   
 <script>
 
+import { useStore } from 'vuex'
+
 export default {
     name: 'NavBar',
     components: {
+    },
+    setup() {
+        const store = useStore()
+        const numToRole = store.state.numToRole
+        const role = numToRole[store.state.numToRole]
+        return {
+            role
+        }
     }
 }
 </script>
