@@ -23,7 +23,7 @@
             </div>
         </div>
         <div v-if="selectedEvent" class="d-flex justify-content-center m-3">
-            <div class="fs-5 w-75 text-start">Riding patterns <a class="link-primary fs-5" :href="selectedEvent.ridingPattern">here</a></div>
+            <div class="fs-5 w-75 text-start">Riding patterns <a class="link-primary fs-5" :href="selectedEvent.ridingPattern" target="_blank">here</a></div>
         </div>
 
         <div class="m-3 d-flex flex-column justify-content-center align-items-center">
@@ -33,7 +33,7 @@
                     <tr>
                         <th scope="col" colspan="7">
                             {{ section.showClass }} - {{ classToName[section.class] }} - {{
-                                section.section }} - {{ role }}
+                                section.section }}
                             <a class="p-2" data-bs-toggle="tooltip" data-bs-placement="top"
                                 title="This class does not have enough horses" v-if="section.riders.some(noHorseAssigned)">
                                 <font-awesome-icon style="color: yellow" class="icon"
@@ -93,7 +93,6 @@ export default {
     name: 'HomePage',
     setup() {
         const store = useStore()
-        let role = ref(store.state.role)
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
         let events = reactive([])
         let selectedEvent = ref(null)
@@ -108,8 +107,7 @@ export default {
             DEFAULTHORSE,
             eventsClasses,
             Modal,
-            eventData,
-            role
+            eventData
         }
     },
     async mounted() {
@@ -190,7 +188,7 @@ export default {
                         "id": pair.riderId,
                         "name": pair.riderName,
                         "school": pair.riderSchool,
-                        "placing": pair.placing,
+                        "placing": pair.riderPlacing,
                         "isHeight": null,
                         "isWeight": null,
                         "order": pair.order

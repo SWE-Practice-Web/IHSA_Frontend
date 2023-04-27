@@ -51,6 +51,7 @@ export default {
           this.$axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
           this.$store.commit('setRole', response.data.user.role)
           this.$store.commit('setAuth', true)
+          this.$store.commit('setToken', response.data.token)
           this.$notify({
             title: 'Success',
             text: `Succesfully logged in`,

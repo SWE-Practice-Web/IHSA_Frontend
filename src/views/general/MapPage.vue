@@ -37,22 +37,23 @@
                 <div class="row m-1">
                     <div class="col-8 d-flex">
                         <span class="fw-bold mx-2 mt-1">School Name: </span>
-                        <input type="text" @input="updateSchoolInfo" v-model="selectedFeature.schoolName">
+                        <input type="text" @input="updateSchoolInfo" v-model="selectedFeature.schoolName" :disabled="!hasEditAcces()">
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2  mt-1">Is Anchor School: </span>
-                        <input type="checkbox" @change="updateSchoolAnchor(selectedFeature)"
+                        <input type="checkbox" @change="updateSchoolAnchor(selectedFeature)" :disabled="!hasEditAcces()"
                             v-model="selectedFeature.isAnchorSchool">
                     </div>
                 </div>
                 <div class="row m-1">
                     <div class="col-8 d-flex">
                         <span class="fw-bold mx-2 mt-1">Number of Riders: </span>
-                        <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)" v-model="selectedFeature.numOfRiders">
+                        <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)" 
+                        v-model="selectedFeature.numOfRiders" :disabled="!hasEditAcces()">
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2 mt-1">Region: </span>
-                        <select v-model="selectedFeature.region" @change="updateSchoolRegion($event)">
+                        <select v-model="selectedFeature.region" @change="updateSchoolRegion($event)" :disabled="!hasEditAcces()">
                             <option v-for="region in ['N/A', ...regions]" :value="region" :key="region">{{ region }}
                             </option>
                         </select>
@@ -135,6 +136,7 @@ import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
 import { never } from 'ol/events/condition'
 import { Modal } from 'bootstrap';
+import { useStore } from 'vuex'
 
 import schools_json from '../../../public/schools.json'
 import {
@@ -157,13 +159,14 @@ export default {
         const pointerMove = selectConditions.pointerMove;
         const clickFeature = selectConditions.click;
         const regions = ref([1, 2, 3, 4, 5])
+        const store = useStore()
+        let role = store.state.role
         let schoolsToUpdate = {};
         let loader;
         let ihsa_schools = reactive({})
         let lastSelectedFeature = ref(null);
         let selectedRegion = ref(1);
         let selectedSchool = ref("Please select a school")
-        let role = ref("admin")
         let selectedFeature = ref({})
         let selectOn = ref(true);
         let deleteOn = ref(false);
@@ -632,7 +635,7 @@ export default {
         * @return {Boolean} Returns a boolean indicating if the user has edit access or not.
         */
         hasEditAcces() {
-            return this.role == "admin"
+            return this.role == 4
         },
 
 
@@ -661,7 +664,7 @@ export default {
                 "schoolName": selectedSchool.schoolName,
                 "coordinates": coordinates,
                 "numOfRiders": selectedSchool.numRiders,
-                "isAnchorSchool": selectedSchool.anchorSchool,
+                "isAnchorSchool": selectedSchool.isAnchorSchool,
                 "region": selectedSchool.region,
                 "zone": selectedSchool.zone,
                 "stateCode": selectedSchool.stateCode,

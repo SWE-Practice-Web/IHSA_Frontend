@@ -39,7 +39,8 @@ export default createStore({
     eventInfo: {},
     classToName: ridingClasses,
     role: 0,
-    isAuth: false
+    isAuth: false,
+    token: null,
   },
   getters: {
     getEventsRiders: (state) => {
@@ -62,6 +63,9 @@ export default createStore({
     },
     getAuth: (state) => {
       return state.isAuth;
+    },
+    getToken: (state) => {
+      return state.token;
     },
   },
   mutations: {
@@ -86,6 +90,9 @@ export default createStore({
     setAuth: (state, isAuth) => {
       state.isAuth = isAuth;
     },
+    setToken: (state, token) => {
+      state.token = token;
+    },
   },
   actions: {
     setEventsRiders: ({ commit }, riders) => {
@@ -108,6 +115,9 @@ export default createStore({
     },
     setAuth: ({ commit }, isAuth) => {
       commit("setAuth", isAuth);
+    },
+    setToken: ({ commit }, token) => {
+      commit("setToken", token);
     },
   },
 });

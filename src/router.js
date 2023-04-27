@@ -6,14 +6,10 @@ import SignupPage from "./views/auth/SignupPage.vue"
 import AnnouncementPage from "./views/general/AnnouncementPage.vue"
 import ManageHorsePage from "./views/admin/ManageHorsePage.vue"
 import ManageEventPage from "./views/admin/ManageEventPage.vue"
+import manageEventClasses from "./components/manageEventClasses.vue"
 import ManagePermissions from "./views/admin/ManagePermissionsPage.vue"
 import ManageRiderPage from "./views/admin/ManageRiderPage.vue"
 import store from './store'
-const role = store.state.role
-
-function isAdmin() {
-    return role == 4
-}
 
 const routes = [
   { path: "/", component: HomePage },
@@ -21,19 +17,30 @@ const routes = [
   { path: "/login", component: LoginPage },
   { path: "/signup", component: SignupPage },
   { path: "/announcements", component: AnnouncementPage },
-  { path: "/manage", component: ManageEventPage, beforeEnter: [isAdmin] },
-  { path: "/hManage", component: ManageHorsePage, beforeEnter: [isAdmin] },
+  { path: "/manage", component: ManageEventPage, meta: { requiresAuth: true }},
+  { path: "/manageEventClasses", component: manageEventClasses, meta: { requiresAuth: true }},
+  { path: "/hManage", component: ManageHorsePage, meta: { requiresAuth: true } },
   {
     path: "/permissions",
     component: ManagePermissions,
-    beforeEnter: [isAdmin],
+    meta: { requiresAuth: true },
   },
-  { path: "/rManage", component: ManageRiderPage, beforeEnter: [isAdmin] },
+  { path: "/rManage", component: ManageRiderPage, meta: { requiresAuth: true } },
 ];
 
 const router = VueRouter.createRouter({
   history: VueRouter.createWebHashHistory(),
   routes,
 });
+
+router.beforeEach((to) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (store.getters.getRole != 4) {
+      return false
+    } 
+  } 
+  return true
+});
+
 
 export default router;

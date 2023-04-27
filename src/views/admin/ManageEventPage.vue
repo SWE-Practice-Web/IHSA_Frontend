@@ -201,7 +201,7 @@ export default {
                         "id": pair.riderId,
                         "name": pair.riderName,
                         "school": pair.riderSchool,
-                        "placing": pair.placing,
+                        "placing": pair.riderPlacing,
                         "isHeight": null,
                         "isWeight": null,
                         "order": pair.order

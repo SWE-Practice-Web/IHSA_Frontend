@@ -85,7 +85,7 @@ export default {
             text: `Succesfully logged out`,
             type: 'success'
           });
-          this.$router.go()
+          this.$router.push({path: '/'})
         }
     }
 }

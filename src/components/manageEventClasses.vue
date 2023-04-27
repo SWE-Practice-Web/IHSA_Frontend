@@ -122,7 +122,7 @@ export default {
     },
     beforeUnmount() {
         if (this.notSavedInfo) {
-            this.postPlacings()
+            this.updatePlacings()
         }
     },
     computed: {
@@ -317,8 +317,38 @@ export default {
         },
 
 
-        postPlacings() {
-            console.log("Posting placings")
+        updatePlacings() {
+            const riders = this.classDraw
+            var ret = []
+            var ret_i = 0
+
+            for (let i in riders) {
+                ret.push({
+                    showClass: riders[i].showClass,
+                    class: riders[i].class,
+                    section: riders[i].section,
+                    pairs: []
+                })
+
+                for (let pair of riders[i].riders) {
+                    ret[ret_i].pairs.push({
+                        riderId: pair.rider.id,
+                        riderPlacing: pair.rider.placing,
+                        order: pair.rider.order,
+                        horseName: pair.horse.name,
+                        horseProvider: pair.horse.provider
+                    })
+                }
+
+                ret_i += 1
+            }
+            return this.$axios.put(`/Event/${this.event.id}/BatchUpdateEventOrder`, ret)
+                .then(() => {
+                    return {error: null}
+                })
+                .catch((err) => {
+                    return {error: err}
+                })
         }
     }
 }

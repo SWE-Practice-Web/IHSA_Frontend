@@ -15,6 +15,11 @@ export default {
   components: {
     NavBar
   },
+  created() {
+    let token = this.$store.getters.getToken
+    this.$axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    // we should authorize token here by making API call if the token is invalid then clear localStorage and redirect to login page
+  },
   computed: {
     ...mapGetters(["getRole"])
   }
