@@ -7,23 +7,23 @@
             <img alt="IHSA logo" src="../../assets/ihsalogo.png" height="150" width="200">
             <div>
               <br>
-              <div class="login">
+              <form @submit.prevent="login" class="login">
                 <h5>
-                Username
+                  Username
                 </h5>
-                <input type="username" id="username" placeholder="Username">
+                <input type="username" v-model="username" placeholder="Username" autocomplete="on">
                 <h5>
-                Password
+                  Password
                 </h5>
-                <input type="password" id="password" placeholder="Password">
+                <input type="password" v-model="password" placeholder="Password" autocomplete="on">
                 <br>
                 <button class="btn btn-dark" type="submit">Login</button>
                 <br>
                 <br>
                 <p>Don't have an account? <router-link class="nav-link" to="/Signup">Sign up here</router-link> </p>
-              </div>
-            </div> 
-          </div> 
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -32,11 +32,39 @@
 
 
 <script>
-
+import { useStore } from 'vuex'
+import {computed} from 'vue'
 export default {
   name: 'LoginPage',
-  props: {
-    msg: String
+  setup() {
+    const store = useStore()
+    return {
+      username: null,
+      password: null,
+      role: computed(() => store.getters.getRole)
+    }
+  },
+  methods: {
+    login() {
+      this.$axios.post('/User/Login', {username: this.username, password: this.password})
+        .then(async (response) => {
+          this.$axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
+          this.$store.commit('setRole', response.data.user.role)
+          this.$store.commit('setAuth', true)
+          this.$notify({
+            title: 'Success',
+            text: `Succesfully logged in`,
+            type: 'success'
+          });
+          this.$router.push({path: '/'})
+        }).catch(() => {
+          this.$notify({
+            title: 'Error',
+            text: `Error attempting to log in`,
+            type: 'error'
+          });
+        })
+    }
   }
 }
 </script>
@@ -77,7 +105,7 @@ a {
   height: 93vh;
   width: 100%;
   background-image: url("../../assets/ihsabackground.jpg");
-  background-size:cover;
+  background-size: cover;
   display: flex;
   align-items: center;
   justify-content: center;

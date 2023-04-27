@@ -22,7 +22,8 @@
     "vue": "^3.0.0",
     "vue-router": "^4.1.6",
     "vue3-openlayers": "^0.1.71",
-    "vuex": "^4.1.0"
+    "vuex": "^4.1.0",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.12",

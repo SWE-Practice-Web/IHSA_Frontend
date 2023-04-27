@@ -1,18 +1,22 @@
 <template>
   <div>
     <notifications class="m-2"/>
-    <NavBar class="fixed-top"/>
+    <NavBar :key="getRole" class="fixed-top"/>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 import NavBar from './views/general/NavBar.vue'
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'App',
   components: {
     NavBar
+  },
+  computed: {
+    ...mapGetters(["getRole"])
   }
 }
 </script>

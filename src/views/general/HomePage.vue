@@ -33,7 +33,7 @@
                     <tr>
                         <th scope="col" colspan="7">
                             {{ section.showClass }} - {{ classToName[section.class] }} - {{
-                                section.section }}
+                                section.section }} - {{ role }}
                             <a class="p-2" data-bs-toggle="tooltip" data-bs-placement="top"
                                 title="This class does not have enough horses" v-if="section.riders.some(noHorseAssigned)">
                                 <font-awesome-icon style="color: yellow" class="icon"
@@ -93,6 +93,7 @@ export default {
     name: 'HomePage',
     setup() {
         const store = useStore()
+        let role = ref(store.state.role)
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
         let events = reactive([])
         let selectedEvent = ref(null)
@@ -107,7 +108,8 @@ export default {
             DEFAULTHORSE,
             eventsClasses,
             Modal,
-            eventData
+            eventData,
+            role
         }
     },
     async mounted() {

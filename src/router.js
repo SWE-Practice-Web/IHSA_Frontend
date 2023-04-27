@@ -8,12 +8,11 @@ import ManageHorsePage from "./views/admin/ManageHorsePage.vue"
 import ManageEventPage from "./views/admin/ManageEventPage.vue"
 import ManagePermissions from "./views/admin/ManagePermissionsPage.vue"
 import ManageRiderPage from "./views/admin/ManageRiderPage.vue"
-import { store } from './store'
-const numToRole = store.state.numToRole
-const role = numToRole[store.state.numToRole]
+import store from './store'
+const role = store.state.role
 
 function isAdmin() {
-    return role == "admin"
+    return role == 4
 }
 
 const routes = [

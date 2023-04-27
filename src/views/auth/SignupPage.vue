@@ -5,31 +5,22 @@
         <div class="card">
           <div class="hello">
             <img alt="IHSA logo" src="../../assets/ihsalogo.png" height="150" width="200">
-            <div>
+            <form @submit="signup">
               <br>
-              <div class="signup">
-                <h5>
-                  Username
-                </h5>
-                <input type="username" id="username" placeholder="Username">
-                <h5>
-                  Email
-                </h5>
-                <input type="email" id="email" placeholder="Email">
-                <h5>
-                  Password
-                </h5>
-                <input type="password" id="password" placeholder="Password">
-                <h5>
-                  Confirm Password
-                </h5>
-                <input type="password" id="password" placeholder="Password">
+              <div class="signup d-flex flex-column justify-content-center align-items-center">
+                <div class="d-flex flex-column w-75">
+                  <input type="given-name" v-model="firstName" placeholder="First name" autocomplete="on" required>
+                  <input type="family-name" v-model="lastName" placeholder="Last Name" autocomplete="on" required>
+                  <input type="username" v-model="userName" placeholder="Username" autocomplete="on" required>
+                  <input type="email" v-model="email" placeholder="Email" autocomplete="on" required>
+                  <input type="password" v-model="passwordOriginal" placeholder="Password" autocomplete="on" required>
+                  <input type="password" v-model="passwordConfirmed" placeholder="Confirm Password" autocomplete="on" required>
+                </div>
                 <br>
-                <br>
-                <button class="btn btn-dark" type="submit">Signup</button>
+                <input role="button" type="submit" value="Submit" class="btn btn-primary"/>
                 <p>Have an account? <router-link class="nav-link" to="/Login">Login here</router-link> </p>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -42,8 +33,49 @@
 
 export default {
   name: 'SignupPage',
-  props: {
-    msg: String
+  setup() {
+    return {
+      firstName: null,
+      lastName: null,
+      userName: null,
+      passwordOriginal: null,
+      passwordConfirmed: null,
+      email:null
+    }
+  },
+  methods: {
+    signup() {
+      if (this.passwordOriginal != this.passwordConfirmed) {
+        this.$notify({
+            title: 'Error',
+            text: `Passwords don't match`,
+            type: 'error'
+          });
+        return
+      }
+      const postData = {
+        "firstName": this.firstName,
+        "lastName": this.lastName,
+        "email": this.email,
+        "username": this.userName,
+        "password": this.passwordConfirmed
+      }
+      this.$axios.post('/User/Register', postData)
+        .then(() => {
+          this.$router.push("/login")
+          this.$notify({
+            title: 'Success creating account',
+            text: `Success creating account: Please log in!`,
+            type: 'Success'
+          });
+        }).catch(() => {
+          this.$notify({
+            title: 'Error',
+            text: `Error login in`,
+            type: 'error'
+          });
+        })
+    }
   }
 }
 </script>

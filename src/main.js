@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import {store} from './store'
 import OpenLayersMap from 'vue3-openlayers'
 import Notifications from '@kyvg/vue3-notification'
 import 'vue3-openlayers/dist/vue3-openlayers.css'
@@ -13,13 +12,14 @@ library.add(faTriangleExclamation)
 library.add(faCircleInfo)
 import axios from 'axios'
 import router from './router'
+import store from './store'
 
 
 
 const app = createApp(App);
 const axiosInstance = axios.create({
   // baseURL: process.env.VUE_APP_BASE_URL,
-  baseURL: "https://localhost:49173",
+  baseURL: "https://localhost:49177",
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
