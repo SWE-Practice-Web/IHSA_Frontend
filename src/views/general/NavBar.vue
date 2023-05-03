@@ -88,6 +88,13 @@ export default {
           this.$router.push({path: '/'})
         }
     }
+    ,data(){
+        return{
+            admin: true,
+            coach: true,
+            user: false
+        }
+    }
 }
 </script>
   
