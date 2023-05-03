@@ -1,30 +1,43 @@
 <template>
   <div>
     <notifications class="m-2"/>
-    <NavBar class="fixed-top"/>
+    <NavBar :key="getRole" class="fixed-top"/>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import NavBar from './components/NavBar.vue'
+import NavBar from './views/general/NavBar.vue'
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'App',
   components: {
     NavBar
+  },
+  created() {
+    let token = this.$store.getters.getToken
+    this.$axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    // we should authorize token here by making API call if the token is invalid then clear localStorage and redirect to login page
+  },
+  computed: {
+    ...mapGetters(["getRole"])
   }
 }
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
 * {
   box-sizing: border-box;
   font-size: 0.8rem !important;
+  font-family: "Montserrat" sans-serif;
 }
 html, body {
   /* height: 100%; */
   margin: 0;
+  background-color: rgb(234, 242, 255);
 }
 
 #app {

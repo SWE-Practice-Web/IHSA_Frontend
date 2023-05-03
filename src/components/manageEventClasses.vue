@@ -2,7 +2,9 @@
     <div>
         <div class="d-flex align-items-center justify-content-center">
             <div class="d-flex w-75 justify-content-between my-3">
-                <button type="button" class="btn btn-primary fs-7" @click="assignHorses">Randomize Classes</button>
+                <button type="button" class="btn btn-primary fs-7" @click="randomize">
+                    Randomize Classes
+                </button>
                 <select v-model="selectedClass" class="form-select w-25" aria-label="Default select example">
                     <option value="null" selected>Select a class</option>
                     <option v-for="ridingClass in availableRidingClasses" :key="ridingClass"><a class="dropdown-item"
@@ -40,7 +42,8 @@
                 <tbody>
 
                     <tr v-for="data in classDraw[section_id]['riders']" :key="data.rider.id">
-                        <td><input type="number" v-model="data.rider.placing" min="0" class="w-25 text-center"></td>
+                        <td><input type="number" v-model="data.rider.placing" min="0" class="w-25 text-center"
+                                @input="this.notSavedInfo = true"></td>
                         <td>{{ data.rider.order }}</td>
                         <td>{{ data.rider.id }}</td>
                         <td>{{ data.rider.name }}</td>
@@ -57,21 +60,43 @@
 <script>
 import { ref, reactive } from 'vue'
 import { useStore } from 'vuex'
+import { Tooltip } from 'bootstrap'
 
 export default {
-    setup() {
+    name: 'manageEventClasses',
+    props: ['event'],
+    setup(props) {
         const store = useStore()
         const DEFAULTHORSE = { 'name': 'N/A', 'provider': 'N/A' }
+        let notSavedInfo = false;
         let myHover = ref(true)
         let file = null
         let data = null
-        let ridersData = reactive(store.state.eventRiders)
-        let horsesData = reactive(store.state.eventHorses)
-        let classDraw = reactive(store.state.eventClasses)
-        let classToName = store.state.classToName
-        let classWarning = {}
-        let selectedClass = ref("null")
+        // Get ridersData
+        let eventsRiders = reactive(store.state.eventsRiders)
+        if (!(props.event.id in eventsRiders)) {
+            eventsRiders[props.event.id] = {}
+        }
+        let ridersData = reactive(eventsRiders[props.event.id])
+        // Get horsesData
+        let eventsHorses = reactive(store.state.eventsHorses)
+        if (!(props.event.id in eventsHorses)) {
+            eventsHorses[props.event.id] = {}
+        }
+        let horsesData = reactive(eventsHorses[props.event.id])
 
+        // Get classDraw data
+        let eventsClasses = reactive(store.state.eventsClasses)
+        if (!(props.event.id in eventsClasses)) {
+            eventsClasses[props.event.id] = {}
+        }
+        let classDraw = reactive(eventsClasses[props.event.id])
+
+
+
+
+        let classToName = store.state.classToName
+        let selectedClass = ref("null")
         // Initialize classDraw sections if it is not initialized yet
         for (let section_id of Object.keys(ridersData)) {
             if (section_id in classDraw) {
@@ -87,14 +112,19 @@ export default {
             horsesData,
             classDraw,
             classToName,
-            classWarning,
             myHover,
             DEFAULTHORSE,
             store,
-            selectedClass
+            selectedClass,
+            notSavedInfo,
+            Tooltip
         }
     },
-    name: 'AddRiders',
+    beforeUnmount() {
+        if (this.notSavedInfo) {
+            this.updatePlacings()
+        }
+    },
     computed: {
         getFilteredClasses() {
             const section_ids = Object.keys(this.classDraw)
@@ -114,6 +144,15 @@ export default {
         }
     },
     methods: {
+        activeTooltips() {
+            // Activate bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new Tooltip(tooltipTriggerEl)
+            })
+        },
+
+
         noHorseAssigned(draw) {
             return draw.horse.name == this.DEFAULTHORSE.name && draw.horse.provider == this.DEFAULTHORSE.provider;
         },
@@ -136,7 +175,6 @@ export default {
                     // If a horse was matched with the rider we remove it from the horses array to not reuse it later
                     horses.splice(horseIndex, 1)
                 } else {
-                    this.classWarning[section_id] = true
                     // If no horse was matched just assign default horse to the rider
                     this.classDraw[section_id]['riders'].push({ 'rider': rider, 'horse': this.DEFAULTHORSE })
                 }
@@ -144,19 +182,23 @@ export default {
             return [horses, order]
         },
 
-
-        assignHorses() {
+        randomize() {
             if (!(this.randomizeReady())) {
                 return
             }
+            this.assignHorses()
+            this.activeTooltips()
 
+        },
+
+
+        assignHorses() {
             for (const section_id of Object.keys(this.ridersData)) {
-                let order = 0;
+                let order = 1;
                 this.classDraw[section_id].riders = []
                 this.classDraw[section_id]['showClass'] = this.ridersData[section_id].showClass
                 this.classDraw[section_id]['class'] = this.ridersData[section_id].class
                 this.classDraw[section_id]['section'] = this.ridersData[section_id].section
-                this.classWarning[section_id] = false
                 const riders = this.ridersData[section_id].riders;
                 const horses = section_id in this.horsesData ? this.horsesData[section_id].horses : []
 
@@ -188,6 +230,7 @@ export default {
                 [shuffledHorses, order] = this.matchRiders(order, section_id, ridersRegular, shuffledHorses, filterFunc4)
             }
 
+            this.postEventClasses()
         },
 
 
@@ -229,6 +272,84 @@ export default {
             }
             return (totalRiders > 0 && totalHorses > 0)
         },
+
+
+        postEventClasses() {
+            const riders = this.classDraw
+            var ret = []
+            var ret_i = 0
+
+            for (let i in riders) {
+                ret.push({
+                    showClass: riders[i].showClass,
+                    class: riders[i].class,
+                    section: riders[i].section,
+                    pairs: []
+                })
+
+                for (let pair of riders[i].riders) {
+                    ret[ret_i].pairs.push({
+                        riderId: pair.rider.id,
+                        riderPlacing: pair.rider.placing,
+                        order: pair.rider.order,
+                        horseName: pair.horse.name,
+                        horseProvider: pair.horse.provider
+                    })
+                }
+
+                ret_i += 1
+            }
+
+            this.$axios.post(`/event/${this.event.id}/BatchAddEventOrder`, ret)
+                .then(() => {
+                    this.$notify({
+                        title: 'Success updating class draw',
+                        type: 'success'
+                    });
+                }).catch((err) => {
+                    this.$notify({
+                        title: 'Error',
+                        text: `Error updating class draw: ${err}`,
+                        type: 'error'
+                    });
+                })
+            // fs.writeFileSync('./classDraw-2.json', JSON.stringify(ret, null, 2), 'utf8')
+        },
+
+
+        updatePlacings() {
+            const riders = this.classDraw
+            var ret = []
+            var ret_i = 0
+
+            for (let i in riders) {
+                ret.push({
+                    showClass: riders[i].showClass,
+                    class: riders[i].class,
+                    section: riders[i].section,
+                    pairs: []
+                })
+
+                for (let pair of riders[i].riders) {
+                    ret[ret_i].pairs.push({
+                        riderId: pair.rider.id,
+                        riderPlacing: pair.rider.placing,
+                        order: pair.rider.order,
+                        horseName: pair.horse.name,
+                        horseProvider: pair.horse.provider
+                    })
+                }
+
+                ret_i += 1
+            }
+            return this.$axios.put(`/Event/${this.event.id}/BatchUpdateEventOrder`, ret)
+                .then(() => {
+                    return {error: null}
+                })
+                .catch((err) => {
+                    return {error: err}
+                })
+        }
     }
 }
 </script>

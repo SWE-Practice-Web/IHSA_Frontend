@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import createPersistedState from "vuex-persistedstate";
 
 const ridingClasses = {
   "CLASS 1": "INTRODUCTORY EQUITATION",
@@ -21,16 +22,102 @@ const ridingClasses = {
   "CLASS 16": "OPEN WESTERN HORSEMANSHIP",
   "CLASS 17": "OPEN REINING",
   "CLASS 18": "ALUMNI WESTERN HORSEMANSHIP",
-  "CLASS 19": "ALUMNI RANCH RIDING"
-}
+  "CLASS 19": "ALUMNI RANCH RIDING",
+};
 
-
-
-export const store = createStore({
+// Define the store
+export default createStore({
+  plugins: [
+    createPersistedState({
+      storage: window.sessionStorage,
+    }),
+  ],
   state: {
-    eventRiders: {},
-    eventHorses: {},
-    eventClasses: {},
-    classToName: ridingClasses
-  }
+    eventsRiders: {},
+    eventsHorses: {},
+    eventsClasses: {},
+    eventInfo: {},
+    classToName: ridingClasses,
+    role: 0,
+    isAuth: false,
+    token: null,
+  },
+  getters: {
+    getEventsRiders: (state) => {
+      return state.eventsRiders;
+    },
+    getEventsHorses: (state) => {
+      return state.eventsHorses;
+    },
+    getEventsClasses: (state) => {
+      return state.eventsClasses;
+    },
+    getEventInfo: (state) => {
+      return state.eventInfo;
+    },
+    getClassToName: (state) => {
+      return state.classToName;
+    },
+    getRole: (state) => {
+      return state.role;
+    },
+    getAuth: (state) => {
+      return state.isAuth;
+    },
+    getToken: (state) => {
+      return state.token;
+    },
+  },
+  mutations: {
+    setEventsRiders: (state, riders) => {
+      state.eventsRiders = riders;
+    },
+    setEventsHorses: (state, horses) => {
+      state.eventsHorses = horses;
+    },
+    setEventsClasses: (state, classes) => {
+      state.eventsClasses = classes;
+    },
+    setEventInfo: (state, info) => {
+      state.eventInfo = info;
+    },
+    setClassToName: (state, classToName) => {
+      state.classToName = classToName;
+    },
+    setRole: (state, role) => {
+      state.role = role;
+    },
+    setAuth: (state, isAuth) => {
+      state.isAuth = isAuth;
+    },
+    setToken: (state, token) => {
+      state.token = token;
+    },
+  },
+  actions: {
+    setEventsRiders: ({ commit }, riders) => {
+      commit("setEventsRiders", riders);
+    },
+    setEventsHorses: ({ commit }, horses) => {
+      commit("setEventsHorses", horses);
+    },
+    setEventsClasses: ({ commit }, classes) => {
+      commit("setEventsClasses", classes);
+    },
+    setEventInfo: ({ commit }, info) => {
+      commit("setEventInfo", info);
+    },
+    setClassToName: ({ commit }, classToName) => {
+      commit("setClassToName", classToName);
+    },
+    setRole: ({ commit }, role) => {
+      commit("setRole", role);
+    },
+    setAuth: ({ commit }, isAuth) => {
+      commit("setAuth", isAuth);
+    },
+    setToken: ({ commit }, token) => {
+      commit("setToken", token);
+    },
+  },
 });

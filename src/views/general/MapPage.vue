@@ -37,24 +37,23 @@
                 <div class="row m-1">
                     <div class="col-8 d-flex">
                         <span class="fw-bold mx-2 mt-1">School Name: </span>
-                        <input type="text" @blur="patchSchool" @input="updateSchoolInfo"
-                            v-model="selectedFeature.schoolName">
+                        <input type="text" @input="updateSchoolInfo" v-model="selectedFeature.schoolName" :disabled="!hasEditAcces()">
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2  mt-1">Is Anchor School: </span>
-                        <input type="checkbox" @change="updateSchoolInfo(); updateMarker(selectedFeature); patchSchool()"
+                        <input type="checkbox" @change="updateSchoolAnchor(selectedFeature)" :disabled="!hasEditAcces()"
                             v-model="selectedFeature.isAnchorSchool">
                     </div>
                 </div>
                 <div class="row m-1">
                     <div class="col-8 d-flex">
                         <span class="fw-bold mx-2 mt-1">Number of Riders: </span>
-                        <input type="number" @blur="patchSchool" @input="updateSchoolInfo"
-                            @change="preventEmptyNumber(selectedFeature)" v-model="selectedFeature.numOfRiders">
+                        <input type="number" @input="updateSchoolInfo" @change="preventEmptyNumber(selectedFeature)" 
+                        v-model="selectedFeature.numOfRiders" :disabled="!hasEditAcces()">
                     </div>
                     <div class="col-4 d-flex">
                         <span class="fw-bold mx-2 mt-1">Region: </span>
-                        <select v-model="selectedFeature.region" @change="changeRegion($event); patchSchool()">
+                        <select v-model="selectedFeature.region" @change="updateSchoolRegion($event)" :disabled="!hasEditAcces()">
                             <option v-for="region in ['N/A', ...regions]" :value="region" :key="region">{{ region }}
                             </option>
                         </select>
@@ -85,7 +84,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="school in schoolsInSelectedRegion()" :key="school.featureId">
+                        <tr v-for="school in schoolsInSelectedRegion" :key="school.featureId">
                             <td><a class='kinda-link' @click='selectSchoolInMap(school.featureId)'>{{ school.schoolName
                             }}</a></td>
                             <td>{{ school.numOfRiders == "" ? 0 : school.numOfRiders }}</td>
@@ -98,9 +97,9 @@
             </div>
         </div>
 
-        <!-- Modal -->
-        <div ref="loader" class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static" data-bs-keyboard="false"
-            aria-hidden="true">
+        <!-- Loading Modal -->
+        <div ref="loader" class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+            data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
                 <div class="modal-content">
                     <div class="modal-title fs-4">Loading...</div>
@@ -116,34 +115,36 @@
 </template>
 
 <script>
-import blackMarker from '../assets/blackMarker.png' //Location icon by Icons8
-import redMarker from '../assets/redMarker.png' //Location icon by Icons8
-import brownMarker from '../assets/brownMarker.png' //Location icon by Icons8
-import greenMarker from '../assets/greenMarker.png' //Location icon by Icons8
-import bluedMarker from '../assets/blueMarker.png' //Location icon by Icons8
-import lightBlueMarker from '../assets/lightBlueMarker.png' //Location icon by Icons8
-import yellowMarker from '../assets/yellowMarker.png' //Location icon by Icons8
+import blackMarker from '../../assets/blackMarker.png' //Location icon by Icons8
+import redMarker from '../../assets/redMarker.png' //Location icon by Icons8
+import brownMarker from '../../assets/brownMarker.png' //Location icon by Icons8
+import greenMarker from '../../assets/greenMarker.png' //Location icon by Icons8
+import bluedMarker from '../../assets/blueMarker.png' //Location icon by Icons8
+import lightBlueMarker from '../../assets/lightBlueMarker.png' //Location icon by Icons8
+import yellowMarker from '../../assets/yellowMarker.png' //Location icon by Icons8
 
-import blackFlagMarker from '../assets/blackFlagMarker.png' //Location icon by Icons8
-import redFlagMarker from '../assets/redFlagMarker.png' //Location icon by Icons8
-import brownFlagMarker from '../assets/brownFlagMarker.png' //Location icon by Icons8
-import greenFlagMarker from '../assets/greenFlagMarker.png' //Location icon by Icons8
-import bluedFlagMarker from '../assets/blueFlagMarker.png' //Location icon by Icons8
-import lightBlueFlagMarker from '../assets/lightBlueFlagMarker.png' //Location icon by Icons8
-import yellowFlagMarker from '../assets/yellowFlagMarker.png' //Location icon by Icons8
+import blackFlagMarker from '../../assets/blackFlagMarker.png' //Location icon by Icons8
+import redFlagMarker from '../../assets/redFlagMarker.png' //Location icon by Icons8
+import brownFlagMarker from '../../assets/brownFlagMarker.png' //Location icon by Icons8
+import greenFlagMarker from '../../assets/greenFlagMarker.png' //Location icon by Icons8
+import bluedFlagMarker from '../../assets/blueFlagMarker.png' //Location icon by Icons8
+import lightBlueFlagMarker from '../../assets/lightBlueFlagMarker.png' //Location icon by Icons8
+import yellowFlagMarker from '../../assets/yellowFlagMarker.png' //Location icon by Icons8
 
 import * as Style from 'ol/style/'
 import { getLength } from 'ol/sphere'
 import Control from 'ol/control/Control'
 import { never } from 'ol/events/condition'
 import { Modal } from 'bootstrap';
+import { useStore } from 'vuex'
 
-import schools_json from '../../public/schools.json'
+import schools_json from '../../../public/schools.json'
 import {
     ref,
     reactive,
     inject
 } from 'vue'
+
 export default {
     setup() {
         const center = ref([-87.86, 42.45])
@@ -158,12 +159,14 @@ export default {
         const pointerMove = selectConditions.pointerMove;
         const clickFeature = selectConditions.click;
         const regions = ref([1, 2, 3, 4, 5])
+        const store = useStore()
+        let role = store.state.role
+        let schoolsToUpdate = {};
         let loader;
         let ihsa_schools = reactive({})
         let lastSelectedFeature = ref(null);
         let selectedRegion = ref(1);
         let selectedSchool = ref("Please select a school")
-        let role = ref("admin")
         let selectedFeature = ref({})
         let selectOn = ref(true);
         let deleteOn = ref(false);
@@ -230,7 +233,33 @@ export default {
             regionToMarkerAnchorSchool,
             never,
             loader,
-            Modal
+            Modal,
+            schoolsToUpdate
+        }
+    },
+    computed: {
+        /**
+        * Function to get all schools in the current selected region.
+        *
+        */
+        schoolsInSelectedRegion() {
+            const schools = Object.values(this.schools)
+            return schools.filter(school => school.region == this.selectedRegion)
+        },
+    },
+
+    async beforeUnmount() {
+        // If there are schools to be updated, update them
+        if (Object.keys(this.schoolsToUpdate).length > 0) {
+            try {
+                await this.$axios.put("/School/BatchUpdate", Object.values(this.schoolsToUpdate))
+            } catch(err) {
+                this.$notify({
+                    title: 'Error',
+                    text: `Error saving school info: ${err}`,
+                    type: 'error'
+                });
+            }
         }
     },
 
@@ -249,8 +278,8 @@ export default {
                 type: 'error'
             });
             console.log(err)
-            
-        } 
+
+        }
         this.loader.hide()
         for (let school of this.ihsa_schools) {
             this.addSchool(school)
@@ -264,6 +293,31 @@ export default {
     },
 
     methods: {
+
+
+        addSchoolToUpdateList(feature) {
+            this.schoolsToUpdate[feature.featureId] = {
+                "schoolName": feature.schoolName,
+                "stateCode": feature.stateCode,
+                "latitude": feature.coordinates[1],
+                "longitude": feature.coordinates[0],
+                "region": feature.region,
+                "zone": feature.zone,
+                "numRiders": feature.numOfRiders,
+                "isAnchorSchool": feature.isAnchorSchool,
+                "id": feature.schoolId
+            }
+        },
+
+        updateSchoolRegion(evt) {
+            this.changeRegion(evt)
+            this.updateSchoolInfo()
+        },
+
+        updateSchoolAnchor(selectedFeature) {
+            this.updateSchoolInfo()
+            this.updateMarker(selectedFeature)
+        },
 
 
         async patchSchool() {
@@ -308,20 +362,10 @@ export default {
         * @param {object} school. School being updated
         */
         updateSchoolInfo() {
+            this.addSchoolToUpdateList(this.selectedFeature)
             if (this.selectedFeature.region == this.selectedRegion) {
                 this.getInformationForRegion()
             }
-        },
-
-
-
-        /**
-        * Function to get all schools in the current selected region.
-        *
-        */
-        schoolsInSelectedRegion() {
-            const schools = Object.values(this.schools)
-            return schools.filter(school => school.region == this.selectedRegion)
         },
 
 
@@ -591,7 +635,7 @@ export default {
         * @return {Boolean} Returns a boolean indicating if the user has edit access or not.
         */
         hasEditAcces() {
-            return this.role == "admin"
+            return this.role == 4
         },
 
 
@@ -620,7 +664,7 @@ export default {
                 "schoolName": selectedSchool.schoolName,
                 "coordinates": coordinates,
                 "numOfRiders": selectedSchool.numRiders,
-                "isAnchorSchool": selectedSchool.anchorSchool,
+                "isAnchorSchool": selectedSchool.isAnchorSchool,
                 "region": selectedSchool.region,
                 "zone": selectedSchool.zone,
                 "stateCode": selectedSchool.stateCode,

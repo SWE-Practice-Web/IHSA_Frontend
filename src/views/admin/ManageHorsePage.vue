@@ -1,9 +1,9 @@
 <template>
     <div>
-        <h1>Manage Horse Information</h1>
+        <h1 class="fs-1 p-3">Manage Horse Information</h1>
         
         <div class="d-flex justify-content-center align-items-center w-100 h-100">
-            <table class="table table-striped w-50 border border-primary">
+            <table class="table table-striped w-75 border border-primary">
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">Name</th>
@@ -30,8 +30,12 @@
                 </tbody>
             </table>
         </div>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHorse">Add Horse to List</button>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadFile">Add Horse Data from .csv</button>
+        <div class="d-flex justify-content-center">
+            <div class="d-flex w-75 justify-content-between">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHorse">Add Horse to List</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadFile">Add Horse Data from .csv</button>
+            </div>
+        </div>
     </div>
 
     <!-- Modal for horse description -->

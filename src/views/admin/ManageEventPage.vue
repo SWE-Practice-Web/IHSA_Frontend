@@ -1,19 +1,24 @@
 <template>
-    <div class="container">
-        <div class="row pt-3">
-            <div class="col">
+    <div class="container1 d-flex flex-column align-items-center">
+        <div class="pt-3 w-75 d-flex flex-row justify-content-between algin-items-between">
+            <div>
+                <h2 class="fs-1 fw-bolder">Manage Events</h2>
             </div>
-            <div class="col">
-                <button class="btn btn-lg fs-5 bg-success" @click="createNew">Create New Event</button>
+            <div>
+                <button class="btn btn-lg fs-5 bg-primary" data-bs-toggle="modal" data-bs-target="#createModal"
+                    @click="initEvent">
+                    Create New Event
+                </button>
             </div>
         </div>
-        <div class="row pt-3">
-            <div class="col">
-                <select class="form-select form-select-lg fs-3" v-model="eventSelected">
-                    <option v-for="event in events" :value="event" :key="event.id" class="fs-3">{{ event.name }}</option>
+        <div class="pt-3 w-75 d-flex flex-row justify-content-between algin-items-between">
+            <div>
+                <select class="form-select form-select-lg fs-3" v-model="selectedEvent">
+                    <option v-for="event in sortedEvents" :value="event" :key="event.id" class="fs-3">{{ event.location }}
+                    </option>
                 </select>
             </div>
-            <div class="col">
+            <div>
                 <select class="form-select form-select-lg fs-3" v-model="aspectSelected">
                     <option class="fs-3" value="info">Information</option>
                     <option class="fs-3" value="riders">Riders</option>
@@ -22,15 +27,73 @@
                 </select>
             </div>
         </div>
+        <div class="w-100">
+            <component :key="selectedEvent" :is="views[aspectSelected]" :event="selectedEvent" />
+        </div>
     </div>
-    <eventInfoTable v-if="aspectSelected=='info'" :eventSelected="eventSelected" :admins="admins"/>
-    <manageEventRiders v-if="aspectSelected=='riders'" />
-    <manageEventHorses v-if="aspectSelected=='horses'" />
-    <manageEventClasses v-if="aspectSelected=='classes'" />
-    <div class="modal" id="createNewModal">
-        <div class="modal-xl modal-dialog modal-dialog-centered modal-dialog-scrollable">
+
+
+
+    <!-- Create event modal -->
+    <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
-                <eventInfoTable :eventSelected="{ id: null, name: null, date: null, description: null, riders: null}"/>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Create new event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container mt-3 p-4 bg-secondary rounded w-75">
+                        <div class="col">
+                            <div class="row">
+                                <div class="input-group m-2">
+                                    <span class="input-group-text fs-4">Name</span>
+                                    <input type="text" class="form-control fs-4" v-model="newEvent.location">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group m-2">
+                                    <span class="input-group-text fs-4">Date</span>
+                                    <input type="date" class="form-control fs-4" v-model="newEvent.eventTime">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group m-2">
+                                    <span class="input-group-text fs-4">Link to riding patterns</span>
+                                    <input type="text" class="form-control fs-4" v-model="newEvent.ridingPattern">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-group m-2">
+                                    <span class="input-group-text fs-4">Description</span>
+                                    <input type="text" class="form-control fs-4" v-model="newEvent.description">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger btn-lg fs-6 d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-success btn-lg fs-6 d-flex align-items-center justify-content-center"
+                        data-bs-dismiss="modal" @click="createEvent">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Loading Modal -->
+    <div ref="loader" class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" data-bs-backdrop="static"
+        data-bs-keyboard="false" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
+            <div class="modal-content">
+                <div class="modal-title fs-4">Loading...</div>
+                <div class="modal-body">
+                    <div class="spinner-border" style="width:8rem; height:8rem" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -38,43 +101,142 @@
 
 <script>
 import { reactive, ref } from 'vue'
-import eventInfoTable from '../../components/eventInfoTable.vue'
+import { useStore } from 'vuex'
+import { Modal } from 'bootstrap';
+import eventInfoTable from '../../components/manageEventInfo.vue'
 import manageEventRiders from '../../components/manageEventRiders.vue'
 import manageEventHorses from '../../components/manageEventHorses.vue'
 import manageEventClasses from '../../components/manageEventClasses.vue'
+import eventData from "../../../public/events.json"
+const EMPTY_EVENT = {
+    location: '',
+    eventOrder: [],
+    eventTime: '',
+    ridingPattern: '',
+    description: '',
+    zone: 0
+}
 
 export default {
     name: 'ManageEventPage',
     setup() {
-        let events = reactive([
-            { id: 1, name: 'Black Hawk College Western Show', date: '03/26/2023', description: 'Saturday show at Black Hawk College', riders: [{id: 123, name: 'BHShow Rider 1', university: 'Truman State', isHeight: false, isWeight: false}, {id: 553, name: 'BHShow Rider 2', university: 'UMKC', isHeight: false, isWeight: true}, {id: 122, name: 'BHShow Rider 3', university: 'Graceland U', isHeight: false, isWeight: false}]},
-            { id: 2, name: 'Iowa State Western Show', date: '02/14/2023', description: 'Annual Iowa State Western show', riders: [{id: 653, name: 'Iowa State Show Rider 1', university: 'MWSU', isHeight: true, isWeight: true}, {id: 900, name: 'Iowa State Rider 2', university: 'UCM', isHeight: false, isWeight: true}, {id: 993, name: 'Iowa State Show Rider 3', university: 'Iowa State', isHeight: true, isWeight: false}]},
-            { id: 3, name: 'Northwest MO State Western Show', date: '01/19/2023', description: 'Saturday afternoon show in Maryville, MO', riders: [{id: 123, name: 'NWShow Rider 1', university: 'BlackHawk', isHeight: true, isWeight: false}, {id: 234, name: 'NWShow Rider 2', university: 'NWMSU', isHeight: false, isWeight: false}, {id: 444, name: 'NWShow Rider 3', university: 'Iowa State', isHeight: true, isWeight: true}]},
-        ])
-        let eventSelected = ref(null)
-        let aspectSelected = ref(null)
-
+        const store = useStore()
+        let events = reactive([])
+        let selectedEvent = ref(null)
+        let aspectSelected = ref("info")
+        let newEvent = ref(EMPTY_EVENT)
+        let eventsClasses = reactive(store.state.eventsClasses)
         return {
-            events,
-            eventSelected,
             aspectSelected,
+            views: {
+                'info': 'eventInfoTable',
+                'riders': 'manageEventRiders',
+                'horses': 'manageEventHorses',
+                'classes': 'manageEventClasses'
+            },
+            events,
+            selectedEvent,
+            newEvent,
+            eventData,
+            EMPTY_EVENT,
+            Modal,
+            eventsClasses
+        }
+    },
+    async mounted() {
+        this.loader = new Modal(this.$refs.loader, {})
+        this.loader.show()
+        await this.getEvents()
+            .then((res) => {
+                // Add events to events list
+                this.events.push(...res.data)
+                // Select latest event
+                this.selectedEvent = this.sortedEvents[0]
+                // Add event draws to store eventsClasses
+                for (let id of Object.keys(this.events)) {
+                    this.formatClassDraw(this.events[id])
+                }
+            })
+            .catch(err => console.log(err))
+        this.loader.hide()
+    },
+    computed: {
+        sortedEvents() {
+            return this.events.slice().sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
         }
     },
     methods: {
-        createNew: function() {
-            let createModal = document.getElementById('createNewModal')
-            createModal.style.display = 'block'
+        async getEvents() {
+            return this.$axios.get("/Event")
+        },
+
+        initEvent() {
+            Object.assign(this.newEvent, this.EMPTY_EVENT)
+        },
+
+        createEvent() {
+            this.newEvent.eventTime = new Date(this.newEvent.eventTime).toISOString()
+            this.$axios.post("/Event/Create", this.newEvent)
+                .then(() => {
+                    this.$notify({
+                        title: 'Success creating event',
+                        type: 'success'
+                    });
+                    this.$router.go()
+                }).catch((err) => {
+                    this.$notify({
+                        title: 'Error',
+                        text: `Error creating event info ${err}`,
+                        type: 'error'
+                    });
+                })
+        },
+
+
+        formatClassDraw(eventInfo) {
+            eventInfo.classDraw = {}
+            for (let section of eventInfo.eventOrder) {
+                let riders = section.pairs.map((pair) => {
+                    let rider = {
+                        "id": pair.riderId,
+                        "name": pair.riderName,
+                        "school": pair.riderSchool,
+                        "placing": pair.riderPlacing,
+                        "isHeight": null,
+                        "isWeight": null,
+                        "order": pair.order
+                    }
+                    let horse = {
+                        "name": pair.horseName,
+                        "provider": pair.horseProvider,
+                        "takesHeight": null,
+                        "takesWeight": null
+                    }
+                    return { 'rider': rider, "horse": horse }
+                })
+                eventInfo.classDraw[`${section.class} ${section.section}`] = {
+                    'showClass': section.showClass,
+                    'class': section.class,
+                    'section': section.section,
+                    'riders': riders
+                }
+            }
+
+            this.eventsClasses[eventInfo.id] = eventInfo.classDraw
         }
     },
     components: {
         eventInfoTable,
         manageEventRiders,
         manageEventHorses,
-        manageEventClasses,
+        manageEventClasses
     }
 }
 </script>
 
-<style>
-
-</style>
+<style scoped>
+.container1 {
+    background-color: rgb(234, 242, 255);
+    min-height: 93vh;
+}
+</style>>
