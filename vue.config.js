@@ -11,6 +11,7 @@ module.exports = {
 
         config.plugins
             .delete('case-sensitive-paths')
-    }
+    },
+    publicPath: './'
 }
   
