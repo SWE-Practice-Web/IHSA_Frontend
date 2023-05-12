@@ -19,7 +19,7 @@ import store from './store'
 const app = createApp(App);
 const axiosInstance = axios.create({
   // baseURL: process.env.VUE_APP_BASE_URL,
-  baseURL: "https://localhost:49177",
+  baseURL: "https://localhost:5001",
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
